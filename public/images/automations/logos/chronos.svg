@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <circle cx="40" cy="30" r="18" stroke="currentColor" stroke-width="3" />
+  <path d="M40 30 L40 15 M40 30 L50 35" stroke="currentColor" stroke-width="3" />
+  <text x="70" y="38" font-family="Arial" font-weight="bold" font-size="24" fill="currentColor">CHRONOS</text>
+</svg>
