@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 50" fill="none">
+  <circle cx="30" cy="25" r="10" stroke="white" stroke-width="3" stroke-opacity="0.8"/>
+  <path d="M30 15L40 25L30 35" stroke="white" stroke-width="3" stroke-opacity="0.8"/>
+  <text x="55" y="32" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="white" fill-opacity="0.9">GrowthX</text>
+</svg>

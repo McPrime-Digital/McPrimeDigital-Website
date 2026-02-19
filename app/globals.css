@@ -1,26 +1,195 @@
 @import "tailwindcss";
 
+@theme {
+  --color-primary: #764DF0;
+  --color-secondary: #442490;
+  --color-background: #101435;
+  --color-foreground: #ffffff;
+}
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+  --primary: 118 77 240;
+  --secondary: 68 36 144;
+  --background: 16 20 53;
+  --foreground: 255 255 255;
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background-color: rgb(var(--background));
+  color: rgb(var(--foreground));
+  font-family: var(--font-manrope), sans-serif;
+  -webkit-font-smoothing: antialiased;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(118, 77, 240, 0.15) 0%, transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(68, 36, 144, 0.15) 0%, transparent 25%);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 700;
+  letter-spacing: -0.025em;
+}
+
+/* Utilities defined as standard CSS classes that compose tailwind utilities */
+.glass-card {
+  @apply bg-white/5 backdrop-blur-lg border border-white/10 rounded-2xl shadow-xl;
+}
+
+.text-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  color: transparent;
+  background-image: linear-gradient(to right, rgb(var(--primary)), #c084fc);
+}
+
+/* --- Custom Effects for Hero Redesign --- */
+
+/* 3D Liquid Glass Text */
+.liquid-glass-text {
+  font-family: var(--font-syne), sans-serif;
+  background: linear-gradient(135deg,
+      #ffffff 0%,
+      #a5f3fc 25%,
+      #22d3ee 50%,
+      #0ea5e9 75%,
+      #ffffff 100%);
+  background-size: 200% auto;
+  color: transparent;
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shine 5s linear infinite;
+  text-shadow:
+    0px 2px 5px rgba(0, 0, 0, 0.2),
+    0px 5px 15px rgba(6, 182, 212, 0.3);
+  position: relative;
+  font-weight: 700;
+  /* Bold as requested */
+}
+
+@keyframes shine {
+  to {
+    background-position: 200% center;
+  }
+}
+
+/* Oregon Style Glass Text */
+.oregon-glass-text {
+  font-family: var(--font-michroma), sans-serif;
+  color: rgba(255, 255, 255, 0.1);
+  /* 10% opacity */
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 400;
+
+  /* 3D Glass Effect */
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+
+  /* Borders/Stroke for legibility */
+  -webkit-text-stroke: 1px rgba(255, 255, 255, 0.5);
+
+  /* Deep 3D Shadow */
+  text-shadow:
+    0 4px 5px rgba(0, 0, 0, 0.3),
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    0 0 30px rgba(6, 182, 212, 0.4);
+
+  position: relative;
+}
+
+/* Subtle glow animation for Oregon text */
+.oregon-glass-text:hover {
+  text-shadow:
+    0 4px 5px rgba(0, 0, 0, 0.3),
+    0 10px 20px rgba(0, 0, 0, 0.5),
+    0 0 50px rgba(6, 182, 212, 0.8),
+    0 0 100px rgba(6, 182, 212, 0.4);
+  transition: all 0.5s ease;
+}
+
+/* 3D Glassmorphism Button */
+.glass-button-3d {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-top: 1px solid rgba(255, 255, 255, 0.5);
+  border-left: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow:
+    0 8px 32px 0 rgba(0, 0, 0, 0.37),
+    inset 0 0 20px rgba(255, 255, 255, 0.05);
+  transition: all 0.3s ease;
+  transform-style: preserve-3d;
+  cursor: pointer;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  font-weight: 700;
+  position: relative;
+  overflow: hidden;
+}
+
+.glass-button-3d:hover {
+  transform: translateY(-5px) scale(1.02);
+  box-shadow:
+    10px 15px 25px rgba(0, 0, 0, 0.4),
+    -2px -2px 15px rgba(255, 255, 255, 0.2),
+    inset 0 0 25px rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.1);
+  border-color: rgba(6, 182, 212, 0.5);
+}
+
+.glass-button-3d:active {
+  transform: translateY(-2px) scale(0.98);
+  box-shadow:
+    2px 5px 10px rgba(0, 0, 0, 0.4);
+}
+
+/* --- Infinite Scroll Animations --- */
+@keyframes marquee {
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+@keyframes marquee-vertical {
+  0% {
+    transform: translateY(0);
+  }
+
+  100% {
+    transform: translateY(-50%);
+  }
+}
+
+.animate-marquee {
+  display: flex;
+  width: max-content;
+  animation: marquee 40s linear infinite;
+  will-change: transform;
+}
+
+.animate-marquee-vertical {
+  animation: marquee-vertical 60s linear infinite;
+  will-change: transform;
+}
+
+.mask-image-gradient {
+  mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+  -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
+}
+
+/* Custom Selection Color */
+::selection {
+  background: #6366f1;
+  /* Indigo 500 */
+  color: white;
 }
