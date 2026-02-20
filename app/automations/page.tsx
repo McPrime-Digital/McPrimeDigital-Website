@@ -92,7 +92,7 @@ export default function AutomationsPage() {
                             variants={fadeInUp}
                             className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-none uppercase"
                         >
-                            <span className="liquid-glass-text block mb-6 text-center !font-[family-name:var(--font-libre)] font-bold tracking-tighter whitespace-nowrap text-2xl md:text-4xl lg:text-5xl">
+                            <span className="liquid-glass-text block mb-6 text-center !font-[family-name:var(--font-libre)] font-bold tracking-tighter whitespace-normal md:whitespace-nowrap text-2xl md:text-4xl lg:text-5xl">
                                 BUILDING SMARTER SYSTEMS WITH
                             </span>
                             <motion.span
@@ -136,7 +136,7 @@ export default function AutomationsPage() {
             </section>
 
             {/* --- CUSTOM AI SYSTEMS --- */}
-            <section className="relative py-32 overflow-hidden">
+            <section className="relative py-16 md:py-32 overflow-hidden">
                 {/* Background Image & Gradient Overlays */}
                 <div className="absolute inset-0 z-0">
                     <Image

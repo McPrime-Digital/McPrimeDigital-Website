@@ -40,9 +40,11 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className={`${manrope.className} ${libreBaskerville.variable} ${cinzel.variable} ${syne.variable} ${michroma.variable}`}>
+      <body className={`${manrope.className} ${libreBaskerville.variable} ${cinzel.variable} ${syne.variable} ${michroma.variable} overflow-x-hidden relative min-h-screen`}>
         <Navbar />
-        {children}
+        <main className="w-full relative overflow-x-hidden">
+          {children}
+        </main>
       </body>
     </html>
   );

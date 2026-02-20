@@ -150,13 +150,14 @@ export default async function ArticlePage({ params }: Props) {
                         </div>
 
                         {/* Mobile Share (Bottom) */}
-                        <div className="lg:hidden col-span-1 border-t border-white/10 pt-8 mt-8">
-                            <h4 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-6">Share this article</h4>
+                        <div className="lg:hidden col-span-1 border-t border-white/10 pt-8 mt-8 flex flex-col items-center">
+                            <h4 className="text-sm font-mono text-gray-500 uppercase tracking-widest mb-6 text-center">Share this article</h4>
                             <ArticleShare
                                 title={article.title}
                                 summary={article.summary}
                                 url={articleUrl}
                                 imageUrl={imageUrl}
+                                row={true}
                             />
                         </div>
                     </div>

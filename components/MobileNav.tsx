@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import Link from 'next/link';
@@ -11,21 +11,33 @@ export default function MobileNav() {
 
     const toggleMenu = () => setIsOpen(!isOpen);
 
+    // Apply scroll lock to body when menu is open
+    useEffect(() => {
+        if (isOpen) {
+            document.body.style.overflow = 'hidden';
+        } else {
+            document.body.style.overflow = 'unset';
+        }
+        return () => {
+            document.body.style.overflow = 'unset';
+        };
+    }, [isOpen]);
+
     const menuVariants = {
         closed: {
             opacity: 0,
             x: "100%",
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 400,
                 damping: 40
             }
         },
         open: {
             opacity: 1,
-            x: 0,
+            x: "0%",
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 stiffness: 400,
                 damping: 40
             }

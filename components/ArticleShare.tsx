@@ -9,9 +9,10 @@ interface ArticleShareProps {
     url: string; // Absolute URL to the article
     imageUrl: string; // Absolute URL to the featured image
     contentRef?: React.RefObject<HTMLDivElement>; // Ref to the article content for copying
+    row?: boolean; // If true, displays horizontally without labels
 }
 
-export default function ArticleShare({ title, summary, url, imageUrl, contentRef }: ArticleShareProps) {
+export default function ArticleShare({ title, summary, url, imageUrl, contentRef, row = false }: ArticleShareProps) {
     const [copied, setCopied] = useState(false);
 
     // 1. NATIVE WEB SHARE
@@ -105,49 +106,55 @@ export default function ArticleShare({ title, summary, url, imageUrl, contentRef
     };
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className={`flex ${row ? 'flex-row gap-4' : 'flex-col gap-6'}`}>
             {/* Share Button (Native) */}
             <button
                 onClick={handleNativeShare}
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn text-left"
+                className={`flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn ${row ? 'justify-center' : 'text-left'}`}
                 aria-label="Share Article"
             >
                 <div className="p-2 rounded-full bg-white/5 group-hover/btn:bg-white/10 transition-colors border border-white/5 group-hover/btn:border-white/20">
                     <Share2 className="w-4 h-4" />
                 </div>
-                <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">Share</span>
+                {!row && <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">Share</span>}
             </button>
 
             {/* LinkedIn Button */}
             <button
                 onClick={handleLinkedInShare}
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn text-left"
+                className={`flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn ${row ? 'justify-center' : 'text-left'}`}
                 aria-label="Share on LinkedIn"
             >
                 <div className="p-2 rounded-full bg-white/5 group-hover/btn:bg-white/10 transition-colors border border-white/5 group-hover/btn:border-white/20">
                     <Linkedin className="w-4 h-4" />
                 </div>
-                <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">LinkedIn</span>
+                {!row && <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">LinkedIn</span>}
             </button>
 
             {/* Copy Full Article Button */}
             <button
                 onClick={handleCopyArticle}
-                className="flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn text-left"
+                className={`flex items-center gap-3 text-sm text-gray-400 hover:text-white transition-colors group/btn ${row ? 'justify-center' : 'text-left'}`}
                 aria-label="Copy Full Article"
             >
                 <div className="p-2 rounded-full bg-white/5 group-hover/btn:bg-white/10 transition-colors border border-white/5 group-hover/btn:border-white/20">
                     {copied ? <Check className="w-4 h-4 text-emerald-400" /> : <Copy className="w-4 h-4" />}
                 </div>
-                <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">
-                    {copied ? "Copied!" : "Copy Full Article"}
-                </span>
+                {!row && (
+                    <span className="group-hover/btn:underline decoration-white/30 underline-offset-4">
+                        {copied ? "Copied!" : "Copy Full Article"}
+                    </span>
+                )}
             </button>
 
-            <div className="h-px w-full bg-white/10 my-4" />
-            <p className="text-xs text-gray-600 leading-relaxed">
-                This article is part of the McPrime Intelligence series, focusing on enterprise application of emerging technologies.
-            </p>
+            {!row && (
+                <>
+                    <div className="h-px w-full bg-white/10 my-4" />
+                    <p className="text-xs text-gray-600 leading-relaxed">
+                        This article is part of the McPrime Intelligence series, focusing on enterprise application of emerging technologies.
+                    </p>
+                </>
+            )}
         </div>
     );
 }

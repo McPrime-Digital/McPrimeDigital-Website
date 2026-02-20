@@ -7,7 +7,7 @@ import { Sparkles, TrendingUp, Users, Video, DollarSign, Target, Zap, Play } fro
 import Link from 'next/link';
 
 // Custom Components
-const RevealText = ({ text, delay = 0, className = "" }) => {
+const RevealText = ({ text, delay = 0, className = "" }: { text: string; delay?: number; className?: string }) => {
     const letters = Array.from(text);
 
     const container = {
@@ -24,7 +24,7 @@ const RevealText = ({ text, delay = 0, className = "" }) => {
             y: 0,
             filter: "blur(0px)",
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 damping: 12,
                 stiffness: 100,
             },
@@ -34,7 +34,7 @@ const RevealText = ({ text, delay = 0, className = "" }) => {
             y: 20,
             filter: "blur(10px)",
             transition: {
-                type: "spring",
+                type: "spring" as const,
                 damping: 12,
                 stiffness: 100,
             },
@@ -66,13 +66,14 @@ const RevealText = ({ text, delay = 0, className = "" }) => {
     );
 };
 
-const MagneticButton = ({ children, className = "", href = "#" }) => {
-    const ref = useRef(null);
+const MagneticButton = ({ children, className = "", href = "#" }: { children: React.ReactNode; className?: string; href?: string }) => {
+    const ref = useRef<HTMLAnchorElement>(null);
     const x = useMotionValue(0);
     const y = useMotionValue(0);
 
-    const handleMouseMove = (e) => {
+    const handleMouseMove = (e: React.MouseEvent<HTMLAnchorElement>) => {
         const { clientX, clientY } = e;
+        if (!ref.current) return;
         const { height, width, left, top } = ref.current.getBoundingClientRect();
         const middleX = clientX - (left + width / 2);
         const middleY = clientY - (top + height / 2);
@@ -103,8 +104,8 @@ const MagneticButton = ({ children, className = "", href = "#" }) => {
     );
 };
 
-const ParallaxCard = ({ children, className = "" }) => {
-    const ref = useRef(null);
+const ParallaxCard = ({ children, className = "" }: { children: React.ReactNode; className?: string }) => {
+    const ref = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({ target: ref, offset: ["start end", "end start"] });
     const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
 

@@ -94,7 +94,7 @@ export default function CtaSection() {
                                         <input
                                             type="text"
                                             placeholder="John Doe"
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -102,7 +102,7 @@ export default function CtaSection() {
                                         <input
                                             type="text"
                                             placeholder="Acme Inc."
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -110,7 +110,7 @@ export default function CtaSection() {
                                         <input
                                             type="email"
                                             placeholder="john@example.com"
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -118,7 +118,7 @@ export default function CtaSection() {
                                         <textarea
                                             rows={4}
                                             placeholder="Tell us about your automation needs..."
-                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all resize-none"
+                                            className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all resize-none"
                                         />
                                     </div>
                                 </div>

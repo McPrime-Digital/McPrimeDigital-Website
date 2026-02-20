@@ -47,7 +47,7 @@ export default function FilmmakingWorkflow() {
     });
 
     return (
-        <section ref={containerRef} className="relative py-24 min-h-screen bg-[#0B0D12] overflow-hidden perspective-1000">
+        <section ref={containerRef} className="relative py-12 md:py-24 min-h-screen bg-[#0B0D12] overflow-hidden perspective-1000">
             {/* --- Layer 1 & 2: Base & Depth Gradient --- */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0F1115] via-[#0B0D12] to-[#050608]" />
 
