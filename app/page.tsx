@@ -41,7 +41,7 @@ export default function Home() {
           </div>
 
           {/* Content Container */}
-          <div className="relative z-10 py-16 px-4 md:px-12 flex flex-col gap-24 overflow-hidden rounded-[40px]">
+          <div className="relative z-10 py-16 px-4 md:px-12 flex flex-col gap-16 md:gap-24 overflow-hidden rounded-[20px] md:rounded-[40px]">
 
             {/* 1. Explore Section (Services) */}
             <div id="explore"><ExploreSection /></div>

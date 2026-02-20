@@ -62,13 +62,13 @@ export default function HeroSketch() {
             {/* Content Wrapper - Constrained Width */}
             <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center pt-10">
                 {/* Top Row: Logo - AI - About */}
-                <div className="flex justify-center items-center w-full mb-12 relative z-20">
-                    {/* Logo Image - Absolute Left */}
+                <div className="flex justify-center items-center w-full mb-8 md:mb-12 relative z-20">
+                    {/* Logo Image - Absolute Left (Hidden on Mobile, handled by Navbar) */}
                     <motion.div
                         initial={{ opacity: 0, x: -20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="absolute left-0 flex items-center"
+                        className="hidden md:flex absolute left-0 items-center"
                     >
                         <img src="/logo.png" alt="McPrime Digital" className="h-10 w-auto" />
                     </motion.div>
@@ -79,10 +79,10 @@ export default function HeroSketch() {
                         initial={{ scale: 0 }}
                         animate={{ scale: 1 }}
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
-                        className="relative z-50 group"
+                        className="relative z-50 group mt-16 md:mt-0"
                     >
                         {/* Glass Circle Container - Reduced Size */}
-                        <div className="w-[200px] h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        <div className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                             <video
                                 src="/compressed_videos/Hero Robot.mp4"
                                 autoPlay
@@ -94,12 +94,12 @@ export default function HeroSketch() {
                         </div>
                     </motion.div>
 
-                    {/* About Button - Absolute Right */}
+                    {/* About Button - Absolute Right (Hidden on Mobile, handled by Navbar) */}
                     <motion.div
                         initial={{ opacity: 0, x: 20 }}
                         animate={{ opacity: 1, x: 0 }}
                         transition={{ duration: 0.8 }}
-                        className="absolute right-0"
+                        className="hidden md:block absolute right-0"
                     >
                         <a href="/about">
                             <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">ABOUT</Button>
@@ -176,17 +176,17 @@ export default function HeroSketch() {
                         The Future of Digital Excellence
                     </div>
 
-                    {/* Headline: Strict 2-Line Layout */}
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto">
-                        <span className="block mb-2 !font-serif whitespace-nowrap">
-                            <span className="text-white">CRAFTING HIGH-END </span>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif">
+                    {/* Headline: Responsive Wrap */}
+                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
+                        <span className="block mb-2 !font-serif">
+                            <span className="text-white block md:inline">CRAFTING HIGH-END </span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline mt-1 md:mt-0">
                                 VISUAL STORYTELLING
                             </span>
                         </span>
-                        <span className="block !font-serif whitespace-nowrap">
-                            <span className="text-white">BUILDING ADVANCED </span>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 !font-serif">
+                        <span className="block !font-serif">
+                            <span className="text-white block md:inline">BUILDING ADVANCED </span>
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 !font-serif block md:inline mt-1 md:mt-0">
                                 AUTOMATION SYSTEMS
                             </span>
                         </span>

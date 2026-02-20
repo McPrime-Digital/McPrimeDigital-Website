@@ -24,6 +24,23 @@ body {
     radial-gradient(circle at 85% 30%, rgba(68, 36, 144, 0.15) 0%, transparent 25%);
 }
 
+/* Prevent iOS Zoom on Inputs */
+@media screen and (max-width: 768px) {
+
+  input,
+  textarea,
+  select {
+    font-size: 16px !important;
+  }
+}
+
+/* Prevent tap highlight blinking on mobile */
+@media (hover: none) and (pointer: coarse) {
+  * {
+    -webkit-tap-highlight-color: transparent;
+  }
+}
+
 h1,
 h2,
 h3,

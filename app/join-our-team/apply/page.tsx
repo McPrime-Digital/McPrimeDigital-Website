@@ -95,7 +95,7 @@ export default function ApplicationPage() {
                                         name="fullName"
                                         required
                                         placeholder="John Doe"
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-base text-white focus:outline-none focus:border-indigo-500 transition-colors"
                                     />
                                 </div>
 
@@ -107,7 +107,7 @@ export default function ApplicationPage() {
                                         name="email"
                                         required
                                         placeholder="john@example.com"
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-base text-white focus:outline-none focus:border-indigo-500 transition-colors"
                                     />
                                 </div>
 
@@ -117,7 +117,7 @@ export default function ApplicationPage() {
                                     <select
                                         name="role"
                                         required
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors appearance-none"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-base text-white focus:outline-none focus:border-indigo-500 transition-colors appearance-none"
                                         defaultValue=""
                                     >
                                         <option value="" disabled>Select a role...</option>
@@ -137,7 +137,7 @@ export default function ApplicationPage() {
                                         name="portfolio"
                                         required
                                         placeholder="https://your-portfolio.com"
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-base text-white focus:outline-none focus:border-indigo-500 transition-colors"
                                     />
                                 </div>
 
@@ -178,7 +178,7 @@ export default function ApplicationPage() {
                                         required
                                         rows={4}
                                         placeholder="Tell us broadly about your approach to systems..."
-                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors resize-none"
+                                        className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-base text-white focus:outline-none focus:border-indigo-500 transition-colors resize-none"
                                     />
                                 </div>
 
