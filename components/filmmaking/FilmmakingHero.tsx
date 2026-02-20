@@ -15,7 +15,7 @@ export default function FilmmakingHero() {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
                 >
-                    <source src="/filmmaking/filmmaking-hero-v2.mp4" type="video/mp4" />
+                    <source src="/compressed_videos/filmmaking-hero-v2.mp4" type="video/mp4" />
                 </video>
                 {/* Cinematic Overlay - Darkened for text readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-black/40 to-transparent opacity-90" />

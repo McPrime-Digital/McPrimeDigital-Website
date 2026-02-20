@@ -54,7 +54,7 @@ export default function HeroSketch() {
                     playsInline
                     className="absolute inset-0 w-full h-full object-cover opacity-20"
                 >
-                    <source src="/homepage-hero-final.mp4" type="video/mp4" />
+                    <source src="/compressed_videos/homepage-hero-final.mp4" type="video/mp4" />
                 </video>
                 <div className="absolute inset-0 bg-black/60 backdrop-blur-[3px] z-10" />
             </div>
@@ -84,7 +84,7 @@ export default function HeroSketch() {
                         {/* Glass Circle Container - Reduced Size */}
                         <div className="w-[200px] h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                             <video
-                                src="/Hero Robot.mp4"
+                                src="/compressed_videos/Hero Robot.mp4"
                                 autoPlay
                                 loop
                                 muted

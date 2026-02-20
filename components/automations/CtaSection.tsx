@@ -21,24 +21,29 @@ export default function CtaSection() {
                             <div className="inline-block px-4 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-6 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                                 <span className="text-xs font-medium text-cyan-400 uppercase tracking-widest">Schedule Your Call With Bond</span>
                             </div>
-                            <h2 className="text-4xl md:text-5xl font-bold tracking-tight mb-6">
-                                Free 20-minute <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">Audit Call</span>
+                            <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold tracking-tight mb-6 uppercase">
+                                SCHEDULE A SYSTEMS <br /><span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-cyan-400">AUDIT CALL</span>
                             </h2>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                Get a clear picture of where AI fits in your business and how it can drive real ROI. We'll get to know your operations, understand your main struggles, and figure out if there's a partnership that makes sense—no pressure, just an honest conversation.
+                                A structured consultation designed to evaluate operational inefficiencies, integration opportunities, and automation feasibility within your organization.
                             </p>
                         </div>
 
                         <div className="space-y-6">
-                            <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">This Demo Call Is Perfect If:</h3>
+                            <h3 className="text-sm font-bold text-white uppercase tracking-widest mb-4">THIS SESSION IS APPROPRIATE IF:</h3>
 
                             <ul className="space-y-6">
                                 {[
-                                    "Your team is drowning in busywork and you need to free them up for high-impact tasks that actually grow the business",
-                                    "Scaling feels impossible without hiring – you want AI systems handling the repetitive work so your people can focus on what matters",
-                                    "AI sounds promising but overwhelming – you need clarity on where it fits, what it solves, and how to implement it",
-                                    "You've got a vision for automation but lack the technical expertise to validate it, design it, or bring it to life",
-                                    "You're done with cookie-cutter solutions – you want an audit-first approach that uncovers real problems before building anything"
+                                    "Your workflows rely heavily on manual coordination",
+                                    "Repetitive tasks are consuming team capacity",
+                                    "You are scaling but processes are not keeping up",
+                                    "CRM or internal tools are not fully integrated",
+                                    "You suspect automation opportunities but lack clarity on priorities",
+                                    "You need validation before investing in new systems",
+                                    "Your team is spending time on tasks that should be automated",
+                                    "Data is scattered across platforms and lacks visibility",
+                                    "You want a structured roadmap rather than isolated tools",
+                                    "You are unsure how AI fits into your current operations"
                                 ].map((item, i) => (
                                     <li key={i} className="flex gap-4 group">
                                         <div className="flex-shrink-0 w-6 h-6 rounded-full bg-white/5 border border-white/10 flex items-center justify-center group-hover:border-cyan-500/50 group-hover:bg-cyan-900/20 transition-colors mt-1">
