@@ -11,21 +11,21 @@ const videos = [
         id: 1,
         title: 'Alice on Skincare',
         context: 'AI-driven persona delivering authentic product education for skincare lines.',
-        src: '/EASYES PRODUCT .mp4',
+        src: '/compressed_videos/EASYES PRODUCT .mp4',
         views: '1.2M'
     },
     {
         id: 2,
         title: 'McNortons on AI Filmmaking',
         context: 'Founder thought leadership and industry authority content at scale.',
-        src: '/McNORTONS on AI FILMMAKING.mp4',
+        src: '/compressed_videos/McNortons on AI FILMMAKING.mp4',
         views: '850K'
     },
     {
         id: 3,
         title: 'Drizzilicious Snack Ad',
         context: 'High-energy consumer product showcase with dynamic editing patterns.',
-        src: '/DRIZZILICIOUS ad 2.mp4',
+        src: '/compressed_videos/DRIZZILICIOUS ad 2.mp4',
         views: '2.4M'
     }
 ];

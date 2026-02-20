@@ -5,21 +5,36 @@ import { motion, AnimatePresence } from 'framer-motion';
 import Link from 'next/link';
 import { ArrowLeft, Loader2, Upload, Check } from 'lucide-react';
 
+import { submitApplication } from '@/app/actions/submitApplication';
+
 export default function ApplicationPage() {
     const [formState, setFormState] = useState<'idle' | 'submitting' | 'success' | 'error'>('idle');
+    const [resumeName, setResumeName] = useState<string | null>(null);
     const formRef = useRef<HTMLFormElement>(null);
 
     async function handleSubmit(e: FormEvent<HTMLFormElement>) {
         e.preventDefault();
         setFormState('submitting');
 
-        // Simulate API delay
-        await new Promise(resolve => setTimeout(resolve, 2000));
+        const formData = new FormData(e.currentTarget);
 
-        // Mock success (In production, this would POST to an API route)
-        console.log("Application Submitted", new FormData(e.currentTarget));
-        setFormState('success');
-        if (formRef.current) formRef.current.reset();
+        try {
+            const result = await submitApplication(formData);
+
+            if (result.success) {
+                setFormState('success');
+                if (formRef.current) formRef.current.reset();
+                setResumeName(null);
+            } else {
+                setFormState('error');
+                console.error(result.message);
+                alert(result.message); // Simple feedback for error
+            }
+        } catch (error) {
+            setFormState('error');
+            console.error(error);
+            alert("An unexpected error occurred.");
+        }
     }
 
     return (
@@ -103,8 +118,9 @@ export default function ApplicationPage() {
                                         name="role"
                                         required
                                         className="w-full bg-black/40 border border-white/10 rounded-lg px-4 py-3 text-white focus:outline-none focus:border-indigo-500 transition-colors appearance-none"
+                                        defaultValue=""
                                     >
-                                        <option value="" disabled selected>Select a role...</option>
+                                        <option value="" disabled>Select a role...</option>
                                         <option value="cinematographer">Traditional Cinematographer</option>
                                         <option value="automations_auditor">Automations Auditor</option>
                                         <option value="ai_specialist">AI Production Specialist</option>
@@ -128,10 +144,29 @@ export default function ApplicationPage() {
                                 {/* Resume Upload (Visual Only) */}
                                 <div>
                                     <label className="block text-xs font-bold text-gray-500 uppercase tracking-wider mb-2">Resume (PDF)</label>
-                                    <div className="w-full bg-black/40 border border-dashed border-white/20 rounded-lg px-4 py-6 text-center cursor-pointer hover:bg-white/5 transition-colors group relative">
-                                        <input type="file" name="resume" accept=".pdf" className="absolute inset-0 opacity-0 cursor-pointer" required />
-                                        <Upload className="w-6 h-6 text-gray-500 group-hover:text-indigo-400 mx-auto mb-2 transition-colors" />
-                                        <span className="text-sm text-gray-400 group-hover:text-white transition-colors">Click to upload or drag & drop</span>
+                                    <div className={`w-full bg-black/40 border border-dashed ${resumeName ? 'border-green-500/50 bg-green-500/10' : 'border-white/20'} rounded-lg px-4 py-6 text-center cursor-pointer hover:bg-white/5 transition-colors group relative`}>
+                                        <input
+                                            type="file"
+                                            name="resume"
+                                            accept=".pdf"
+                                            className="absolute inset-0 opacity-0 cursor-pointer"
+                                            required
+                                            onChange={(e) => {
+                                                const file = e.target.files?.[0];
+                                                if (file) setResumeName(file.name);
+                                            }}
+                                        />
+                                        {resumeName ? (
+                                            <>
+                                                <Check className="w-6 h-6 text-green-500 mx-auto mb-2" />
+                                                <span className="text-sm text-green-400 font-medium break-all">{resumeName}</span>
+                                            </>
+                                        ) : (
+                                            <>
+                                                <Upload className="w-6 h-6 text-gray-500 group-hover:text-indigo-400 mx-auto mb-2 transition-colors" />
+                                                <span className="text-sm text-gray-400 group-hover:text-white transition-colors">Click to upload or drag & drop</span>
+                                            </>
+                                        )}
                                     </div>
                                 </div>
 
