@@ -1,5 +1,0 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
-  <path d="M40 10 L20 50 H60 Z" stroke="currentColor" stroke-width="4" />
-  <circle cx="40" cy="25" r="3" fill="currentColor" />
-  <text x="70" y="38" font-family="Arial" font-weight="bold" font-size="24" fill="currentColor">VERTEX</text>
-</svg>
