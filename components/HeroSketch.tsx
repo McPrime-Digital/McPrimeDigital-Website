@@ -107,62 +107,54 @@ export default function HeroSketch() {
                     </motion.div>
                 </div>
 
-                {/* Connection Lines (Desktop) - Merging Logic */}
-                <div className="hidden md:block relative w-full h-32 mb-6 -mt-20 z-0">
-                    <svg className="absolute inset-0 w-full h-full overflow-visible">
-                        {/* 
-                       Logic: 
-                       AI is TOP CENTER.
-                       Branches are BOTTOM (20%, 50%, 80%).
-                       "Join together above automations to connect to AI"
-                       
-                       Path 1: Center Branch (50%, 100%) -> Goes Up to Join Point (50%, 20%) -> AI (50%, 0%)
-                       Path 2: Left Branch (20%, 100%) -> Curves to Join Point (50%, 20%)
-                       Path 3: Right Branch (80%, 100%) -> Curves to Join Point (50%, 20%)
-                       
-                       Note: AI visual bottom is roughly around y=0% in this SVG context (relative layout)
-                    */}
-
-                        {/* Left Branch to Intersection */}
-                        <motion.path
-                            d="M20% 100% C20% 60%, 50% 60%, 50% 20%"
-                            stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="none"
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
-                        />
-
-                        {/* Right Branch to Intersection */}
-                        <motion.path
-                            d="M80% 100% C80% 60%, 50% 60%, 50% 20%"
-                            stroke="rgba(255,255,255,0.2)" strokeWidth="1.5" fill="none"
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
-                        />
-
-                        {/* Center Branch to Intersection */}
+                {/* Connection Lines (Desktop) - Mathematically aligned to Grid fractions */}
+                <div className="hidden md:block relative w-full h-32 mb-6 -mt-20 z-0 px-4 md:px-20">
+                    <svg className="w-full h-full overflow-visible">
+                        {/* Left Branch */}
                         <motion.line
-                            x1="50%" y1="100%" x2="50%" y2="20%"
-                            stroke="rgba(255,255,255,0.2)" strokeWidth="1.5"
+                            x1="16.67%" y1="93.75%" x2="16.67%" y2="80%"
+                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
+                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
+                        />
+                        <motion.line
+                            x1="16.67%" y1="80%" x2="50%" y2="80%"
+                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
+                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
+                        />
+
+                        {/* Right Branch */}
+                        <motion.line
+                            x1="83.33%" y1="93.75%" x2="83.33%" y2="80%"
+                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
+                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
+                        />
+                        <motion.line
+                            x1="83.33%" y1="80%" x2="50%" y2="80%"
+                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
+                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
+                        />
+
+                        {/* Center Branch */}
+                        <motion.line
+                            x1="50%" y1="93.75%" x2="50%" y2="80%"
+                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
                             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
                         />
 
                         {/* Intersection to AI (Trunk) */}
                         <motion.line
-                            x1="50%" y1="20%" x2="50%" y2="-20%"
-                            stroke="rgba(255,255,255,0.3)" strokeWidth="2"
+                            x1="50%" y1="80%" x2="50%" y2="-20%"
+                            stroke="rgba(255,255,255,0.4)" strokeWidth="2"
                             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
                         />
-
-                        {/* Reactive Pulses - Flowing UP towards AI */}
-                        {/* <motion.circle r="3" fill="#22d3ee" animate={{ offsetDistance: ["0%", "100%"] }} style={{ offsetPath: "path('M20% 100% C20% 60%, 50% 60%, 50% 20%')" }} transition={{ duration: 3, repeat: Infinity, ease: "linear" }} />
-                    <motion.circle r="3" fill="#22d3ee" animate={{ offsetDistance: ["0%", "100%"] }} style={{ offsetPath: "path('M80% 100% C80% 60%, 50% 60%, 50% 20%')" }} transition={{ duration: 3, repeat: Infinity, ease: "linear", delay: 1 }} />
-                    <motion.circle r="3" fill="#22d3ee" animate={{ offsetDistance: ["0%", "100%"] }} style={{ offsetPath: "path('M50% 100% L50% 20%')" }} transition={{ duration: 2, repeat: Infinity, ease: "linear", delay: 0.5 }} /> */}
                     </svg>
                 </div>
 
                 {/* Services Row - Nodes */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 w-full relative z-10 px-4 md:px-20 mb-20 md:-mt-8">
-                    <ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" />
-                    <ServiceBox title="AUTOMATIONS" delay={1.4} isCenter href="/automations" />
-                    <ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" />
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 w-full relative z-10 px-4 md:px-20 mb-20 md:-mt-8">
+                    <div className="md:px-4"><ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" /></div>
+                    <div className="md:px-4"><ServiceBox title="AUTOMATIONS" delay={1.4} href="/automations" /></div>
+                    <div className="md:px-4"><ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" /></div>
                 </div>
 
                 {/* Hero Content Area */}
@@ -209,7 +201,11 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
     const Content = () => (
         <>
             {/* Connector dot at top of box (where line connects) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-500 shadow-[0_0_10px_#22d3ee]" />
+            <motion.div
+                animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
+                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"
+            />
 
             <div className={`absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg`} />
             <div className={`
@@ -219,7 +215,7 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
                     : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/30 hover:text-white'
                 }
             `}>
-                <span className="text-sm md:text-base font-bold tracking-[0.2em]">{title}</span>
+                <span className="text-sm md:text-base font-black tracking-[0.2em]">{title}</span>
             </div>
         </>
     );
