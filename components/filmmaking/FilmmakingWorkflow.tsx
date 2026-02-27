@@ -40,11 +40,8 @@ export default function FilmmakingWorkflow() {
         offset: ["start start", "end end"]
     });
 
-    const scaleY = useSpring(scrollYProgress, {
-        stiffness: 150,
-        damping: 30,
-        restDelta: 0.001
-    });
+    // Removing useSpring physics to make the line track the vertical scroll instantaneously with zero lag/delay.
+    const scaleY = scrollYProgress;
 
     return (
         <section ref={containerRef} className="relative py-12 md:py-24 min-h-screen bg-[#0B0D12] overflow-hidden perspective-1000">
@@ -159,8 +156,8 @@ export default function FilmmakingWorkflow() {
 function WorkflowStep({ step, index, progress }: { step: any, index: number, progress: any }) {
     const [isActive, setIsActive] = useState(false);
 
-    // Dynamic trigger point based on index (0 to 4 steps -> 0, 0.2, 0.4, 0.6, 0.8)
-    const triggerPoint = index * 0.18;
+    // Dynamic trigger point based on index (starts earlier: 0, 0.15, 0.30...)
+    const triggerPoint = index * 0.15;
 
     useEffect(() => {
         return progress.on("change", (latest: number) => {
