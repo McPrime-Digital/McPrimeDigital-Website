@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
-import { motion } from 'framer-motion';
-import { ShieldCheck, Video, LayoutTemplate, BriefcaseBusiness, TrendingUp, Users, Building2, Map } from 'lucide-react';
+import React, { useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { FlaskConical, UtensilsCrossed, MonitorPlay, Building2, Gem, Handshake, Map, BriefcaseBusiness } from 'lucide-react';
 
 const engagements = [
     {
@@ -10,7 +10,7 @@ const engagements = [
         title: "AI Commercial Film Production",
         description: "Developed and delivered an AI-native commercial film explaining a pharmaceutical product, its intended use, and the problem it addresses. Scriptwriting was structured to align with approval requirements, and full production was completed in under six days.",
         points: ["Structured script development", "Compliance-aware messaging", "Accelerated production timeline", "Deployment-ready commercial asset"],
-        icon: ShieldCheck,
+        icon: FlaskConical,
         color: "from-blue-500/20 to-cyan-500/20",
         iconColor: "text-cyan-400"
     },
@@ -19,7 +19,7 @@ const engagements = [
         title: "Commercial Film Production",
         description: "Produced a commercial film highlighting brand positioning and product appeal within a competitive consumer market.",
         points: ["Concept development", "AI-native production", "Multi-format commercial delivery"],
-        icon: Video,
+        icon: UtensilsCrossed,
         color: "from-emerald-500/20 to-teal-500/20",
         iconColor: "text-emerald-400"
     },
@@ -28,7 +28,7 @@ const engagements = [
         title: "Capability-Focused Commercial Film",
         description: "Produced a short-form commercial explaining product capabilities, target users, practical application, and functional benefits.",
         points: ["Structured product narrative", "Clear use-case communication", "Benefit-driven positioning", "Platform-ready output"],
-        icon: LayoutTemplate,
+        icon: MonitorPlay,
         color: "from-purple-500/20 to-indigo-500/20",
         iconColor: "text-indigo-400"
     },
@@ -46,7 +46,7 @@ const engagements = [
         title: "Multi-Product Commercial Production",
         description: "Produced a high-end commercial showcasing five products within a unified narrative framework.",
         points: ["Coordinated visual architecture", "Controlled brand tone", "Premium visual delivery"],
-        icon: BriefcaseBusiness,
+        icon: Gem,
         color: "from-rose-500/20 to-pink-500/20",
         iconColor: "text-rose-400"
     },
@@ -55,7 +55,7 @@ const engagements = [
         title: "AI Brand Ambassador Program",
         description: "Developed a recurring AI-powered brand ambassador system producing weekly content for snack product promotion.",
         points: ["Structured weekly content framework", "Consistent brand voice", "Scalable short-form output"],
-        icon: Users,
+        icon: Handshake,
         color: "from-fuchsia-500/20 to-purple-500/20",
         iconColor: "text-fuchsia-400"
     },
@@ -73,7 +73,7 @@ const engagements = [
         title: "Operational & Lead Generation Workflow",
         description: "Designed and implemented operational and lead generation workflows to improve internal coordination and marketing pipeline structure.",
         points: ["Lead capture optimization", "Workflow automation", "Structured operational alignment"],
-        icon: TrendingUp,
+        icon: BriefcaseBusiness,
         color: "from-teal-500/20 to-emerald-500/20",
         iconColor: "text-teal-400"
     }
@@ -82,6 +82,7 @@ const engagements = [
 export default function SelectedEngagementsVertical() {
     // Duplicate the array to create a seamless infinite loop
     const doubledEngagements = [...engagements, ...engagements];
+    const [touchedCard, setTouchedCard] = useState<number | null>(null);
 
     return (
         <section className="py-24 sm:py-32 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 my-12">
@@ -140,10 +141,13 @@ export default function SelectedEngagementsVertical() {
                             {doubledEngagements.map((item, index) => (
                                 <div
                                     key={index}
-                                    className="w-full flex-shrink-0 group/card relative rounded-2xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-xl p-6 hover:bg-[#111] transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] overflow-hidden"
+                                    onMouseEnter={() => setTouchedCard(index)}
+                                    onMouseLeave={() => setTouchedCard(null)}
+                                    onClick={() => setTouchedCard(touchedCard === index ? null : index)} // Toggle on Touch
+                                    className={`w-full flex-shrink-0 relative rounded-2xl border bg-[#0a0a0a]/80 backdrop-blur-xl p-6 transition-all duration-500 overflow-hidden cursor-pointer ${touchedCard === index ? 'border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] bg-[#111] scale-105 z-20' : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] hover:bg-[#111] hover:scale-[1.02] z-10'}`}
                                 >
-                                    {/* Card Hover Glow */}
-                                    <div className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${item.color} rounded-full blur-[80px] opacity-20 group-hover/card:opacity-60 transition-opacity duration-700 pointer-events-none`} />
+                                    {/* Card Hover Glow (Active on Touch) */}
+                                    <div className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${item.color} rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${touchedCard === index ? 'opacity-60' : 'opacity-20 hover:opacity-60'}`} />
 
                                     <div className="mb-4 flex items-center justify-between relative z-10">
                                         <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 bg-white/5 border border-white/5 px-3 py-1 rounded-full">{item.client}</span>
