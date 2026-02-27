@@ -10,12 +10,9 @@ import Hero3D from '@/components/automations/Hero3D';
 import TextType from '@/components/TextType';
 import AuditHorizontal from '@/components/automations/AuditHorizontal';
 import RoiSection from '@/components/automations/RoiSection';
-import TestimonialsSection from '@/components/automations/TestimonialsSection';
 import SecurityGovernanceSection from '@/components/automations/SecurityGovernanceSection';
-
-// ... (existing imports)
-
 import CtaSection from '@/components/automations/CtaSection';
+import SelectedEngagementsVertical from '@/components/SelectedEngagementsVertical';
 
 
 
@@ -48,9 +45,6 @@ const slideInRight = {
 
 export default function AutomationsPage() {
     const [isHoveringHeroText, setIsHoveringHeroText] = useState(false);
-
-    // Testimonial / Logo Carousel Logic
-    // Using a continuous CSS animation or framer movement for logos
 
     // Form state
     const [formData, setFormData] = useState({ name: '', email: '', company: '', message: '' });
@@ -214,15 +208,15 @@ export default function AutomationsPage() {
             < RoiSection />
 
 
+            {/* --- SELECTED ENGAGEMENTS (VERTICAL) --- */}
+            <SelectedEngagementsVertical />
+
+
             {/* --- CTA SECTION --- */}
             < CtaSection />
 
             {/* --- SECURITY & GOVERNANCE --- */}
             <SecurityGovernanceSection />
-
-            {/* --- TESTIMONIALS & TRUSTED BY --- */}
-            < TestimonialsSection />
-
 
             <Footer />
         </main >

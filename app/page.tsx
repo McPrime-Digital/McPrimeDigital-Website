@@ -2,16 +2,14 @@ import HeroSketch from '@/components/HeroSketch';
 import ExploreSection from '@/components/ExploreSection';
 import AmbassadorsSection from '@/components/AmbassadorsSection';
 import StorySection from '@/components/StorySection';
-import TestimonialsSection from '@/components/TestimonialsSection';
+import SelectedEngagementsHorizontal from '@/components/SelectedEngagementsHorizontal';
 import CTASection from '@/components/CTASection';
 import BlogSection from '@/components/BlogSection';
 import Footer from '@/components/Footer';
 
-
 export default function Home() {
   return (
     <main className="min-h-screen relative overflow-x-hidden">
-      {/* Background Mesh/Glow Effects - Fixed Layer */}
       {/* Background Mesh/Glow Effects - Fixed Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-slate-950">
         <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-900 to-transparent opacity-60" />
@@ -27,14 +25,13 @@ export default function Home() {
 
         {/* Main Content Frame */}
         <div className="mt-12 mx-2 md:mx-4 lg:mx-8 mb-8 relative">
-          {/* Frame Border & Glow */}
           {/* Cyber Grid Background */}
           <div className="absolute inset-0 rounded-[40px] bg-slate-950 pointer-events-none z-0 overflow-hidden">
             {/* Technical Grid Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px]" />
-            {/* Top Gradient - Dark Premium Fade (Replaces Bluish Purple) */}
+            {/* Top Gradient - Dark Premium Fade */}
             <div className="absolute top-0 left-0 right-0 h-[800px] bg-gradient-to-b from-slate-950 via-slate-900/40 to-transparent pointer-events-none" />
-            {/* Subtle Deep Glow (Much Darker) */}
+            {/* Subtle Deep Glow */}
             <div className="absolute top-0 left-0 right-0 h-[600px] bg-[radial-gradient(circle_800px_at_50%_-200px,#1e1b4b,transform-gpu)] opacity-20 blur-[120px]" />
             {/* Bottom Glow */}
             <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-[radial-gradient(circle_800px_at_50%_100%,#1e1b4b,transform-gpu)] opacity-40 blur-[100px]" />
@@ -52,8 +49,8 @@ export default function Home() {
             {/* 3. Story & Why Choose Us */}
             <div id="story"><StorySection /></div>
 
-            {/* 4. Testimonials */}
-            <div id="testimonials"><TestimonialsSection /></div>
+            {/* 4. Selected Engagements */}
+            <div id="engagements"><SelectedEngagementsHorizontal /></div>
 
             {/* 5. CTA & Blog */}
             <div id="contact"><CTASection /></div>
