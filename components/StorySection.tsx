@@ -135,6 +135,7 @@ function WhyChooseUsVault() {
                     <motion.div
                         key={item.id}
                         onHoverStart={() => setActiveIndex(i)}
+                        onClick={() => setActiveIndex(i)}
                         className="relative h-full cursor-pointer group rounded-3xl overflow-hidden min-w-[60px] md:min-w-[80px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
                         animate={{
                             flex: isActive ? 2 : 1, // More dramatic size difference

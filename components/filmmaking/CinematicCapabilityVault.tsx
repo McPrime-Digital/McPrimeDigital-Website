@@ -119,6 +119,7 @@ function BookPanelSystem() {
                     <motion.div
                         key={cap.id}
                         onHoverStart={() => setActiveIndex(i)}
+                        onClick={() => setActiveIndex(i)}
                         // Removed onHoverEnd to maintain state until another is hovered
                         className="relative h-full cursor-pointer group rounded-2xl overflow-hidden"
                         style={{ transformStyle: "preserve-3d" }}

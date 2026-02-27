@@ -82,14 +82,17 @@ export default function HeroSketch() {
                         className="relative z-50 group mt-16 md:mt-0"
                     >
                         {/* Glass Circle Container - Reduced Size */}
-                        <div className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                        <div
+                            className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                            style={{ isolation: 'isolate', WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
+                        >
                             <video
                                 src="/compressed_videos/Hero Robot.mp4"
                                 autoPlay
                                 loop
                                 muted
                                 playsInline
-                                className="w-full h-full object-cover opacity-80 mix-blend-screen"
+                                className="w-full h-full object-cover opacity-80 mix-blend-screen rounded-full"
                             />
                         </div>
                     </motion.div>
