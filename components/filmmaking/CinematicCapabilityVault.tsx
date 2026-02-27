@@ -83,16 +83,16 @@ export default function CinematicCapabilityVault() {
             </div>
 
             {/* --- CORE CAPABILITIES --- */}
-            <div className="relative w-full h-full flex flex-col items-center justify-end pb-20 z-10">
+            <div className="relative w-full h-full flex flex-col items-center justify-end md:justify-end pb-10 md:pb-20 z-10 pt-32 md:pt-0">
                 {/* Full Screen Blurred Background for Readability - Reduced opacity */}
                 <div className="absolute inset-0 bg-black/30 backdrop-blur-md -z-10" />
 
-                {/* Header */}
-                <div className="absolute top-12 left-0 right-0 text-center z-20 pointer-events-none">
-                    <h2 className="text-4xl md:text-5xl font-bold text-white mb-2 tracking-tight">
-                        CAPABILITIES THAT DRIVE<br /><span className="text-[#2D6BFF]">MEASURABLE PERFORMANCE</span>
+                {/* Header - Adjusted for mobile overlap */}
+                <div className="absolute top-8 md:top-12 left-0 right-0 text-center z-20 pointer-events-none px-4">
+                    <h2 className="text-3xl md:text-4xl lg:text-5xl font-bold text-white mb-2 tracking-tight leading-tight">
+                        CAPABILITIES THAT DRIVE<br className="hidden md:block" /><span className="text-[#2D6BFF]"> MEASURABLE PERFORMANCE</span>
                     </h2>
-                    <p className="text-gray-400 text-sm tracking-widest uppercase">Core Capabilities</p>
+                    <p className="text-gray-400 text-[10px] md:text-sm tracking-[0.2em] md:tracking-widest uppercase mt-2 md:mt-0">Core Capabilities</p>
                 </div>
 
                 {/* Desktop Version */}
@@ -101,7 +101,7 @@ export default function CinematicCapabilityVault() {
                 </div>
 
                 {/* Mobile Version - 3D Swipe Carousel */}
-                <div className="flex md:hidden w-full h-[65vh] items-center justify-center perspective-[2000px] px-2 overflow-visible">
+                <div className="flex md:hidden w-full h-[60vh] items-center justify-center perspective-[2000px] px-2 overflow-visible mt-auto mb-4">
                     <BookPanelMobileCarousel />
                 </div>
             </div>
