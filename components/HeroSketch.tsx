@@ -158,19 +158,44 @@ export default function HeroSketch() {
 
                 {/* Services Row - Nodes */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 w-full relative z-10 px-4 md:px-20 mb-20 md:-mt-8">
-                    {/* Mobile vertical connection line from Robot down through all nodes */}
-                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-[-60px] bottom-10 w-[2px] z-[-1]">
-                        <motion.div
-                            initial={{ height: 0 }}
-                            animate={{ height: "100%" }}
-                            transition={{ duration: 2, delay: 0.8 }}
-                            className="w-full bg-gradient-to-b from-cyan-500/60 via-indigo-500/40 to-transparent"
-                        />
+                    <div className="md:px-4 relative">
+                        {/* Mobile line: Robot to Filmmaking */}
+                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-[-60px] h-[60px] w-[2px]">
+                            <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: "100%" }}
+                                transition={{ duration: 0.4, delay: 0.8 }}
+                                className="w-full h-full bg-cyan-500/50"
+                            />
+                        </div>
+                        <ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" />
+                        {/* Mobile line: Filmmaking to Automations */}
+                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
+                            <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: "100%" }}
+                                transition={{ duration: 0.2, delay: 1.3 }}
+                                className="w-full h-full bg-cyan-500/40"
+                            />
+                        </div>
                     </div>
 
-                    <div className="md:px-4"><ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" /></div>
-                    <div className="md:px-4"><ServiceBox title="AUTOMATIONS" delay={1.4} href="/automations" /></div>
-                    <div className="md:px-4"><ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" /></div>
+                    <div className="md:px-4 relative">
+                        <ServiceBox title="AUTOMATIONS" delay={1.4} href="/automations" />
+                        {/* Mobile line: Automations to Add-ons */}
+                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
+                            <motion.div
+                                initial={{ height: 0 }}
+                                animate={{ height: "100%" }}
+                                transition={{ duration: 0.2, delay: 1.5 }}
+                                className="w-full h-full bg-cyan-500/30"
+                            />
+                        </div>
+                    </div>
+
+                    <div className="md:px-4 relative">
+                        <ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" />
+                    </div>
                 </div>
 
                 {/* Hero Content Area */}
