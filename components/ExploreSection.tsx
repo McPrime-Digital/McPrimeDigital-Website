@@ -13,10 +13,10 @@ export default function ExploreSection() {
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
-                    className="text-2xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight whitespace-nowrap overflow-visible w-full flex justify-center gap-3"
+                    className="text-xl sm:text-2xl md:text-4xl lg:text-5xl font-bold mb-6 leading-tight whitespace-normal md:whitespace-nowrap overflow-visible w-full flex flex-col md:flex-row justify-center items-center gap-1 md:gap-3"
                 >
-                    HARNESSING <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">AI POWER</span>
-                    FOR OUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">PARTNERS SUCCESS</span>
+                    <span>HARNESSING <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-teal-400">AI POWER</span></span>
+                    <span>FOR OUR <span className="text-transparent bg-clip-text bg-gradient-to-r from-orange-400 to-amber-400">PARTNERS SUCCESS</span></span>
                 </motion.h2>
             </div>
 
