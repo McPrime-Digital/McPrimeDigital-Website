@@ -29,8 +29,33 @@ const michroma = Michroma({
 });
 
 export const metadata: Metadata = {
-  title: "McPrime Digital | AI-Powered Marketing & Production",
-  description: "Unleash Success With Our AI Mastery And Digital Marketing!",
+  title: "AI Commercial Filmmaking & AI Automation Systems | McPrime Digital",
+  description: "McPrime Digital delivers AI commercial filmmaking and AI automation systems engineered for mid-market and enterprise organizations. We design AI-native cinematic production and structured automation infrastructure built for speed, governance alignment, and scalable execution.",
+  keywords: [
+    "AI commercial filmmaking",
+    "AI commercial production",
+    "AI cinematic production",
+    "AI automation systems",
+    "enterprise AI automation",
+    "AI marketing automation infrastructure",
+    "AI-powered commercial film",
+    "AI production agency",
+    "AI workflow automation",
+    "enterprise automation architecture",
+    "AI brand ambassador systems",
+    "AI digital spokesperson",
+    "AI-driven advertising",
+    "enterprise content automation",
+    "AI video production for enterprises",
+    "AI automation consulting",
+    "AI production infrastructure",
+    "AI content systems",
+    "AI commercial filmmaking for pharmaceutical companies",
+    "AI automation systems for financial institutions",
+    "enterprise AI video production agency",
+    "AI automation architecture for enterprises",
+    "AI-native commercial production infrastructure"
+  ]
 };
 
 export default function RootLayout({
