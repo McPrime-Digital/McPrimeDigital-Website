@@ -4,6 +4,7 @@ import FilmmakingWorkflow from '@/components/filmmaking/FilmmakingWorkflow';
 import CinematicCapabilityVault from '@/components/filmmaking/CinematicCapabilityVault';
 import FilmmakingPortfolio from '@/components/filmmaking/FilmmakingPortfolio';
 import FilmmakingTarget from '@/components/filmmaking/FilmmakingTarget';
+import SelectedEngagementsHorizontal from '@/components/SelectedEngagementsHorizontal';
 import Footer from '@/components/Footer';
 
 export default function FilmmakingPage() {
@@ -14,6 +15,7 @@ export default function FilmmakingPage() {
             <CinematicCapabilityVault />
             <FilmmakingPortfolio />
             <FilmmakingTarget />
+            <SelectedEngagementsHorizontal />
             <Footer />
         </main>
     );
