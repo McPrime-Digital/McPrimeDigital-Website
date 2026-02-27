@@ -165,7 +165,8 @@ export default function RoiSection() {
                     <div
                         onMouseEnter={() => setIsConnecting(true)}
                         onMouseLeave={() => setIsConnecting(false)}
-                        className="group relative rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl p-8 hover:bg-[#0a0a0a]/80 transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden"
+                        onClick={() => setIsConnecting(!isConnecting)}
+                        className="group relative rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl p-8 hover:bg-[#0a0a0a]/80 transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden cursor-pointer"
                     >
                         <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
 
@@ -185,72 +186,77 @@ export default function RoiSection() {
                                         <stop offset="50%" stopColor="#818cf8" stopOpacity="1" />
                                         <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
                                     </linearGradient>
+                                    <linearGradient id="lineGradActive" x1="0%" y1="0%" x2="100%" y2="0%">
+                                        <stop offset="0%" stopColor="#3b82f6" stopOpacity="0" />
+                                        <stop offset="50%" stopColor="#06b6d4" stopOpacity="1" />
+                                        <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                                    </linearGradient>
                                 </defs>
 
-                                {/* 5 Lines connecting center (50% 50%) to 5 satellites */}
+                                {/* 5 Lines connecting center (50% 50%) to 5 satellites ! */}
                                 {/* Top Satellite */}
-                                <line x1="50%" y1="50%" x2="50%" y2="15%" stroke="url(#lineGrad)" strokeWidth="2"
+                                <line x1="50%" y1="50%" x2="50%" y2="15%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
                                     className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
                                     style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100 }}
                                 />
                                 {/* Top-Right */}
-                                <line x1="50%" y1="50%" x2="85%" y2="35%" stroke="url(#lineGrad)" strokeWidth="2"
+                                <line x1="50%" y1="50%" x2="85%" y2="35%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
                                     className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
                                     style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '100ms' }}
                                 />
                                 {/* Bottom-Right */}
-                                <line x1="50%" y1="50%" x2="75%" y2="80%" stroke="url(#lineGrad)" strokeWidth="2"
+                                <line x1="50%" y1="50%" x2="75%" y2="80%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
                                     className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
                                     style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '200ms' }}
                                 />
                                 {/* Bottom-Left */}
-                                <line x1="50%" y1="50%" x2="25%" y2="80%" stroke="url(#lineGrad)" strokeWidth="2"
+                                <line x1="50%" y1="50%" x2="25%" y2="80%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
                                     className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
                                     style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '300ms' }}
                                 />
                                 {/* Top-Left */}
-                                <line x1="50%" y1="50%" x2="15%" y2="35%" stroke="url(#lineGrad)" strokeWidth="2"
+                                <line x1="50%" y1="50%" x2="15%" y2="35%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
                                     className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
                                     style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '400ms' }}
                                 />
                             </svg>
 
                             {/* Orbit Rings */}
-                            <div className={`absolute w-56 h-56 border border-white/5 rounded-full transition-all duration-700 ${isConnecting ? 'border-indigo-500/20 scale-105' : ''}`} />
-                            <div className={`absolute w-36 h-36 border border-white/10 rounded-full transition-all duration-700 ${isConnecting ? 'border-indigo-500/30 scale-95' : ''}`} />
+                            <div className={`absolute w-56 h-56 border border-white/5 rounded-full transition-all duration-700 ${isConnecting ? 'border-cyan-400/30 scale-105' : ''}`} />
+                            <div className={`absolute w-36 h-36 border border-white/10 rounded-full transition-all duration-700 ${isConnecting ? 'border-indigo-400/40 scale-95' : ''}`} />
 
-                            {/* 5 Satellites - Larger and positioned around */}
+                            {/* 5 Satellites - Custom active colors for each */}
 
                             {/* Top (Database) */}
-                            <div className={`absolute top-2 left-1/2 -translate-x-1/2 p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-indigo-900/40 border-indigo-500 text-indigo-300 shadow-[0_0_20px_rgba(129,140,248,0.6)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                            <div className={`absolute top-2 left-1/2 -translate-x-1/2 p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-emerald-900/60 border-emerald-400 text-emerald-300 shadow-[0_0_25px_rgba(16,185,129,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
                                 <Database size={20} />
                             </div>
 
                             {/* Top-Right (Layers) */}
-                            <div className={`absolute top-[25%] right-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-indigo-900/40 border-indigo-500 text-indigo-300 shadow-[0_0_20px_rgba(129,140,248,0.6)] scale-110 transition-delay-100' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                            <div className={`absolute top-[25%] right-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-cyan-900/60 border-cyan-400 text-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.7)] scale-110 transition-delay-100' : 'bg-black/50 border-white/10 text-gray-500'}`}>
                                 <Layers size={20} />
                             </div>
 
                             {/* Bottom-Right (Code) */}
-                            <div className={`absolute bottom-[10%] right-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-indigo-900/40 border-indigo-500 text-indigo-300 shadow-[0_0_20px_rgba(129,140,248,0.6)] scale-110 transition-delay-200' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                            <div className={`absolute bottom-[10%] right-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-purple-900/60 border-purple-400 text-purple-300 shadow-[0_0_25px_rgba(168,85,247,0.7)] scale-110 transition-delay-200' : 'bg-black/50 border-white/10 text-gray-500'}`}>
                                 <Code2 size={20} />
                             </div>
 
                             {/* Bottom-Left (Smartphone) */}
-                            <div className={`absolute bottom-[10%] left-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-indigo-900/40 border-indigo-500 text-indigo-300 shadow-[0_0_20px_rgba(129,140,248,0.6)] scale-110 transition-delay-300' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                            <div className={`absolute bottom-[10%] left-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-blue-900/60 border-blue-400 text-blue-300 shadow-[0_0_25px_rgba(59,130,246,0.7)] scale-110 transition-delay-300' : 'bg-black/50 border-white/10 text-gray-500'}`}>
                                 <Smartphone size={20} />
                             </div>
 
                             {/* Top-Left (Mic) */}
-                            <div className={`absolute top-[25%] left-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-indigo-900/40 border-indigo-500 text-indigo-300 shadow-[0_0_20px_rgba(129,140,248,0.6)] scale-110 transition-delay-400' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                            <div className={`absolute top-[25%] left-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-rose-900/60 border-rose-400 text-rose-300 shadow-[0_0_25px_rgba(244,63,94,0.7)] scale-110 transition-delay-400' : 'bg-black/50 border-white/10 text-gray-500'}`}>
                                 <Mic size={20} />
                             </div>
 
                             {/* Central Core */}
-                            <div className={`relative z-20 w-28 h-28 bg-black rounded-2xl border flex items-center justify-center shadow-2xl transition-all duration-500 ${isConnecting ? 'border-indigo-500 shadow-[0_0_40px_rgba(129,140,248,0.4)]' : 'border-white/10'}`}>
-                                <div className={`absolute -top-8 px-3 py-1 rounded-full text-[10px] font-mono tracking-wide flex items-center gap-1 transition-all duration-300 ${isConnecting ? 'bg-emerald-900/40 border border-emerald-500/50 text-emerald-400' : 'bg-indigo-900/40 border border-indigo-500/30 text-indigo-300'}`}>
-                                    <span className={`w-1.5 h-1.5 rounded-full ${isConnecting ? 'bg-emerald-400' : 'bg-indigo-400 animate-pulse'}`} />
-                                    {isConnecting ? 'CONNECTED' : 'CONNECTING'}
+                            <div className={`relative z-20 w-28 h-28 bg-black rounded-2xl border flex items-center justify-center shadow-2xl transition-all duration-500 ${isConnecting ? 'border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)]' : 'border-white/10'}`}>
+                                <div className={`absolute -top-8 px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest flex items-center gap-2 transition-all duration-300 ${isConnecting ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 border border-cyan-400/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.8)]' : 'bg-indigo-900/40 border border-indigo-500/30 text-indigo-300'}`}>
+                                    <span className={`w-2 h-2 rounded-full ${isConnecting ? 'bg-white shadow-[0_0_8px_white]' : 'bg-indigo-400 animate-pulse'}`} />
+                                    {isConnecting ? 'ACTIVE' : 'STANDBY'}
                                 </div>
                                 {/* Chip Grid */}
                                 <div className="grid grid-cols-4 gap-1 opacity-50">
