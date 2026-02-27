@@ -29,7 +29,7 @@ const michroma = Michroma({
 });
 
 export const metadata: Metadata = {
-  title: "AI Commercial Filmmaking & AI Automation Systems | McPrime Digital",
+  title: "AI Commercial Filmmaking & AI Automation Infrastructure | McPrime Digital",
   description: "McPrime Digital delivers AI commercial filmmaking and AI automation systems engineered for mid-market and enterprise organizations. We design AI-native cinematic production and structured automation infrastructure built for speed, governance alignment, and scalable execution.",
   keywords: [
     "AI commercial filmmaking",
