@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Button from './ui/Button';
@@ -63,7 +64,7 @@ export default function BlogSection() {
                             <Link href={`/insights#${post.slug}`} className="block h-full">
                                 {/* Card Image Area */}
                                 <div className={`aspect-[4/3] rounded-3xl bg-gray-900 border border-white/10 mb-6 overflow-hidden relative group-hover:border-white/20 transition-all`}>
-                                    <img src={post.image} alt={post.title} className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-105 transition-transform" />
+                                    <Image src={post.image} alt={post.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-105" />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
                                     <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
                                     <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wider border border-white/10 backdrop-blur-md ${post.type === 'case-study' ? 'bg-amber-500/80' : 'bg-black/50'}`}>

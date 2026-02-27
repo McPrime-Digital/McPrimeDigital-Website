@@ -5,14 +5,17 @@ import Image from 'next/image';
 import { motion, AnimatePresence, useScroll, useTransform } from 'framer-motion';
 import { Brain, Network, Zap, ChevronRight, BarChart3, Lock, Shield, CheckCircle, ArrowRight, X, Mail, FileText, User, Building, ExternalLink, TrendingUp, MessageSquare, Settings, Users, Database } from 'lucide-react';
 import Link from 'next/link';
+import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
 import Hero3D from '@/components/automations/Hero3D';
 import TextType from '@/components/TextType';
-import AuditHorizontal from '@/components/automations/AuditHorizontal';
-import RoiSection from '@/components/automations/RoiSection';
-import SecurityGovernanceSection from '@/components/automations/SecurityGovernanceSection';
-import CtaSection from '@/components/automations/CtaSection';
-import SelectedEngagementsVertical from '@/components/SelectedEngagementsVertical';
+
+// Dynamically import below-the-fold heavy components
+const AuditHorizontal = dynamic(() => import('@/components/automations/AuditHorizontal'), { ssr: true });
+const RoiSection = dynamic(() => import('@/components/automations/RoiSection'), { ssr: true });
+const SecurityGovernanceSection = dynamic(() => import('@/components/automations/SecurityGovernanceSection'), { ssr: true });
+const CtaSection = dynamic(() => import('@/components/automations/CtaSection'), { ssr: true });
+const SelectedEngagementsVertical = dynamic(() => import('@/components/SelectedEngagementsVertical'), { ssr: true });
 
 
 

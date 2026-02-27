@@ -1,6 +1,8 @@
 'use client';
 
 import { usePathname } from 'next/navigation';
+import Image from 'next/image';
+import Link from 'next/link';
 
 import { motion } from 'framer-motion';
 import Button from './ui/Button';
@@ -23,29 +25,49 @@ export default function Navbar() {
             className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 pointer-events-none"
         >
             <div className={`pointer-events-auto backdrop-blur-md px-6 py-2 rounded-full ${isHome ? 'md:hidden' : ''}`}>
-                <a href="/">
-                    <img src="/logo.png" alt="McP DIGITAL" className="h-8 md:h-10 w-auto max-w-[200px]" />
-                </a>
+                <Link href="/">
+                    <Image src="/logo.png" alt="McP DIGITAL" width={200} height={40} priority className="h-8 md:h-10 w-auto max-w-[200px]" />
+                </Link>
             </div>
 
-            <div className="pointer-events-auto flex gap-4">
-                {/* On Filmmaking page, only show Home button to keep it distraction-free */}
+            <div className="pointer-events-auto flex gap-4 items-center">
                 {isFilmmaking ? (
-                    <a href="/">
-                        <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">HOME</Button>
-                    </a>
-                ) : (
                     <>
-                        <div className={`gap-4 ${isHome ? 'hidden' : 'hidden md:flex'}`}>
+                        {/* Filmmaking Page: Show HOME on desktop, Burger Menu on mobile (per request) */}
+                        <div className="hidden md:block">
                             <a href="/">
-                                <Button variant="glass" className="text-white hover:text-indigo-400">Home</Button>
+                                <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">HOME</Button>
                             </a>
-                            {/* Add more standard links here for other pages in the future */}
+                        </div>
+                        <div className="md:hidden">
+                            <MobileNav />
+                        </div>
+                    </>
+                ) : isHome ? (
+                    <>
+                        {/* Homepage: Show standard links on desktop, ABOUT button on mobile */}
+                        <div className="hidden md:flex gap-4">
                             <a href="/about">
                                 <Button variant="glass" className="text-white hover:text-indigo-400">About</Button>
                             </a>
                         </div>
-                        {/* Mobile Nav Toggle */}
+                        <div className="md:hidden">
+                            <a href="/about">
+                                <Button variant="outline" className="text-xs px-4 py-2 border-white/20 hover:bg-white/10 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.1)]">ABOUT</Button>
+                            </a>
+                        </div>
+                    </>
+                ) : (
+                    <>
+                        {/* Other Pages: Standard Desktop Links + Mobile Nav */}
+                        <div className="hidden md:flex gap-4">
+                            <a href="/">
+                                <Button variant="glass" className="text-white hover:text-indigo-400">Home</Button>
+                            </a>
+                            <a href="/about">
+                                <Button variant="glass" className="text-white hover:text-indigo-400">About</Button>
+                            </a>
+                        </div>
                         <div className="md:hidden">
                             <MobileNav />
                         </div>

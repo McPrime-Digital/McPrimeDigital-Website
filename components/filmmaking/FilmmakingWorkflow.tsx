@@ -41,7 +41,7 @@ export default function FilmmakingWorkflow() {
     });
 
     const scaleY = useSpring(scrollYProgress, {
-        stiffness: 100,
+        stiffness: 150,
         damping: 30,
         restDelta: 0.001
     });
@@ -94,7 +94,7 @@ export default function FilmmakingWorkflow() {
 
                                 <div className="space-y-16">
                                     {workflowSteps.map((step, i) => (
-                                        <WorkflowStep key={i} step={step} index={i} />
+                                        <WorkflowStep key={i} step={step} index={i} progress={scaleY} />
                                     ))}
                                 </div>
                             </div>
@@ -156,32 +156,39 @@ export default function FilmmakingWorkflow() {
 }
 
 // --- Left Column Step ---
-function WorkflowStep({ step, index }: { step: any, index: number }) {
-    const ref = useRef(null);
-    const isInView = useInView(ref, { margin: "-40% 0px -40% 0px" });
+function WorkflowStep({ step, index, progress }: { step: any, index: number, progress: any }) {
+    const [isActive, setIsActive] = useState(false);
+
+    // Dynamic trigger point based on index (0 to 4 steps -> 0, 0.2, 0.4, 0.6, 0.8)
+    const triggerPoint = index * 0.18;
+
+    useEffect(() => {
+        return progress.on("change", (latest: number) => {
+            setIsActive(latest >= triggerPoint);
+        });
+    }, [progress, triggerPoint]);
 
     return (
         <motion.div
-            ref={ref}
             animate={{
-                opacity: isInView ? 1 : 0.3,
-                x: isInView ? 10 : 0,
-                scale: isInView ? 1.05 : 1
+                opacity: isActive ? 1 : 0.3,
+                x: isActive ? 10 : 0,
+                scale: isActive ? 1.05 : 1
             }}
             transition={{ duration: 0.5 }}
             className="group relative"
         >
-            <div className={`absolute -left-[45px] top-1 flex items-center justify-center w-6 h-6 rounded-full border transition-colors duration-500 ${isInView ? 'bg-[#0B0D12] border-[#2D6BFF] shadow-[0_0_10px_#2D6BFF]' : 'bg-[#0B0D12] border-white/10'}`}>
-                <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${isInView ? 'bg-[#2D6BFF]' : 'bg-white/20'}`} />
+            <div className={`absolute -left-[45px] top-1 flex items-center justify-center w-6 h-6 rounded-full border transition-colors duration-500 ${isActive ? 'bg-[#0B0D12] border-[#2D6BFF] shadow-[0_0_10px_#2D6BFF]' : 'bg-[#0B0D12] border-white/10'}`}>
+                <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${isActive ? 'bg-[#2D6BFF]' : 'bg-white/20'}`} />
             </div>
 
-            <span className={`block text-4xl font-light mb-2 font-mono transition-colors duration-500 ${isInView ? 'text-[#2D6BFF]' : 'text-white/20'}`}>
+            <span className={`block text-4xl font-light mb-2 font-mono transition-colors duration-500 ${isActive ? 'text-[#2D6BFF]' : 'text-white/20'}`}>
                 {step.number}
             </span>
-            <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${isInView ? 'text-white' : 'text-gray-500'}`}>
+            <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500'}`}>
                 {step.title}
             </h3>
-            <div className={`overflow-hidden transition-all duration-700 ${isInView ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
+            <div className={`overflow-hidden transition-all duration-700 ${isActive ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
                 <p className="text-sm text-gray-400 font-light leading-relaxed max-w-sm">
                     {step.desc}
                 </p>

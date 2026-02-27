@@ -6,13 +6,14 @@ export default function FilmmakingHero() {
     return (
         <section className="relative h-screen w-full overflow-hidden bg-[#0B0D12]">
             {/* Background Video */}
-            <div className="absolute inset-0 z-0 select-none">
+            <div className="absolute inset-0 z-0 select-none bg-[#0a0a0d]">
                 <video
                     key="filmmaking-hero-v2"
                     autoPlay
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
                 >
                     <source src="/compressed_videos/filmmaking-hero-v2.mp4" type="video/mp4" />

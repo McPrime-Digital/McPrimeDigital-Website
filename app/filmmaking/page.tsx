@@ -1,11 +1,13 @@
+import dynamic from 'next/dynamic';
 import FilmmakingHero from '@/components/filmmaking/FilmmakingHero';
-import FilmmakingWorkflow from '@/components/filmmaking/FilmmakingWorkflow';
-// import FilmmakingCapabilities from '@/components/filmmaking/FilmmakingCapabilities'; 
-import CinematicCapabilityVault from '@/components/filmmaking/CinematicCapabilityVault';
-import FilmmakingPortfolio from '@/components/filmmaking/FilmmakingPortfolio';
-import FilmmakingTarget from '@/components/filmmaking/FilmmakingTarget';
-import SelectedEngagementsHorizontal from '@/components/SelectedEngagementsHorizontal';
-import Footer from '@/components/Footer';
+
+// Dynamically import below-the-fold components
+const FilmmakingWorkflow = dynamic(() => import('@/components/filmmaking/FilmmakingWorkflow'), { ssr: true });
+const CinematicCapabilityVault = dynamic(() => import('@/components/filmmaking/CinematicCapabilityVault'), { ssr: true });
+const FilmmakingPortfolio = dynamic(() => import('@/components/filmmaking/FilmmakingPortfolio'), { ssr: true });
+const FilmmakingTarget = dynamic(() => import('@/components/filmmaking/FilmmakingTarget'), { ssr: true });
+const SelectedEngagementsHorizontal = dynamic(() => import('@/components/SelectedEngagementsHorizontal'), { ssr: true });
+const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
 
 export default function FilmmakingPage() {
     return (

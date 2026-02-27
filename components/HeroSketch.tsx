@@ -2,6 +2,7 @@
 
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef } from 'react';
+import Image from 'next/image';
 import Button from './ui/Button';
 import { Player } from '@remotion/player';
 import { HeroLoop } from '../remotion/HeroLoop';
@@ -45,13 +46,14 @@ export default function HeroSketch() {
             className="relative min-h-[90vh] w-full flex flex-col items-center mb-32 overflow-hidden" // Full width container
         >
             {/* Background Video Layer - Full Width */}
-            <div className="absolute inset-0 z-0 overflow-hidden">
+            <div className="absolute inset-0 z-0 overflow-hidden bg-[#0A0D14]">
                 <video
                     key="homepage-hero-final"
                     autoPlay
                     loop
                     muted
                     playsInline
+                    preload="auto"
                     className="absolute inset-0 w-full h-full object-cover opacity-20"
                 >
                     <source src="/compressed_videos/homepage-hero-final.mp4" type="video/mp4" />
@@ -70,7 +72,7 @@ export default function HeroSketch() {
                         transition={{ duration: 0.8 }}
                         className="hidden md:flex absolute left-0 items-center"
                     >
-                        <img src="/logo.png" alt="McPrime Digital" className="h-10 w-auto" />
+                        <Image src="/logo.png" alt="McPrime Digital" width={160} height={40} priority className="h-10 w-auto" />
                     </motion.div>
 
                     {/* Central AI Node - Video with Mask and Glass Effect */}
@@ -83,7 +85,7 @@ export default function HeroSketch() {
                     >
                         {/* Glass Circle Container - Reduced Size */}
                         <div
-                            className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-white/5 backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                            className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-[#0B0F19] backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                             style={{ isolation: 'isolate', WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
                             <video
@@ -92,6 +94,7 @@ export default function HeroSketch() {
                                 loop
                                 muted
                                 playsInline
+                                preload="auto"
                                 className="w-full h-full object-cover opacity-80 mix-blend-screen rounded-full"
                             />
                         </div>
@@ -155,6 +158,16 @@ export default function HeroSketch() {
 
                 {/* Services Row - Nodes */}
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 w-full relative z-10 px-4 md:px-20 mb-20 md:-mt-8">
+                    {/* Mobile vertical connection line from Robot down through all nodes */}
+                    <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-[-60px] bottom-10 w-[2px] z-[-1]">
+                        <motion.div
+                            initial={{ height: 0 }}
+                            animate={{ height: "100%" }}
+                            transition={{ duration: 2, delay: 0.8 }}
+                            className="w-full bg-gradient-to-b from-cyan-500/60 via-indigo-500/40 to-transparent"
+                        />
+                    </div>
+
                     <div className="md:px-4"><ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" /></div>
                     <div className="md:px-4"><ServiceBox title="AUTOMATIONS" delay={1.4} href="/automations" /></div>
                     <div className="md:px-4"><ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" /></div>

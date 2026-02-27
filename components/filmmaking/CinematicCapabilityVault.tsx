@@ -1,5 +1,7 @@
 'use client';
 
+import Image from 'next/image';
+
 import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 import {
@@ -71,12 +73,15 @@ export default function CinematicCapabilityVault() {
         <section ref={containerRef} className="relative h-screen bg-black overflow-hidden border-b border-white/10">
             {/* --- GLOBAL BACKGROUND: Liquid Water --- */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <motion.img
-                    src="/filmmaking/watersplash.jpeg"
-                    alt="Liquid Background"
-                    className="w-full h-full object-cover opacity-60"
-                    style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "5%"]) }}
-                />
+                <motion.div style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "5%"]) }} className="absolute inset-0">
+                    <Image
+                        src="/filmmaking/watersplash.jpeg"
+                        alt="Liquid Background"
+                        fill
+                        className="object-cover opacity-60"
+                        priority
+                    />
+                </motion.div>
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
                 {/* Dust Particles */}
                 <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02]" />
@@ -155,10 +160,11 @@ function BookPanelSystem() {
                                             exit={{ opacity: 0, height: 0 }}
                                             className="w-full relative overflow-hidden rounded-t-2xl border-b border-white/10"
                                         >
-                                            <img
+                                            <Image
                                                 src={cap.img}
                                                 alt={cap.title}
-                                                className="w-full h-full object-cover object-center"
+                                                fill
+                                                className="object-cover object-center"
                                             />
                                             <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                                         </motion.div>
@@ -272,10 +278,11 @@ function BookPanelMobileCarousel() {
                                         // Active/Center Panel - Full Info
                                         <>
                                             <div className="w-full h-[45%] relative overflow-hidden rounded-t-2xl border-b border-white/10 shrink-0">
-                                                <img
+                                                <Image
                                                     src={cap.img}
                                                     alt={cap.title}
-                                                    className="w-full h-full object-cover object-center"
+                                                    fill
+                                                    className="object-cover object-center"
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
                                                 <div className="absolute top-4 left-4 text-[#2D6BFF] drop-shadow-md">

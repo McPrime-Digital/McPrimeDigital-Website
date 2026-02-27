@@ -1,9 +1,29 @@
 'use server';
 
 import nodemailer from 'nodemailer';
+import { headers } from 'next/headers';
+import rateLimit from '@/lib/rateLimit';
+
+// Initialize rate limiter: 3 requests per minute per IP
+const limiter = rateLimit({
+    interval: 60000, // 1 minute
+    uniqueTokenPerInterval: 500,
+});
 
 export async function submitApplication(formData: FormData) {
     try {
+        // 0. Security: Rate Limiting
+        try {
+            // Get IP or use fallback
+            const headersList = await headers();
+            const ip = headersList.get('x-forwarded-for') || headersList.get('x-real-ip') || 'unknown-ip';
+
+            // Limit to 3 applications per minute per IP
+            await limiter.check(3, ip);
+        } catch {
+            return { success: false, message: 'Too many submissions. Please wait a minute before trying again.' };
+        }
+
         const fullName = formData.get('fullName') as string;
         const email = formData.get('email') as string;
         const role = formData.get('role') as string;
@@ -14,6 +34,24 @@ export async function submitApplication(formData: FormData) {
         // 1. Basic Validation
         if (!fullName || !email || !role || !resume) {
             return { success: false, message: 'Missing required fields.' };
+        }
+
+        // 2. Strict Security Validation (File Uploads)
+        const allowedTypes = [
+            'application/pdf',
+            'application/msword',
+            'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+        ];
+
+        if (!allowedTypes.includes(resume.type)) {
+            console.warn(`[SECURITY] Blocked invalid upload type: ${resume.type} from ${email}`);
+            return { success: false, message: 'Invalid file type. Only PDF and DOC/DOCX are allowed.' };
+        }
+
+        const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB limit
+        if (resume.size > MAX_FILE_SIZE) {
+            console.warn(`[SECURITY] Blocked oversized upload: ${resume.size} bytes from ${email}`);
+            return { success: false, message: 'File is too large. Maximum size is 5MB.' };
         }
 
         // 2. Configure Transporter

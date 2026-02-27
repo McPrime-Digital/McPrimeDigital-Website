@@ -1,11 +1,14 @@
+import dynamic from 'next/dynamic';
 import HeroSketch from '@/components/HeroSketch';
-import ExploreSection from '@/components/ExploreSection';
-import AmbassadorsSection from '@/components/AmbassadorsSection';
-import StorySection from '@/components/StorySection';
-import SelectedEngagementsHorizontal from '@/components/SelectedEngagementsHorizontal';
-import CTASection from '@/components/CTASection';
-import BlogSection from '@/components/BlogSection';
-import Footer from '@/components/Footer';
+
+// Dynamically import below-the-fold components to reduce initial JS payload
+const ExploreSection = dynamic(() => import('@/components/ExploreSection'), { ssr: true });
+const AmbassadorsSection = dynamic(() => import('@/components/AmbassadorsSection'), { ssr: true });
+const StorySection = dynamic(() => import('@/components/StorySection'), { ssr: true });
+const SelectedEngagementsHorizontal = dynamic(() => import('@/components/SelectedEngagementsHorizontal'), { ssr: true });
+const CTASection = dynamic(() => import('@/components/CTASection'), { ssr: true });
+const BlogSection = dynamic(() => import('@/components/BlogSection'), { ssr: true });
+const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
 
 export default function Home() {
   return (
