@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowUpRight, Check, Zap, Shield, Eye, Database } from 'lucide-react';
+import { ArrowUpRight, Check, Zap, Shield, Eye, Database, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // --- DATA ---
 const features = [
@@ -112,9 +112,14 @@ export default function StorySection() {
                     </h3>
                 </motion.div>
 
-                {/* Horizontal Accordion Container - Perspective Wrapper */}
-                <div className="w-full max-w-6xl mx-auto h-[600px] flex items-center justify-center md:px-0 perspective-[800px] overflow-hidden">
+                {/* Desktop Version - Horizontal Accordion Container */}
+                <div className="hidden md:flex w-full max-w-6xl mx-auto h-[600px] items-center justify-center md:px-0 perspective-[800px] overflow-hidden">
                     <WhyChooseUsVault />
+                </div>
+
+                {/* Mobile Version - 3D Swipe Carousel */}
+                <div className="flex md:hidden w-full h-[520px] items-center justify-center perspective-[800px] overflow-visible px-2">
+                    <WhyChooseUsMobileCarousel />
                 </div>
             </div>
         </section>
@@ -238,6 +243,131 @@ function WhyChooseUsVault() {
                     </motion.div>
                 );
             })}
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: Mobile 3D Swipe Carousel ---
+function WhyChooseUsMobileCarousel() {
+    const [activeIndex, setActiveIndex] = useState<number>(2);
+
+    const handleNext = () => setActiveIndex((prev) => Math.min(features.length - 1, prev + 1));
+    const handlePrev = () => setActiveIndex((prev) => Math.max(0, prev - 1));
+
+    // Simple swipe detection using Framer Motion drag end
+    const handleDragEnd = (event: any, info: any) => {
+        if (info.offset.x < -50) handleNext();
+        if (info.offset.x > 50) handlePrev();
+    };
+
+    return (
+        <div className="w-full h-full flex flex-col">
+            {/* Carousel Track */}
+            <div className="relative flex-1 w-full flex items-center justify-center overflow-visible">
+                <AnimatePresence initial={false}>
+                    {features.map((item, i) => {
+                        const offset = i - activeIndex;
+                        const isCenter = offset === 0;
+                        if (Math.abs(offset) > 2) return null; // Render only nearby items
+
+                        return (
+                            <motion.div
+                                key={item.id}
+                                className="absolute h-[90%] w-[75%] max-w-[300px] cursor-pointer rounded-3xl overflow-hidden"
+                                initial={false}
+                                animate={{
+                                    x: offset * 80, // Horizontal shift for side panels
+                                    scale: isCenter ? 1 : 0.85,
+                                    zIndex: 10 - Math.abs(offset),
+                                    opacity: Math.abs(offset) >= 2 ? 0 : isCenter ? 1 : 0.6,
+                                    rotateY: offset * -15, // Light 3D angle
+                                }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                onClick={() => setActiveIndex(i)}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.2}
+                                onDragEnd={handleDragEnd}
+                            >
+                                {/* Glass Surface Details */}
+                                <div className={`absolute inset-0 rounded-3xl backdrop-blur-xl transition-all duration-500
+                                    ${isCenter
+                                        ? 'bg-gradient-to-b from-[#2D6BFF]/20 to-black/80 shadow-[0_0_40px_-10px_rgba(45,107,255,0.4)] border border-white/20'
+                                        : 'bg-white/5 border border-white/5'
+                                    }`
+                                }>
+                                    <div className="absolute inset-0 rounded-3xl bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
+                                </div>
+
+                                {/* Inner Content */}
+                                <div className="relative z-10 w-full h-full flex flex-col p-5">
+                                    {isCenter ? (
+                                        // Active/Center Panel - Full Info
+                                        <div className="flex-1 flex flex-col relative h-full">
+                                            {/* ID Float */}
+                                            <div className="absolute top-0 right-0 text-5xl font-black text-white/5 pointer-events-none select-none">
+                                                {item.id}
+                                            </div>
+
+                                            {/* Icon */}
+                                            <div className="mb-4 mt-2">
+                                                <div className="w-12 h-12 rounded-full bg-[#2D6BFF]/20 flex items-center justify-center">
+                                                    <item.icon className="w-6 h-6 text-[#2D6BFF]" />
+                                                </div>
+                                            </div>
+
+                                            <h3 className="text-xl font-bold text-white leading-tight mb-3 pr-8">
+                                                {item.title}
+                                            </h3>
+                                            <div className="w-8 h-1 bg-[#2D6BFF] rounded-full mb-4 shrink-0" />
+
+                                            {/* Scrollable text area if content is too long on very small screens */}
+                                            <div className="flex-1 overflow-y-auto pr-1 pb-4">
+                                                <p className="text-gray-300 text-sm leading-relaxed">
+                                                    {item.content}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ) : (
+                                        // Inactive Side Panels - Collapsed
+                                        <div className="flex-1 flex flex-col items-center justify-center opacity-60">
+                                            <item.icon className="w-8 h-8 text-white mb-6" />
+                                            <h3 className="text-white/80 text-xs font-bold tracking-[0.1em] uppercase text-center -rotate-90 origin-center whitespace-nowrap translate-y-8">
+                                                {item.title.substring(0, 15)}...
+                                            </h3>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+            </div>
+
+            {/* Pagination / Arrows */}
+            <div className="mt-8 flex items-center justify-center gap-6">
+                <button
+                    onClick={handlePrev}
+                    className={`p-3 rounded-full border transition-all ${activeIndex === 0 ? 'bg-transparent border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white hover:bg-white/10'}`}
+                    disabled={activeIndex === 0}
+                >
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <div className="flex gap-2">
+                    {features.map((_, i) => (
+                        <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-6 bg-[#2D6BFF]' : 'w-1.5 bg-white/20'}`} />
+                    ))}
+                </div>
+
+                <button
+                    onClick={handleNext}
+                    className={`p-3 rounded-full border transition-all ${activeIndex === features.length - 1 ? 'bg-transparent border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white hover:bg-white/10'}`}
+                    disabled={activeIndex === features.length - 1}
+                >
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
         </div>
     );
 }

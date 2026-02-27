@@ -4,7 +4,7 @@ import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion'
 import { useRef, useState } from 'react';
 import {
     FileText, Image as ImageIcon, Layers, Film, Globe,
-    Zap, TrendingDown, RefreshCw, Box, ShieldCheck, Target
+    Zap, TrendingDown, RefreshCw, Box, ShieldCheck, Target, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 // --- DATA ---
@@ -95,9 +95,14 @@ export default function CinematicCapabilityVault() {
                     <p className="text-gray-400 text-sm tracking-widest uppercase">Core Capabilities</p>
                 </div>
 
-                {/* Book Panels Container */}
-                <div className="w-full h-[70vh] flex items-center justify-center px-4 md:px-12 perspective-[2000px]">
+                {/* Desktop Version */}
+                <div className="hidden md:flex w-full h-[70vh] items-center justify-center px-4 md:px-12 perspective-[2000px]">
                     <BookPanelSystem />
+                </div>
+
+                {/* Mobile Version - 3D Swipe Carousel */}
+                <div className="flex md:hidden w-full h-[65vh] items-center justify-center perspective-[2000px] px-2 overflow-visible">
+                    <BookPanelMobileCarousel />
                 </div>
             </div>
 
@@ -209,6 +214,127 @@ function BookPanelSystem() {
                     </motion.div>
                 );
             })}
+        </div>
+    );
+}
+
+// --- SUB-COMPONENT: Mobile 3D Swipe Carousel for Book Panels ---
+function BookPanelMobileCarousel() {
+    // Default to index 2
+    const [activeIndex, setActiveIndex] = useState<number>(2);
+
+    const handleNext = () => setActiveIndex((prev) => Math.min(capabilities.length - 1, prev + 1));
+    const handlePrev = () => setActiveIndex((prev) => Math.max(0, prev - 1));
+
+    // Simple swipe detection using Framer Motion drag end
+    const handleDragEnd = (event: any, info: any) => {
+        if (info.offset.x < -40) handleNext();
+        if (info.offset.x > 40) handlePrev();
+    };
+
+    return (
+        <div className="w-full h-full flex flex-col pt-4">
+            {/* Carousel Track */}
+            <div className="relative flex-1 w-full flex items-center justify-center overflow-visible">
+                <AnimatePresence initial={false}>
+                    {capabilities.map((cap, i) => {
+                        const offset = i - activeIndex;
+                        const isCenter = offset === 0;
+                        if (Math.abs(offset) > 2) return null; // Render only nearby items
+
+                        return (
+                            <motion.div
+                                key={cap.id}
+                                className="absolute h-full w-[75%] max-w-[300px] cursor-pointer rounded-2xl overflow-hidden"
+                                initial={false}
+                                animate={{
+                                    x: offset * 80, // Horizontal shift
+                                    scale: isCenter ? 1 : 0.85,
+                                    zIndex: 10 - Math.abs(offset),
+                                    opacity: Math.abs(offset) >= 2 ? 0 : isCenter ? 1 : 0.6,
+                                    rotateY: offset * -15, // Light 3D angle
+                                }}
+                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                onClick={() => setActiveIndex(i)}
+                                drag="x"
+                                dragConstraints={{ left: 0, right: 0 }}
+                                dragElastic={0.2}
+                                onDragEnd={handleDragEnd}
+                            >
+                                {/* Transparent Liquid Glass Material */}
+                                <div className="absolute inset-0 bg-white/[0.03] backdrop-blur-md border border-white/[0.1] rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+                                    <div className="absolute inset-0 bg-gradient-to-br from-white/[0.1] via-transparent to-transparent opacity-50 pointer-events-none rounded-2xl" />
+                                </div>
+
+                                {/* Inner Content */}
+                                <div className="relative z-10 w-full h-full flex flex-col">
+                                    {isCenter ? (
+                                        // Active/Center Panel - Full Info
+                                        <>
+                                            <div className="w-full h-[45%] relative overflow-hidden rounded-t-2xl border-b border-white/10 shrink-0">
+                                                <img
+                                                    src={cap.img}
+                                                    alt={cap.title}
+                                                    className="w-full h-full object-cover object-center"
+                                                />
+                                                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
+                                                <div className="absolute top-4 left-4 text-[#2D6BFF] drop-shadow-md">
+                                                    <cap.icon size={24} />
+                                                </div>
+                                            </div>
+                                            <div className="flex-1 p-5 flex flex-col bg-black/40 overflow-y-auto">
+                                                <div className="text-3xl font-mono font-bold text-[#2D6BFF] mb-2">{cap.id}</div>
+                                                <h3 className="text-lg font-bold text-white leading-tight mb-3">
+                                                    {cap.title}
+                                                </h3>
+                                                <p className="text-gray-300 text-sm leading-relaxed border-l-2 border-[#2D6BFF] pl-4 mb-2">
+                                                    {cap.desc}
+                                                </p>
+                                            </div>
+                                        </>
+                                    ) : (
+                                        // Inactive Side Panels - Collapsed
+                                        <div className="flex-1 flex flex-col items-center justify-center opacity-60 px-2 py-4">
+                                            <div className="text-3xl font-mono font-bold text-white/20 mb-4">{cap.id}</div>
+                                            <cap.icon size={24} className="text-white/50 mb-auto" />
+                                            <div className="relative h-32 w-full mt-auto mb-10">
+                                                <h3 className="absolute bottom-0 left-1/2 -translate-x-1/2 text-white/60 text-[10px] font-bold tracking-[0.2em] uppercase whitespace-nowrap -rotate-90 origin-bottom">
+                                                    {cap.title.substring(0, 18)}...
+                                                </h3>
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+                            </motion.div>
+                        );
+                    })}
+                </AnimatePresence>
+            </div>
+
+            {/* Pagination / Arrows */}
+            <div className="mt-8 flex items-center justify-center gap-6">
+                <button
+                    onClick={handlePrev}
+                    className={`p-3 rounded-full border transition-all ${activeIndex === 0 ? 'bg-transparent border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white hover:bg-white/10'}`}
+                    disabled={activeIndex === 0}
+                >
+                    <ChevronLeft className="w-5 h-5" />
+                </button>
+
+                <div className="flex gap-2">
+                    {capabilities.map((_, i) => (
+                        <div key={i} className={`h-1.5 rounded-full transition-all duration-300 ${i === activeIndex ? 'w-6 bg-[#2D6BFF]' : 'w-1.5 bg-white/20'}`} />
+                    ))}
+                </div>
+
+                <button
+                    onClick={handleNext}
+                    className={`p-3 rounded-full border transition-all ${activeIndex === capabilities.length - 1 ? 'bg-transparent border-white/5 text-white/20' : 'bg-white/5 border-white/20 text-white hover:bg-white/10'}`}
+                    disabled={activeIndex === capabilities.length - 1}
+                >
+                    <ChevronRight className="w-5 h-5" />
+                </button>
+            </div>
         </div>
     );
 }
