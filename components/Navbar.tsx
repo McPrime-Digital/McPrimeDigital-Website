@@ -33,10 +33,13 @@ export default function Navbar() {
             <div className="pointer-events-auto flex gap-4 items-center">
                 {isFilmmaking ? (
                     <>
-                        {/* Filmmaking Page: Show HOME on desktop, Burger Menu on mobile (per request) */}
-                        <div className="hidden md:block">
+                        {/* Filmmaking Page: Show HOME and ABOUT on desktop, Burger Menu on mobile */}
+                        <div className="hidden md:flex gap-4">
                             <a href="/">
                                 <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">HOME</Button>
+                            </a>
+                            <a href="/about">
+                                <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">ABOUT</Button>
                             </a>
                         </div>
                         <div className="md:hidden">
@@ -45,12 +48,7 @@ export default function Navbar() {
                     </>
                 ) : isHome ? (
                     <>
-                        {/* Homepage: Show standard links on desktop, ABOUT button on mobile */}
-                        <div className="hidden md:flex gap-4">
-                            <a href="/about">
-                                <Button variant="glass" className="text-white hover:text-indigo-400">About</Button>
-                            </a>
-                        </div>
+                        {/* Homepage: HeroSketch handles Desktop Nav entirely. Only show ABOUT on mobile. */}
                         <div className="md:hidden">
                             <a href="/about">
                                 <Button variant="outline" className="text-xs px-4 py-2 border-white/20 hover:bg-white/10 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.1)]">ABOUT</Button>
