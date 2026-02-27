@@ -18,6 +18,8 @@ import {
 
 export default function RoiSection() {
     const [isConnecting, setIsConnecting] = useState(false);
+    const [isCard1Active, setIsCard1Active] = useState(false);
+    const [isCard2Active, setIsCard2Active] = useState(false);
 
     return (
         <section className="py-24 sm:py-32 relative bg-[#050505] text-white overflow-hidden">
@@ -65,8 +67,13 @@ export default function RoiSection() {
                 <div className="grid lg:grid-cols-3 gap-8">
 
                     {/* Card 1: Complete AI Opportunity Report */}
-                    <div className="group relative rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl p-8 hover:bg-[#0a0a0a]/80 transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    <div
+                        onMouseEnter={() => setIsCard1Active(true)}
+                        onMouseLeave={() => setIsCard1Active(false)}
+                        onClick={() => setIsCard1Active(!isCard1Active)}
+                        className={`group relative rounded-3xl border bg-[#0a0a0a]/50 backdrop-blur-xl p-8 transition-all duration-500 overflow-hidden cursor-pointer ${isCard1Active ? 'bg-[#0a0a0a]/80 border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]' : 'border-white/10 hover:bg-[#0a0a0a]/80 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)]'}`}
+                    >
+                        <div className={`absolute inset-0 bg-gradient-to-br from-white/5 to-transparent transition-opacity duration-700 pointer-events-none ${isCard1Active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
 
                         <h3 className="text-2xl font-bold mb-4">Complete AI Opportunity Report</h3>
                         <p className="text-gray-400 text-sm leading-relaxed mb-10 h-12">
@@ -76,37 +83,37 @@ export default function RoiSection() {
                         {/* Visual: Stacked List */}
                         <div className="space-y-4 relative">
                             {/* Item 1 */}
-                            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 relative overflow-hidden group/item transition-colors duration-300 hover:bg-white/10 hover:border-white/20">
-                                <div className="p-2 rounded-lg bg-black/40 border border-white/10 text-gray-400 group-hover/item:text-white transition-colors">
+                            <div className={`flex items-center gap-4 p-3 rounded-xl border relative overflow-hidden group/item transition-colors duration-300 ${isCard1Active ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'}`}>
+                                <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-white' : 'text-gray-400 group-hover/item:text-white'}`}>
                                     <LayoutDashboard size={18} />
                                 </div>
                                 <div className="flex-1">
                                     <div className="text-sm font-medium text-white">Map all Workflows</div>
-                                    <div className="text-xs text-gray-500 group-hover/item:text-gray-400 transition-colors">Visualize business operations</div>
+                                    <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>Visualize business operations</div>
                                 </div>
                                 <span className="text-[10px] font-bold bg-indigo-500/20 text-indigo-300 px-1.5 py-0.5 rounded border border-indigo-500/30">NEW</span>
                             </div>
 
                             {/* Item 2 */}
-                            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 relative overflow-hidden group/item transition-colors duration-300 hover:bg-white/10 hover:border-white/20">
-                                <div className="p-2 rounded-lg bg-black/40 border border-white/10 text-gray-400 group-hover/item:text-white transition-colors">
+                            <div className={`flex items-center gap-4 p-3 rounded-xl border relative overflow-hidden group/item transition-colors duration-300 ${isCard1Active ? 'bg-white/10 border-white/20' : 'bg-white/5 border-white/5 hover:bg-white/10 hover:border-white/20'}`}>
+                                <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-white' : 'text-gray-400 group-hover/item:text-white'}`}>
                                     <Zap size={18} />
                                 </div>
                                 <div className="flex-1">
                                     <div className="text-sm font-medium text-white">Add AI Touchpoints</div>
-                                    <div className="text-xs text-gray-500 group-hover/item:text-gray-400 transition-colors">Spot automation opportunities</div>
+                                    <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>Spot automation opportunities</div>
                                 </div>
                                 <span className="text-[10px] font-bold bg-purple-500/20 text-purple-300 px-1.5 py-0.5 rounded border border-purple-500/30">LINK</span>
                             </div>
 
                             {/* Item 3 */}
-                            <div className="flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 relative overflow-hidden group/item opacity-60 hover:opacity-100 transition-all duration-300">
-                                <div className="p-2 rounded-lg bg-black/40 border border-white/10 text-gray-400 group-hover/item:text-white transition-colors">
+                            <div className={`flex items-center gap-4 p-3 rounded-xl bg-white/5 border border-white/5 relative overflow-hidden group/item transition-all duration-300 ${isCard1Active ? 'opacity-100' : 'opacity-60 hover:opacity-100'}`}>
+                                <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-white' : 'text-gray-400 group-hover/item:text-white'}`}>
                                     <FileText size={18} />
                                 </div>
                                 <div className="flex-1">
                                     <div className="text-sm font-medium text-white">Generate Insights Report</div>
-                                    <div className="text-xs text-gray-500 group-hover/item:text-gray-400 transition-colors">See ROI projections</div>
+                                    <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>See ROI projections</div>
                                 </div>
                                 <span className="text-[10px] font-bold bg-blue-500/20 text-blue-300 px-1.5 py-0.5 rounded border border-blue-500/30">UPDATED</span>
                             </div>
@@ -115,8 +122,13 @@ export default function RoiSection() {
 
 
                     {/* Card 2: Adoption Blueprint */}
-                    <div className="group relative rounded-3xl border border-white/10 bg-[#0a0a0a]/50 backdrop-blur-xl p-8 hover:bg-[#0a0a0a]/80 transition-all duration-500 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)] overflow-hidden">
-                        <div className="absolute inset-0 bg-gradient-to-br from-white/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-700 pointer-events-none" />
+                    <div
+                        onMouseEnter={() => setIsCard2Active(true)}
+                        onMouseLeave={() => setIsCard2Active(false)}
+                        onClick={() => setIsCard2Active(!isCard2Active)}
+                        className={`group relative rounded-3xl border bg-[#0a0a0a]/50 backdrop-blur-xl p-8 transition-all duration-500 overflow-hidden cursor-pointer ${isCard2Active ? 'bg-[#0a0a0a]/80 border-white/20 shadow-[0_0_50px_rgba(0,0,0,0.5)]' : 'border-white/10 hover:bg-[#0a0a0a]/80 hover:border-white/20 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)]'}`}
+                    >
+                        <div className={`absolute inset-0 bg-gradient-to-br from-white/5 to-transparent transition-opacity duration-700 pointer-events-none ${isCard2Active ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'}`} />
 
                         <h3 className="text-2xl font-bold mb-4">Adoption Blueprint</h3>
                         <p className="text-gray-400 text-sm leading-relaxed mb-10 h-12">
@@ -126,35 +138,35 @@ export default function RoiSection() {
                         {/* Visual: Flow Chart */}
                         <div className="relative h-64 flex flex-col items-center justify-center gap-6">
                             {/* Connecting Line */}
-                            <div className="absolute top-1/2 left-10 right-10 h-[1px] border-t border-dashed border-white/20 -z-10 hidden md:block group-hover:border-white/40 transition-colors duration-500" />
+                            <div className={`absolute top-1/2 left-10 right-10 h-[1px] border-t border-dashed -z-10 hidden md:block transition-colors duration-500 ${isCard2Active ? 'border-white/40' : 'border-white/20 group-hover:border-white/40'}`} />
 
                             <div className="flex flex-wrap justify-center gap-4 w-full">
-                                <div className="px-4 py-2 rounded-full border border-white/10 bg-black/40 text-xs text-gray-300 flex items-center gap-2 group-hover:border-indigo-500/50 group-hover:bg-indigo-900/10 group-hover:text-white transition-all duration-300">
-                                    <Users size={14} className="group-hover:text-indigo-400 transition-colors" /> Align team
+                                <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 ${isCard2Active ? 'border-indigo-500/50 bg-indigo-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-indigo-500/50 group-hover:bg-indigo-900/10 group-hover:text-white'}`}>
+                                    <Users size={14} className={`transition-colors ${isCard2Active ? 'text-indigo-400' : 'group-hover:text-indigo-400'}`} /> Align team
                                 </div>
-                                <div className="px-4 py-2 rounded-full border border-white/10 bg-black/40 text-xs text-gray-300 flex items-center gap-2 group-hover:border-purple-500/50 group-hover:bg-purple-900/10 group-hover:text-white transition-all duration-300 delay-75">
-                                    <GitMerge size={14} className="group-hover:text-purple-400 transition-colors" /> Design Workflow
+                                <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-75 ${isCard2Active ? 'border-purple-500/50 bg-purple-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-purple-500/50 group-hover:bg-purple-900/10 group-hover:text-white'}`}>
+                                    <GitMerge size={14} className={`transition-colors ${isCard2Active ? 'text-purple-400' : 'group-hover:text-purple-400'}`} /> Design Workflow
                                 </div>
                             </div>
 
                             {/* Central Active Node */}
-                            <div className="relative z-10 p-1 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 shadow-[0_0_30px_rgba(129,140,248,0.3)] group-hover:shadow-[0_0_50px_rgba(129,140,248,0.6)] transition-all duration-500">
+                            <div className={`relative z-10 p-1 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 transition-all duration-500 ${isCard2Active ? 'shadow-[0_0_50px_rgba(129,140,248,0.6)]' : 'shadow-[0_0_30px_rgba(129,140,248,0.3)] group-hover:shadow-[0_0_50px_rgba(129,140,248,0.6)]'}`}>
                                 <div className="bg-black rounded-lg p-2">
-                                    <RefreshCw size={24} className="text-indigo-400 animate-spin-slow group-hover:text-white transition-colors" />
+                                    <RefreshCw size={24} className={`animate-spin-slow transition-colors ${isCard2Active ? 'text-white' : 'text-indigo-400 group-hover:text-white'}`} />
                                 </div>
                             </div>
 
                             <div className="flex flex-wrap justify-center gap-4 w-full">
-                                <div className="px-4 py-2 rounded-full border border-white/10 bg-black/40 text-xs text-gray-300 flex items-center gap-2 group-hover:border-blue-500/50 group-hover:bg-blue-900/10 group-hover:text-white transition-all duration-300 delay-100">
-                                    <RefreshCw size={14} className="group-hover:text-blue-400 transition-colors" /> Feedback loop
+                                <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-100 ${isCard2Active ? 'border-blue-500/50 bg-blue-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-blue-500/50 group-hover:bg-blue-900/10 group-hover:text-white'}`}>
+                                    <RefreshCw size={14} className={`transition-colors ${isCard2Active ? 'text-blue-400' : 'group-hover:text-blue-400'}`} /> Feedback loop
                                 </div>
-                                <div className="px-4 py-2 rounded-full border border-white/10 bg-black/40 text-xs text-gray-300 flex items-center gap-2 group-hover:border-emerald-500/50 group-hover:bg-emerald-900/10 group-hover:text-white transition-all duration-300 delay-150">
-                                    <Send size={14} className="group-hover:text-emerald-400 transition-colors" /> Rollout plan
+                                <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-150 ${isCard2Active ? 'border-emerald-500/50 bg-emerald-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-emerald-500/50 group-hover:bg-emerald-900/10 group-hover:text-white'}`}>
+                                    <Send size={14} className={`transition-colors ${isCard2Active ? 'text-emerald-400' : 'group-hover:text-emerald-400'}`} /> Rollout plan
                                 </div>
                             </div>
 
                             {/* Bottom Note */}
-                            <div className="w-full mt-4 px-4 py-2 border border-white/5 bg-white/5 rounded-lg text-center text-xs text-gray-400 group-hover:text-gray-300 transition-colors">
+                            <div className={`w-full mt-4 px-4 py-2 border border-white/5 bg-white/5 rounded-lg text-center text-xs transition-colors ${isCard2Active ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'}`}>
                                 Continuous improvement plan.
                             </div>
                         </div>
@@ -256,7 +268,7 @@ export default function RoiSection() {
                             <div className={`relative z-20 w-28 h-28 bg-black rounded-2xl border flex items-center justify-center shadow-2xl transition-all duration-500 ${isConnecting ? 'border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)]' : 'border-white/10'}`}>
                                 <div className={`absolute -top-8 px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest flex items-center gap-2 transition-all duration-300 ${isConnecting ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 border border-cyan-400/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.8)]' : 'bg-indigo-900/40 border border-indigo-500/30 text-indigo-300'}`}>
                                     <span className={`w-2 h-2 rounded-full ${isConnecting ? 'bg-white shadow-[0_0_8px_white]' : 'bg-indigo-400 animate-pulse'}`} />
-                                    {isConnecting ? 'ACTIVE' : 'STANDBY'}
+                                    {isConnecting ? 'CONNECTED' : 'CONNECTING'}
                                 </div>
                                 {/* Chip Grid */}
                                 <div className="grid grid-cols-4 gap-1 opacity-50">
