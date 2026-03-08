@@ -1,6 +1,8 @@
 import dynamic from 'next/dynamic';
 import HeroSketch from '@/components/HeroSketch';
 
+// test
+
 // Dynamically import below-the-fold components to reduce initial JS payload
 const ExploreSection = dynamic(() => import('@/components/ExploreSection'), { ssr: true });
 const AmbassadorsSection = dynamic(() => import('@/components/AmbassadorsSection'), { ssr: true });
