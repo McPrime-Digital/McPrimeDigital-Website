@@ -1,8 +1,8 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { VideoUploader } from "@/components/VideoUploader";
-import { ArrowLeft, ShieldCheck, Zap, Info, LogOut, Loader2 } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Info, LogOut, Loader2, PlayCircle, Clock } from "lucide-react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useRouter } from "next/navigation";
@@ -10,6 +10,27 @@ import { useRouter } from "next/navigation";
 export default function UploadPage() {
     const router = useRouter();
     const [loggingOut, setLoggingOut] = useState(false);
+    const [videos, setVideos] = useState<any[]>([]);
+    const [loadingVideos, setLoadingVideos] = useState(true);
+
+    const fetchVideos = async () => {
+        try {
+            setLoadingVideos(true);
+            const res = await fetch("/api/videos");
+            if (res.ok) {
+                const data = await res.json();
+                setVideos(data.videos);
+            }
+        } catch (error) {
+            console.error("Failed to fetch videos:", error);
+        } finally {
+            setLoadingVideos(false);
+        }
+    };
+
+    useEffect(() => {
+        fetchVideos();
+    }, []);
 
     const handleLogout = async () => {
         setLoggingOut(true);
@@ -27,7 +48,7 @@ export default function UploadPage() {
 
     const handleUploadComplete = (url: string) => {
         console.log("Uploaded successfully to:", url);
-        // Here you could save the URL to a database (e.g. Prisma + PostgreSQL)
+        fetchVideos();
     };
 
     return (
@@ -109,6 +130,58 @@ export default function UploadPage() {
                         <VideoUploader onUploadComplete={handleUploadComplete} />
                     </section>
                 </div>
+
+                {/* Uploaded Videos Section */}
+                <section className="space-y-6">
+                    <div className="flex items-center gap-3 mb-6">
+                        <PlayCircle className="w-6 h-6 text-blue-400" />
+                        <h2 className="text-2xl font-bold text-white">Uploaded Videos</h2>
+                    </div>
+
+                    {loadingVideos ? (
+                        <div className="flex items-center justify-center p-12 bg-white/5 border border-white/10 rounded-3xl">
+                            <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+                        </div>
+                    ) : videos.length === 0 ? (
+                        <div className="text-center p-12 bg-white/5 border border-white/10 rounded-3xl">
+                            <p className="text-white/50 text-lg">No videos uploaded yet.</p>
+                        </div>
+                    ) : (
+                        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                            {videos.map((video) => (
+                                <motion.div
+                                    key={video.key}
+                                    initial={{ opacity: 0, scale: 0.95 }}
+                                    animate={{ opacity: 1, scale: 1 }}
+                                    className="bg-white/5 border border-white/10 rounded-2xl overflow-hidden hover:border-blue-500/30 transition-all group"
+                                >
+                                    <div className="aspect-video bg-black/50 relative">
+                                        <video
+                                            src={video.url}
+                                            className="w-full h-full object-cover"
+                                            controls
+                                            preload="metadata"
+                                        />
+                                    </div>
+                                    <div className="p-4 space-y-2">
+                                        <p className="text-sm font-medium text-white truncate" title={video.key.replace("samples/", "")}>
+                                            {video.key.replace("samples/", "")}
+                                        </p>
+                                        <div className="flex items-center justify-between text-xs text-white/40">
+                                            <span className="flex items-center gap-1">
+                                                <Clock className="w-3 h-3" />
+                                                {new Date(video.lastModified).toLocaleDateString()}
+                                            </span>
+                                            <span>
+                                                {(video.size / (1024 * 1024)).toFixed(2)} MB
+                                            </span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            ))}
+                        </div>
+                    )}
+                </section>
 
                 {/* Footer info/stats */}
                 <footer className="pt-20 text-center opacity-20 hover:opacity-100 transition-opacity duration-500">
