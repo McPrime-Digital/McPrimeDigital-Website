@@ -28,7 +28,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     // NOTE: LinkedIn requires absolute URLs for og:image.
     // We'll assume the site is deployed at https://mcprime-digital.com for the example, 
     // or use a placeholder if env is missing.
-    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://mcprime.com';
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://mcprimedigital.com';
     const imageUrl = `${domain}${article.image}`;
     const articleUrl = `${domain}/insights/${slug}`;
 
@@ -77,7 +77,7 @@ export default async function ArticlePage({ params }: Props) {
     }
 
     // Domain for sharing
-    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://mcprime.com';
+    const domain = process.env.NEXT_PUBLIC_SITE_URL || 'https://mcprimedigital.com';
     const articleUrl = `${domain}/insights/${article.id}`;
     const imageUrl = `${domain}${article.image}`;
 
