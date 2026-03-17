@@ -5,8 +5,11 @@ import { s3Client } from "@/lib/s3";
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
     try {
+        const { searchParams } = new URL(request.url);
+        const category = searchParams.get('category');
+
         const bucketName = process.env.AWS_BUCKET_NAME;
         if (!bucketName) {
             return NextResponse.json(
@@ -15,15 +18,18 @@ export async function GET() {
             );
         }
 
+        // List from the specific category folder if requested, otherwise list all videos
+        const prefix = category ? `videos/${category}/` : `videos/`;
+
         const command = new ListObjectsV2Command({
             Bucket: bucketName,
-            Prefix: "samples/",
+            Prefix: prefix,
         });
 
         const response = await s3Client.send(command);
 
         const sortedContents = (response.Contents || [])
-            .filter(item => item.Key !== 'samples/' && item.Key)
+            .filter(item => !item.Key?.endsWith('/') && item.Key)
             .sort((a, b) => {
                 const aTime = a.LastModified?.getTime() || 0;
                 const bTime = b.LastModified?.getTime() || 0;

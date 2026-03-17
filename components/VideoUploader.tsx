@@ -10,11 +10,21 @@ interface VideoUploaderProps {
 
 export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }) => {
     const [file, setFile] = useState<File | null>(null);
+    const [category, setCategory] = useState<string>("home-hero");
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);
     const [uploadedUrl, setUploadedUrl] = useState<string | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+
+    const categories = [
+        { id: "home-hero", label: "Home Base Hero" },
+        { id: "filmmaking", label: "Filmmaking Approach" },
+        { id: "drone-fpv", label: "Drone / FPV" },
+        { id: "automation", label: "Workflow Automations" },
+        { id: "add-ons", label: "Add-Ons & Extras" },
+        { id: "uncategorized", label: "Misc / Other" }
+    ];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
@@ -42,6 +52,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                 body: JSON.stringify({
                     fileName: file.name,
                     fileType: file.type,
+                    category: category,
                 }),
                 headers: {
                     "Content-Type": "application/json",
@@ -138,6 +149,26 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                 </div>
             ) : (
                 <div className="space-y-6">
+                    {/* Category Selector */}
+                    <div className="bg-white/5 border border-white/10 rounded-2xl p-4 space-y-3 relative z-10">
+                        <label className="text-white/70 text-sm font-bold block">
+                            Website Placement (Category)
+                        </label>
+                        <select
+                            value={category}
+                            onChange={(e) => setCategory(e.target.value)}
+                            disabled={uploading}
+                            className="w-full bg-black/50 border border-white/20 rounded-xl px-4 py-3 text-white focus:outline-none focus:border-blue-500 transition-colors appearance-none disabled:opacity-50"
+                        >
+                            {categories.map((cat) => (
+                                <option key={cat.id} value={cat.id} className="bg-[#050505] text-white">
+                                    {cat.label}
+                                </option>
+                            ))}
+                        </select>
+                        <p className="text-white/40 text-xs">This ensures the video automatically displays in the correct section on the live site.</p>
+                    </div>
+
                     <div className="bg-white/5 rounded-2xl p-4 flex items-center gap-4 relative">
                         <div className="w-12 h-12 bg-blue-500/20 rounded-xl flex items-center justify-center">
                             <Video className="w-6 h-6 text-blue-400" />
