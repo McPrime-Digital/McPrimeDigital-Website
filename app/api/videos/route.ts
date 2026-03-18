@@ -43,15 +43,23 @@ export async function GET(request: Request) {
             });
             const signedUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
 
+            // Extract category from key: videos/{category}/{filename}
+            const parts = item.Key!.split('/');
+            const videoCategory = parts.length >= 3 ? parts[1] : 'uncategorized';
+
             return {
                 key: item.Key,
                 url: signedUrl,
                 lastModified: item.LastModified,
                 size: item.Size,
+                category: videoCategory,
             };
         }));
 
-        return NextResponse.json({ videos });
+        // Collect unique categories
+        const categories = [...new Set(videos.map(v => v.category))];
+
+        return NextResponse.json({ videos, categories });
     } catch (error) {
         console.error("Error fetching videos from S3:", error);
         return NextResponse.json(

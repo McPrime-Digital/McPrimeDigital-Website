@@ -18,12 +18,10 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const categories = [
-        { id: "home-hero", label: "Home Base Hero" },
-        { id: "filmmaking", label: "Filmmaking Approach" },
-        { id: "drone-fpv", label: "Drone / FPV" },
-        { id: "automation", label: "Workflow Automations" },
-        { id: "add-ons", label: "Add-Ons & Extras" },
-        { id: "uncategorized", label: "Misc / Other" }
+        { id: "homepage-core-services", label: "Homepage Core Services" },
+        { id: "homepage-ambassadors", label: "Homepage Ambassadors" },
+        { id: "addons-creations", label: "Addons Creations" },
+        { id: "filmmaking-portfolio", label: "Filmmaking Portfolio" }
     ];
 
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
