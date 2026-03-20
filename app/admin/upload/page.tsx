@@ -247,10 +247,10 @@ export default function UploadPage() {
                                         )}
                                     </button>
 
-                                    <div className="aspect-video bg-black/50 relative">
+                                    <div className="bg-black/50 relative flex items-center justify-center overflow-hidden">
                                         <video
                                             src={video.url}
-                                            className="w-full h-full object-cover"
+                                            className="w-full h-auto max-h-[75vh] object-contain"
                                             controls
                                             preload="metadata"
                                         />
