@@ -5,7 +5,7 @@ import { Play, X, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
 // Metadata map matched to S3 filenames (keyword-based)
-const videoMeta: Record<string, { title: string; subtitle: string; category: string }> = {
+const videoMeta: Record<string, { title: string; subtitle: string; category: string; loopFromEnd?: boolean }> = {
     'primeos': {
         title: 'PRIME.OS',
         subtitle: 'The AI that builds execution paths and turns imagination into action.',
@@ -13,8 +13,9 @@ const videoMeta: Record<string, { title: string; subtitle: string; category: str
     },
     'vexorin': {
         title: 'VEXORIN',
-        subtitle: 'Precision-engineered commercial storytelling built for maximum brand impact at scale.',
-        category: 'Brand Film'
+        subtitle: 'The new standard in mental focus.',
+        category: 'Brand Film',
+        loopFromEnd: true // thumbnail loops from 30s before end
     }
 };
 
@@ -30,6 +31,7 @@ interface S3Video {
     title: string;
     subtitle: string;
     category: string;
+    loopFromEnd?: boolean;
 }
 
 function getMetaForVideo(key: string) {
@@ -38,7 +40,7 @@ function getMetaForVideo(key: string) {
         if (lower.includes(keyword)) return meta;
     }
     const filename = key.split('/').pop()?.replace(/^\d+-/, '').replace(/\.[^.]+$/, '') || key;
-    return { title: filename.toUpperCase(), subtitle: '', category: 'Commercial' };
+    return { title: filename.toUpperCase(), subtitle: '', category: 'Commercial', loopFromEnd: false };
 }
 
 export default function FilmmakingPortfolio() {
@@ -156,11 +158,21 @@ export default function FilmmakingPortfolio() {
 
 function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; onOpen: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
+    const loopStartRef = useRef<number>(0);
 
-    // 20-second loop
+    // On metadata load: for loopFromEnd videos, seek to 30s before end
+    const handleLoadedMetadata = () => {
+        if (video.loopFromEnd && videoRef.current) {
+            const start = Math.max(0, videoRef.current.duration - 30);
+            loopStartRef.current = start;
+            videoRef.current.currentTime = start;
+        }
+    };
+
+    // Loop within 20-second window from loopStart
     const handleTimeUpdate = () => {
-        if (videoRef.current && videoRef.current.currentTime >= 20) {
-            videoRef.current.currentTime = 0;
+        if (videoRef.current && videoRef.current.currentTime >= loopStartRef.current + 20) {
+            videoRef.current.currentTime = loopStartRef.current;
             videoRef.current.play();
         }
     };
@@ -183,6 +195,7 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
                 autoPlay
                 playsInline
                 preload="auto"
+                onLoadedMetadata={handleLoadedMetadata}
                 onTimeUpdate={handleTimeUpdate}
             />
 
