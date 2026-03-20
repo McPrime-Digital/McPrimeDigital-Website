@@ -71,6 +71,8 @@ export default function UGCGrid() {
                                 className="w-full h-full object-contain"
                                 controls
                                 autoPlay
+                                playsInline
+                                preload="auto"
                             />
 
                             <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
@@ -115,6 +117,7 @@ function VideoCard({ video, index, onOpen }: { video: typeof videos[0], index: n
                     autoPlay
                     loop
                     playsInline
+                    preload="auto"
                     onTimeUpdate={handleTimeUpdate}
                 />
 

@@ -409,6 +409,7 @@ function PostProduction() {
                         muted
                         loop
                         playsInline
+                        preload="auto"
                         className="absolute inset-0 w-full h-full object-cover opacity-80 contrast-110 saturate-100"
                     />
 
@@ -433,6 +434,7 @@ function PostProduction() {
                             muted
                             loop
                             playsInline
+                            preload="auto"
                             className="w-full h-full object-cover filter blur-[2px]"
                         />
                     </motion.div>
