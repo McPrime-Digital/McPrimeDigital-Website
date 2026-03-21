@@ -1,9 +1,39 @@
 'use client';
 
-import React from 'react';
-import { ArrowRight, CheckCircle2 } from 'lucide-react';
+import React, { useState } from 'react';
+import { ArrowRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function CtaSection() {
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '' });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus('loading');
+        setErrorMessage('');
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, source: 'Automations Systems Audit' })
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to send request');
+            }
+
+            setStatus('success');
+            setFormData({ name: '', company: '', email: '', message: '' });
+            setTimeout(() => setStatus('idle'), 5000);
+        } catch (error: any) {
+            setStatus('error');
+            setErrorMessage(error.message);
+        }
+    };
+
     return (
         <section id="contact-automations" className="py-24 md:py-32 relative bg-[#020202] text-white overflow-hidden">
             {/* Dynamic Background */}
@@ -87,14 +117,28 @@ export default function CtaSection() {
                                 ))}
                             </ul>
 
-                            <form className="space-y-6 relative z-10">
+                            <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+                                {status === 'success' && (
+                                    <div className="p-4 bg-emerald-500/20 border border-emerald-500/50 rounded-xl flex items-center gap-3 text-emerald-400">
+                                        <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                                        <span className="text-sm">Your assessment request has been received. We will contact you soon.</span>
+                                    </div>
+                                )}
+                                {status === 'error' && (
+                                    <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-center gap-3 text-red-400">
+                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <span className="text-sm">{errorMessage || 'Something went wrong. Please try again later.'}</span>
+                                    </div>
+                                )}
+
                                 <div className="space-y-6">
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Name</label>
+                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Name <span className="text-red-400">*</span></label>
                                         <input
                                             type="text"
                                             placeholder="John Doe"
                                             className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} required
                                         />
                                     </div>
                                     <div className="space-y-2">
@@ -103,30 +147,40 @@ export default function CtaSection() {
                                             type="text"
                                             placeholder="Acme Inc."
                                             className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })}
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Email Address</label>
+                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Email Address <span className="text-red-400">*</span></label>
                                         <input
                                             type="email"
                                             placeholder="john@example.com"
                                             className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all"
+                                            value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required
                                         />
                                     </div>
                                     <div className="space-y-2">
-                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Message</label>
+                                        <label className="text-xs font-bold text-emerald-400/80 ml-1 uppercase tracking-wider">Message <span className="text-red-400">*</span></label>
                                         <textarea
                                             rows={4}
                                             placeholder="Tell us about your automation needs..."
                                             className="w-full bg-black/40 border border-white/10 rounded-xl px-4 py-3 text-base text-white placeholder-gray-600 focus:outline-none focus:border-emerald-500/50 focus:bg-emerald-950/10 focus:shadow-[0_0_20px_rgba(16,185,129,0.1)] transition-all resize-none"
+                                            value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} required
                                         />
                                     </div>
                                 </div>
 
-                                <button className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold py-4 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20">
+                                <button
+                                    className="w-full group relative overflow-hidden rounded-xl bg-gradient-to-r from-emerald-500 to-cyan-500 text-white font-bold py-4 transition-all hover:scale-[1.02] active:scale-[0.98] shadow-lg shadow-emerald-900/20 disabled:opacity-70 disabled:cursor-not-allowed disabled:hover:scale-100"
+                                    disabled={status === 'loading'}
+                                >
                                     <div className="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-500 ease-out" />
                                     <span className="relative z-10 flex items-center justify-center gap-2 tracking-wide">
-                                        REQUEST A SYSTEMS ASSESSMENT <ArrowRight size={18} />
+                                        {status === 'loading' ? (
+                                            <><Loader2 size={18} className="animate-spin" /> SENDING...</>
+                                        ) : (
+                                            <>REQUEST A SYSTEMS ASSESSMENT <ArrowRight size={18} /></>
+                                        )}
                                     </span>
                                 </button>
                             </form>

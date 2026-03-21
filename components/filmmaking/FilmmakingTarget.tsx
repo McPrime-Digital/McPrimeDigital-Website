@@ -1,8 +1,9 @@
 'use client';
 
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
+import { useState } from 'react';
 import { MouseEvent } from 'react';
-import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { CheckCircle2, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 // Reusable Spotlight Component for Premium Cards
 function SpotlightCard({ children, className = "" }: { children: React.ReactNode, className?: string }) {
@@ -52,6 +53,36 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 }
 
 export default function FilmmakingTarget() {
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '' });
+    const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
+    const [errorMessage, setErrorMessage] = useState('');
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        setStatus('loading');
+        setErrorMessage('');
+
+        try {
+            const res = await fetch('/api/contact', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ ...formData, source: 'Filmmaking Target CTA' })
+            });
+
+            if (!res.ok) {
+                const data = await res.json();
+                throw new Error(data.error || 'Failed to send request');
+            }
+
+            setStatus('success');
+            setFormData({ name: '', company: '', email: '', message: '' });
+            setTimeout(() => setStatus('idle'), 5000);
+        } catch (error: any) {
+            setStatus('error');
+            setErrorMessage(error.message);
+        }
+    };
+
     return (
         <section className="relative bg-[#0B0D12] py-32 overflow-hidden border-t border-white/5">
             {/* Ambient Background Glows */}
@@ -169,30 +200,51 @@ export default function FilmmakingTarget() {
                                 ))}
                             </ul>
 
-                            <form className="space-y-6 relative z-10">
+                            <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+                                {status === 'success' && (
+                                    <div className="p-4 bg-green-500/20 border border-green-500/50 rounded-xl flex items-center gap-3 text-green-400">
+                                        <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
+                                        <span className="text-sm">Your strategy briefing request has been received.</span>
+                                    </div>
+                                )}
+                                {status === 'error' && (
+                                    <div className="p-4 bg-red-500/20 border border-red-500/50 rounded-xl flex items-center gap-3 text-red-400">
+                                        <AlertCircle className="w-5 h-5 flex-shrink-0" />
+                                        <span className="text-sm">{errorMessage || 'Something went wrong. Please try again.'}</span>
+                                    </div>
+                                )}
+
                                 <div className="space-y-6">
-                                    <PremiumInput label="Name" placeholder="Enter your name" />
-                                    <PremiumInput label="Company" placeholder="Company name" />
-                                    <PremiumInput label="Email" placeholder="work@email.com" type="email" />
+                                    <PremiumInput label="Name" placeholder="Enter your name" value={formData.name} onChange={(e: any) => setFormData({ ...formData, name: e.target.value })} required />
+                                    <PremiumInput label="Company" placeholder="Company name" value={formData.company} onChange={(e: any) => setFormData({ ...formData, company: e.target.value })} />
+                                    <PremiumInput label="Email" placeholder="work@email.com" type="email" value={formData.email} onChange={(e: any) => setFormData({ ...formData, email: e.target.value })} required />
                                     <div className="group space-y-2">
-                                        <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">Message</label>
+                                        <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">Message <span className="text-red-400">*</span></label>
                                         <textarea
                                             rows={3}
                                             className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#2D6BFF] focus:bg-white/[0.05] transition-all resize-none"
                                             placeholder="Briefly describe your project..."
+                                            value={formData.message}
+                                            onChange={(e) => setFormData({ ...formData, message: e.target.value })}
+                                            required
                                         />
                                     </div>
                                 </div>
 
-                                <a
-                                    href="/contact"
-                                    className="w-full group relative overflow-hidden rounded-xl bg-[#2D6BFF] p-4 text-white font-bold tracking-wider uppercase transition-all hover:bg-[#1a55db] shadow-[0_0_20px_rgba(45,107,255,0.3)] hover:shadow-[0_0_40px_rgba(45,107,255,0.6)] flex items-center justify-center gap-2 block text-center"
+                                <button
+                                    type="submit"
+                                    disabled={status === 'loading'}
+                                    className="w-full group relative overflow-hidden rounded-xl bg-[#2D6BFF] p-4 text-white font-bold tracking-wider uppercase transition-all hover:bg-[#1a55db] shadow-[0_0_20px_rgba(45,107,255,0.3)] hover:shadow-[0_0_40px_rgba(45,107,255,0.6)] flex items-center justify-center gap-2 block text-center disabled:opacity-70 disabled:cursor-not-allowed"
                                 >
                                     <span className="relative z-10 flex items-center justify-center gap-2 text-sm md:text-base">
-                                        Schedule a Production Strategy Briefing <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                                        {status === 'loading' ? (
+                                            <><Loader2 className="w-5 h-5 animate-spin" /> SCHEDULING...</>
+                                        ) : (
+                                            <>Schedule a Production Strategy Briefing <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></>
+                                        )}
                                     </span>
                                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
-                                </a>
+                                </button>
                             </form>
                         </SpotlightCard>
                     </motion.div>
@@ -203,14 +255,17 @@ export default function FilmmakingTarget() {
     );
 }
 
-function PremiumInput({ label, placeholder, type = "text" }: { label: string, placeholder: string, type?: string }) {
+function PremiumInput({ label, placeholder, type = "text", value, onChange, required }: { label: string, placeholder: string, type?: string, value?: string, onChange?: any, required?: boolean }) {
     return (
         <div className="group space-y-2">
-            <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">{label}</label>
+            <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">{label} {required && <span className="text-red-400">*</span>}</label>
             <input
                 type={type}
                 className="w-full bg-white/[0.03] border border-white/10 rounded-xl px-4 py-4 text-white placeholder-gray-600 focus:outline-none focus:border-[#2D6BFF] focus:bg-white/[0.05] transition-all"
                 placeholder={placeholder}
+                value={value}
+                onChange={onChange}
+                required={required}
             />
         </div>
     );
