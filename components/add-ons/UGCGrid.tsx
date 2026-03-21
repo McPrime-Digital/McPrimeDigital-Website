@@ -2,43 +2,81 @@
 
 import { motion, AnimatePresence } from 'framer-motion';
 import PremiumCard from './PremiumCard';
-import { Play, X, Volume2 } from 'lucide-react';
+import { X, Volume2, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
 
-// Video Data
-const videos = [
-    {
-        id: 1,
+// Metadata matched to S3 filenames (case-insensitive partial match)
+const videoMeta: Record<string, { title: string; context: string; views: string }> = {
+    'easyes': {
         title: 'Alice on Skincare',
         context: 'AI-driven persona delivering authentic product education for skincare lines.',
-        src: '/compressed_videos/EASYES PRODUCT .mp4',
         views: '1.2M'
     },
-    {
-        id: 2,
+    'mcnortons': {
         title: 'McNortons on AI Filmmaking',
         context: 'Founder thought leadership and industry authority content at scale.',
-        src: '/compressed_videos/McNortons on AI FILMMAKING.mp4',
         views: '850K'
     },
-    {
-        id: 3,
+    'drizzilicious': {
         title: 'Drizzilicious Snack Ad',
         context: 'High-energy consumer product showcase with dynamic editing patterns.',
-        src: '/compressed_videos/DRIZZILICIOUS ad 2.mp4',
         views: '2.4M'
     }
-];
+};
+
+interface S3Video {
+    key: string;
+    url: string;
+    title: string;
+    context: string;
+    views: string;
+}
+
+function getMetaForVideo(key: string) {
+    const lower = key.toLowerCase();
+    for (const [keyword, meta] of Object.entries(videoMeta)) {
+        if (lower.includes(keyword)) return meta;
+    }
+    // Fallback: derive title from filename
+    const filename = key.split('/').pop()?.replace(/\.[^.]+$/, '') || key;
+    return { title: filename, context: '', views: '' };
+}
 
 export default function UGCGrid() {
-    const [selectedVideo, setSelectedVideo] = useState<typeof videos[0] | null>(null);
+    const [videos, setVideos] = useState<S3Video[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [selectedVideo, setSelectedVideo] = useState<S3Video | null>(null);
+
+    useEffect(() => {
+        const controller = new AbortController();
+        fetch('/api/videos?category=addons-creations', { signal: controller.signal })
+            .then(res => res.json())
+            .then(data => {
+                const mapped: S3Video[] = (data.videos || []).map((v: { key: string; url: string }) => ({
+                    ...v,
+                    ...getMetaForVideo(v.key),
+                }));
+                setVideos(mapped);
+            })
+            .catch(() => {})
+            .finally(() => setLoading(false));
+        return () => controller.abort();
+    }, []);
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center py-24">
+                <Loader2 className="w-8 h-8 animate-spin text-blue-500" />
+            </div>
+        );
+    }
 
     return (
         <>
             {/* 3-Column Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
                 {videos.map((video, index) => (
-                    <VideoCard key={video.id} video={video} index={index} onOpen={() => setSelectedVideo(video)} />
+                    <VideoCard key={video.key} video={video} index={index} onOpen={() => setSelectedVideo(video)} />
                 ))}
             </div>
 
@@ -67,10 +105,12 @@ export default function UGCGrid() {
                             </button>
 
                             <video
-                                src={selectedVideo.src}
+                                src={selectedVideo.url}
                                 className="w-full h-full object-contain"
                                 controls
                                 autoPlay
+                                playsInline
+                                preload="auto"
                             />
 
                             <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
@@ -85,7 +125,7 @@ export default function UGCGrid() {
     );
 }
 
-function VideoCard({ video, index, onOpen }: { video: typeof videos[0], index: number, onOpen: () => void }) {
+function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; onOpen: () => void }) {
     const videoRef = useRef<HTMLVideoElement>(null);
 
     // 10 Second Loop Logic
@@ -109,18 +149,19 @@ function VideoCard({ video, index, onOpen }: { video: typeof videos[0], index: n
                 {/* Background Video - Muted Loop 10s */}
                 <video
                     ref={videoRef}
-                    src={video.src}
+                    src={video.url}
                     className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                     muted
                     autoPlay
                     loop
                     playsInline
+                    preload="auto"
                     onTimeUpdate={handleTimeUpdate}
                 />
 
                 {/* Overlay Content */}
                 <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
-                    {/* Play Icon - Centered initially, fades out or moves */}
+                    {/* Play Icon */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100 group-hover:bg-[#2D6BFF]">
                         <Volume2 className="w-6 h-6 text-white" />
                     </div>

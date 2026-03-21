@@ -13,8 +13,8 @@ import { s3Client } from "@/lib/s3";
  */
 export async function POST(request: Request) {
     try {
-        const { fileName, fileType } = await request.json();
-        console.log(fileName, fileType)
+        const { fileName, fileType, category = "uncategorized" } = await request.json();
+        console.log(fileName, fileType, category)
 
         if (!fileName || !fileType) {
             return NextResponse.json(
@@ -33,9 +33,10 @@ export async function POST(request: Request) {
         }
 
         // Define the S3 object key (path and filename)
-        // We'll store it under a 'samples/' folder for organization.
-        const key = `samples/${Date.now()}-${fileName}`;
-        console.log(key)
+        // We organize uploads into folders based on their website category.
+        const safeCategory = category.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
+        const key = `videos/${safeCategory}/${Date.now()}-${fileName}`;
+        console.log("Uploading to S3 Key:", key)
 
         const command = new PutObjectCommand({
             Bucket: bucketName,

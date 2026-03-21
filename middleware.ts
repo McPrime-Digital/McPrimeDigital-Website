@@ -13,7 +13,7 @@ export async function middleware(request: NextRequest) {
 
     // 1. Define routes that require authentication
     const isAdminPath = pathname.startsWith("/admin");
-    const isProtectedApiPath = pathname.startsWith("/api/upload");
+    const isProtectedApiPath = pathname.startsWith("/api/upload") || (pathname.startsWith("/api/videos") && request.method !== "GET");
     const isLoginPage = pathname === "/admin/login";
 
     if (isAdminPath || isProtectedApiPath) {
@@ -54,5 +54,5 @@ export async function middleware(request: NextRequest) {
 
 // Configuration to only run middleware on specific routes
 export const config = {
-    matcher: ["/admin/:path*", "/api/upload/:path*"],
+    matcher: ["/admin/:path*", "/api/upload/:path*", "/api/videos/:path*"],
 };
