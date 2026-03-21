@@ -30,6 +30,7 @@ interface S3Video {
     title: string;
     context: string;
     views: string;
+    blobUrl?: string; // Fully downloaded local blob for instant playback
 }
 
 function getMetaForVideo(key: string) {
@@ -57,9 +58,29 @@ export default function UGCGrid() {
                     ...getMetaForVideo(v.key),
                 }));
                 setVideos(mapped);
+                setLoading(false);
+
+                // Aggressive background preloading into memory Blobs to guarantee zero buffering
+                mapped.forEach((v) => {
+                    fetch(v.url, { signal: controller.signal })
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const objectUrl = URL.createObjectURL(blob);
+                            setVideos(prev => 
+                                prev.map(video => 
+                                    video.key === v.key ? { ...video, blobUrl: objectUrl } : video
+                                )
+                            );
+                        })
+                        .catch(err => {
+                            if (err.name !== 'AbortError') {
+                                console.error('Failed to preload video into memory:', err);
+                            }
+                        });
+                });
             })
-            .catch(() => {})
-            .finally(() => setLoading(false));
+            .catch(() => setLoading(false));
+
         return () => controller.abort();
     }, []);
 
@@ -105,7 +126,7 @@ export default function UGCGrid() {
                             </button>
 
                             <video
-                                src={selectedVideo.url}
+                                src={selectedVideo.blobUrl || selectedVideo.url}
                                 className="w-full h-full object-contain"
                                 controls
                                 autoPlay
@@ -149,7 +170,7 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
                 {/* Background Video - Muted Loop 10s */}
                 <video
                     ref={videoRef}
-                    src={video.url}
+                    src={video.blobUrl || video.url}
                     className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
                     muted
                     autoPlay

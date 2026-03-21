@@ -32,6 +32,7 @@ interface S3Video {
     subtitle: string;
     category: string;
     loopFromEnd?: boolean;
+    blobUrl?: string; // Memory downloaded blob for zero buffering
 }
 
 function getMetaForVideo(key: string) {
@@ -58,9 +59,29 @@ export default function FilmmakingPortfolio() {
                     ...getMetaForVideo(v.key),
                 }));
                 setVideos(mapped);
+                setLoading(false);
+
+                // Aggressive background fetch into memory Blobs for instant playback
+                mapped.forEach((v) => {
+                    fetch(v.url, { signal: controller.signal })
+                        .then(response => response.blob())
+                        .then(blob => {
+                            const objectUrl = URL.createObjectURL(blob);
+                            setVideos(prev => 
+                                prev.map(video => 
+                                    video.key === v.key ? { ...video, blobUrl: objectUrl } : video
+                                )
+                            );
+                        })
+                        .catch(err => {
+                            if (err.name !== 'AbortError') {
+                                console.error('Failed to preload video into memory:', err);
+                            }
+                        });
+                });
             })
-            .catch(() => {})
-            .finally(() => setLoading(false));
+            .catch(() => setLoading(false));
+
         return () => controller.abort();
     }, []);
 
@@ -133,7 +154,7 @@ export default function FilmmakingPortfolio() {
                             </button>
 
                             <video
-                                src={selectedVideo.url}
+                                src={selectedVideo.blobUrl || selectedVideo.url}
                                 className="w-full h-auto max-h-[80vh] object-contain"
                                 controls
                                 autoPlay
@@ -189,7 +210,7 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
             {/* Looping Video Thumbnail */}
             <video
                 ref={videoRef}
-                src={video.url}
+                src={video.blobUrl || video.url}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
                 muted
                 autoPlay
