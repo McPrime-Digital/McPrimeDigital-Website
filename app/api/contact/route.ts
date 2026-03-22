@@ -10,16 +10,18 @@ export async function POST(req: Request) {
 
         const MAILGUN_KEY = process.env.MAILGUN_KEY;
         const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
+        const CONTACT_EMAIL_DESTINATION = process.env.CONTACT_EMAIL_DESTINATION;
 
-        if (!MAILGUN_KEY || !MAILGUN_DOMAIN) {
-            console.error('Mailgun credentials missing');
+        if (!MAILGUN_KEY || !MAILGUN_DOMAIN || !CONTACT_EMAIL_DESTINATION) {
+            console.error('Mailgun credentials or destination email missing');
             return NextResponse.json({ error: 'Server configuration error' }, { status: 500 });
         }
 
         const formData = new URLSearchParams();
-        formData.append('from', `McPrime Digital <postmaster@${MAILGUN_DOMAIN}>`);
-        formData.append('to', 'mcprime2026@proton.me');
-        formData.append('subject', `New Contact: ${name} ${company ? `(${company})` : ''} - ${source || 'Website'}`);
+        formData.append('from', 'McPrime Digital <postmaster@' + MAILGUN_DOMAIN + '>');
+        formData.append('to', CONTACT_EMAIL_DESTINATION);
+        const companyText = company ? `(${company})` : '';
+        formData.append('subject', `New Contact: ${name} ${companyText} - ${source || 'Website'}`);
         formData.append('text', `
 You have received a new contact form submission.
 
