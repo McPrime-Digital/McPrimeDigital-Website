@@ -1,6 +1,6 @@
 'use server';
 
-import nodemailer from 'nodemailer';
+
 import { headers } from 'next/headers';
 import rateLimit from '@/lib/rateLimit';
 
@@ -54,85 +54,59 @@ export async function submitApplication(formData: FormData) {
             return { success: false, message: 'File is too large. Maximum size is 5MB.' };
         }
 
-        // 2. Configure Transporter
-        const transporter = nodemailer.createTransport({
-            host: process.env.EMAIL_HOST,
-            port: Number(process.env.EMAIL_PORT),
-            secure: Number(process.env.EMAIL_PORT) === 465, // true for 465, false for other ports
-            auth: {
-                user: process.env.EMAIL_USER,
-                pass: process.env.EMAIL_PASS,
+        const MAILGUN_KEY = process.env.MAILGUN_KEY;
+        const MAILGUN_DOMAIN = process.env.MAILGUN_DOMAIN;
+        const CONTACT_EMAIL = process.env.CONTACT_EMAIL_DESTINATION;
+
+        if (!MAILGUN_KEY || !MAILGUN_DOMAIN || !CONTACT_EMAIL) {
+            console.error('Mailgun credentials missing');
+            return { success: false, message: 'Server email configuration error.' };
+        }
+
+        const url = `https://api.mailgun.net/v3/${MAILGUN_DOMAIN}/messages`;
+        const auth = Buffer.from(`api:${MAILGUN_KEY}`).toString('base64');
+
+        // 3. Send Internal Email (To Team) via Mailgun
+        const adminFormData = new FormData();
+        adminFormData.append('from', `McPrime Careers <postmaster@${MAILGUN_DOMAIN}>`);
+        adminFormData.append('to', CONTACT_EMAIL);
+        adminFormData.append('h:Reply-To', email);
+        adminFormData.append('subject', `New Application: ${role} - ${fullName}`);
+        adminFormData.append('text', `New Job Application Received\n\nName: ${fullName}\nEmail: ${email}\nRole: ${role}\nPortfolio: ${portfolio}\n\nMessage:\n${message}`);
+        adminFormData.append('attachment', resume);
+
+        const adminResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${auth}`,
             },
-            tls: {
-                rejectUnauthorized: false
+            body: adminFormData as any,
+        });
+
+        if (!adminResponse.ok) {
+            console.error('Mailgun admin email failed:', await adminResponse.text());
+            throw new Error('Failed to send internal application email');
+        }
+
+        // 4. Send Confirmation Email (To Applicant) via Mailgun
+        const userFormData = new FormData();
+        userFormData.append('from', `McPrime Digital <postmaster@${MAILGUN_DOMAIN}>`);
+        userFormData.append('to', email);
+        userFormData.append('subject', 'Application Received - McPrime Digital');
+        userFormData.append('text', `Hi ${fullName},\n\nThank you for applying to McPrime Digital for the ${role} position.\n\nWe have received your application and will review your portfolio and details. If your profile matches our needs, we will be in touch shortly.\n\nBest regards,\nThe McPrime Team`);
+
+        const userResponse = await fetch(url, {
+            method: 'POST',
+            headers: {
+                Authorization: `Basic ${auth}`,
             },
+            body: userFormData as any,
         });
 
-        // 3. Prepare Resume Buffer
-        const arrayBuffer = await resume.arrayBuffer();
-        const buffer = Buffer.from(arrayBuffer);
-
-        // 4. Send Internal Email (To Team)
-        await transporter.sendMail({
-            from: `"McPrime Careers" <${process.env.EMAIL_USER}>`,
-            to: 'careers@mcprimedigital.com',
-            replyTo: email,
-            subject: `New Application: ${role} - ${fullName}`,
-            text: `
-        New Job Application Received
-
-        Name: ${fullName}
-        Email: ${email}
-        Role: ${role}
-        Portfolio: ${portfolio}
-
-        Message:
-        ${message}
-      `,
-            html: `
-        <h2>New Job Application Received</h2>
-        <p><strong>Name:</strong> ${fullName}</p>
-        <p><strong>Email:</strong> ${email}</p>
-        <p><strong>Role:</strong> ${role}</p>
-        <p><strong>Portfolio:</strong> <a href="${portfolio}">${portfolio}</a></p>
-        <h3>Message:</h3>
-        <p>${message.replace(/\n/g, '<br>')}</p>
-      `,
-            attachments: [
-                {
-                    filename: resume.name,
-                    content: buffer,
-                },
-            ],
-        });
-
-        // 5. Send Confirmation Email (To Applicant)
-        await transporter.sendMail({
-            from: `"McPrime Digital" <${process.env.EMAIL_USER}>`,
-            to: email,
-            subject: 'Application Received - McPrime Digital',
-            text: `
-        Hi ${fullName},
-
-        Thank you for applying to McPrime Digital for the ${role} position.
-
-        We have received your application and will review your portfolio and details. If your profile matches our needs, we will be in touch shortly.
-
-        Best regards,
-        The McPrime Team
-      `,
-            html: `
-        <div style="font-family: sans-serif; color: #333;">
-          <h2>Application Received</h2>
-          <p>Hi ${fullName},</p>
-          <p>Thank you for applying to <strong>McPrime Digital</strong> for the <strong>${role}</strong> position.</p>
-          <p>We have received your application and will review your portfolio and details. If your profile matches our needs, we will be in touch shortly.</p>
-          <br>
-          <p>Best regards,</p>
-          <p><strong>The McPrime Team</strong></p>
-        </div>
-      `,
-        });
+        if (!userResponse.ok) {
+            console.error('Mailgun user email failed:', await userResponse.text());
+            // We don't fail the whole user request if the confirmation email fails
+        }
 
         return { success: true, message: 'Application submitted successfully.' };
 
