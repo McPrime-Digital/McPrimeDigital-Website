@@ -1,11 +1,21 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
-import { Play, X, Loader2 } from 'lucide-react';
+import { motion } from 'framer-motion';
+import { Play, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import CinemaModal from '@/components/CinemaModal';
+import { prettifyFilename } from '@/lib/video-utils';
 
-// Metadata map matched to S3 filenames (keyword-based)
-const videoMeta: Record<string, { title: string; subtitle: string; category: string; loopFromEnd?: boolean }> = {
+// Metadata map matched to stored filenames (keyword-based).
+// previewStart/previewDuration control which window of the film the card thumbnail loops.
+const videoMeta: Record<string, {
+    title: string;
+    subtitle: string;
+    category: string;
+    loopFromEnd?: boolean;
+    previewStart?: number;
+    previewDuration?: number;
+}> = {
     'primeos': {
         title: 'PRIME.OS',
         subtitle: 'The AI that builds execution paths and turns imagination into action.',
@@ -16,6 +26,13 @@ const videoMeta: Record<string, { title: string; subtitle: string; category: str
         subtitle: 'The new standard in mental focus.',
         category: 'Brand Film',
         loopFromEnd: true // thumbnail loops from 30s before end
+    },
+    'primers': {
+        title: 'THE PRIMERS HOTEL',
+        subtitle: 'Where luxury meets reality.',
+        category: 'Comedy Commercial',
+        previewStart: 24, // poolside sequence
+        previewDuration: 12
     }
 };
 
@@ -32,6 +49,8 @@ interface S3Video {
     subtitle: string;
     category: string;
     loopFromEnd?: boolean;
+    previewStart?: number;
+    previewDuration?: number;
     blobUrl?: string; // Memory downloaded blob for zero buffering
 }
 
@@ -40,8 +59,7 @@ function getMetaForVideo(key: string) {
     for (const [keyword, meta] of Object.entries(videoMeta)) {
         if (lower.includes(keyword)) return meta;
     }
-    const filename = key.split('/').pop()?.replace(/^\d+-/, '').replace(/\.[^.]+$/, '') || key;
-    return { title: filename.toUpperCase(), subtitle: '', category: 'Commercial', loopFromEnd: false };
+    return { title: prettifyFilename(key).toUpperCase(), subtitle: '', category: 'Commercial', loopFromEnd: false };
 }
 
 export default function FilmmakingPortfolio() {
@@ -129,50 +147,16 @@ export default function FilmmakingPortfolio() {
                 </div>
             </section>
 
-            {/* Fullscreen Modal */}
-            <AnimatePresence>
-                {selectedVideo && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/95 backdrop-blur-xl p-4 md:p-10"
-                        onClick={() => setSelectedVideo(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0, y: 20 }}
-                            animate={{ scale: 1, opacity: 1, y: 0 }}
-                            exit={{ scale: 0.9, opacity: 0, y: 20 }}
-                            className="relative w-full max-w-6xl bg-[#050608] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
-                            onClick={e => e.stopPropagation()}
-                        >
-                            <button
-                                onClick={() => setSelectedVideo(null)}
-                                className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/60 hover:bg-white/10 text-white transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-
-                            <video
-                                src={selectedVideo.blobUrl || selectedVideo.url}
-                                className="w-full h-auto max-h-[80vh] object-contain"
-                                controls
-                                autoPlay
-                                playsInline
-                                preload="auto"
-                            />
-
-                            <div className="p-6 bg-gradient-to-t from-black to-transparent">
-                                <span className="text-[#2D6BFF] text-xs tracking-widest font-mono uppercase mb-2 block">
-                                    {selectedVideo.category}
-                                </span>
-                                <h3 className="text-2xl font-bold text-white tracking-tight mb-1">{selectedVideo.title}</h3>
-                                <p className="text-gray-400 text-sm leading-relaxed">{selectedVideo.subtitle}</p>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* The Screening Room */}
+            <CinemaModal
+                video={selectedVideo ? {
+                    src: selectedVideo.blobUrl || selectedVideo.url,
+                    title: selectedVideo.title,
+                    subtitle: selectedVideo.subtitle,
+                    category: selectedVideo.category,
+                } : null}
+                onClose={() => setSelectedVideo(null)}
+            />
         </>
     );
 }
@@ -181,18 +165,26 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
     const videoRef = useRef<HTMLVideoElement>(null);
     const loopStartRef = useRef<number>(0);
 
-    // On metadata load: for loopFromEnd videos, seek to 30s before end
+    // On metadata load: seek the thumbnail to its preview window
+    // (an explicit previewStart, or 30s before the end for loopFromEnd films)
     const handleLoadedMetadata = () => {
-        if (video.loopFromEnd && videoRef.current) {
-            const start = Math.max(0, videoRef.current.duration - 30);
+        if (!videoRef.current) return;
+        let start = 0;
+        if (video.previewStart !== undefined) {
+            start = Math.min(video.previewStart, Math.max(0, videoRef.current.duration - 5));
+        } else if (video.loopFromEnd) {
+            start = Math.max(0, videoRef.current.duration - 30);
+        }
+        if (start > 0) {
             loopStartRef.current = start;
             videoRef.current.currentTime = start;
         }
     };
 
-    // Loop within 20-second window from loopStart
+    // Loop within the preview window from loopStart
     const handleTimeUpdate = () => {
-        if (videoRef.current && videoRef.current.currentTime >= loopStartRef.current + 20) {
+        const windowLength = video.previewDuration ?? 20;
+        if (videoRef.current && videoRef.current.currentTime >= loopStartRef.current + windowLength) {
             videoRef.current.currentTime = loopStartRef.current;
             videoRef.current.play();
         }

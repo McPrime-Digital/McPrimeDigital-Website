@@ -2,10 +2,12 @@
 
 import React, { useState, useEffect, useMemo } from "react";
 import { VideoUploader } from "@/components/VideoUploader";
-import { ArrowLeft, ShieldCheck, Zap, Info, LogOut, Loader2, PlayCircle, Clock, Trash2, X, AlertTriangle } from "lucide-react";
+import { ArrowLeft, ShieldCheck, Zap, Info, LogOut, Loader2, PlayCircle, Clock, Trash2, X, AlertTriangle, Play } from "lucide-react";
 import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import CinemaModal from "@/components/CinemaModal";
+import { prettifyFilename } from "@/lib/video-utils";
 
 interface VideoItem {
     key: string;
@@ -24,6 +26,7 @@ export default function UploadPage() {
     const [activeCategory, setActiveCategory] = useState<string>("all");
     const [deletingKey, setDeletingKey] = useState<string | null>(null);
     const [confirmDeleteKey, setConfirmDeleteKey] = useState<string | null>(null);
+    const [screeningVideo, setScreeningVideo] = useState<VideoItem | null>(null);
 
     const fetchVideos = async () => {
         try {
@@ -247,17 +250,27 @@ export default function UploadPage() {
                                         )}
                                     </button>
 
-                                    <div className="bg-black/50 relative flex items-center justify-center overflow-hidden">
+                                    {/* Preview tile: fixed stage, letterboxes 16:9 and 9:16 alike */}
+                                    <div
+                                        className="bg-black relative h-64 flex items-center justify-center overflow-hidden cursor-pointer"
+                                        onClick={() => setScreeningVideo(video)}
+                                    >
                                         <video
                                             src={video.url}
-                                            className="w-full h-auto max-h-[75vh] object-contain"
-                                            controls
+                                            className="max-w-full max-h-full object-contain"
+                                            muted
+                                            playsInline
                                             preload="metadata"
                                         />
+                                        <div className="absolute inset-0 flex items-center justify-center bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                            <div className="w-14 h-14 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center">
+                                                <Play className="w-5 h-5 text-white ml-0.5" />
+                                            </div>
+                                        </div>
                                     </div>
                                     <div className="p-4 space-y-2">
                                         <p className="text-sm font-medium text-white truncate" title={video.key.replace("videos/", "")}>
-                                            {video.key.split("/").pop()}
+                                            {prettifyFilename(video.key)}
                                         </p>
                                         <div className="flex items-center justify-between text-xs text-white/40">
                                             <span className="flex items-center gap-1">
@@ -288,6 +301,16 @@ export default function UploadPage() {
                     </p>
                 </footer>
             </div>
+
+            {/* Screening Room preview */}
+            <CinemaModal
+                video={screeningVideo ? {
+                    src: screeningVideo.url,
+                    title: prettifyFilename(screeningVideo.key),
+                    category: formatCategoryLabel(screeningVideo.category),
+                } : null}
+                onClose={() => setScreeningVideo(null)}
+            />
 
             {/* Delete Confirmation Modal */}
             <AnimatePresence>

@@ -1,9 +1,11 @@
 'use client';
 
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import PremiumCard from './PremiumCard';
-import { X, Volume2, Loader2 } from 'lucide-react';
+import { Volume2, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
+import CinemaModal from '@/components/CinemaModal';
+import { prettifyFilename } from '@/lib/video-utils';
 
 // Metadata matched to S3 filenames (case-insensitive partial match)
 const videoMeta: Record<string, { title: string; context: string; views: string }> = {
@@ -39,8 +41,7 @@ function getMetaForVideo(key: string) {
         if (lower.includes(keyword)) return meta;
     }
     // Fallback: derive title from filename
-    const filename = key.split('/').pop()?.replace(/\.[^.]+$/, '') || key;
-    return { title: filename, context: '', views: '' };
+    return { title: prettifyFilename(key), context: '', views: '' };
 }
 
 export default function UGCGrid() {
@@ -101,47 +102,16 @@ export default function UGCGrid() {
                 ))}
             </div>
 
-            {/* Full Screen Video Modal */}
-            <AnimatePresence>
-                {selectedVideo && (
-                    <motion.div
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="fixed inset-0 z-[100] flex items-center justify-center bg-black/90 backdrop-blur-xl p-4 md:p-10"
-                        onClick={() => setSelectedVideo(null)}
-                    >
-                        <motion.div
-                            initial={{ scale: 0.9, opacity: 0 }}
-                            animate={{ scale: 1, opacity: 1 }}
-                            exit={{ scale: 0.9, opacity: 0 }}
-                            className="relative w-full max-w-5xl aspect-video md:aspect-auto md:h-[85vh] bg-[#050608] rounded-2xl overflow-hidden border border-white/10 shadow-2xl"
-                            onClick={(e) => e.stopPropagation()}
-                        >
-                            <button
-                                onClick={() => setSelectedVideo(null)}
-                                className="absolute top-4 right-4 z-50 p-2 rounded-full bg-black/50 hover:bg-white/10 text-white transition-colors"
-                            >
-                                <X className="w-6 h-6" />
-                            </button>
-
-                            <video
-                                src={selectedVideo.blobUrl || selectedVideo.url}
-                                className="w-full h-full object-contain"
-                                controls
-                                autoPlay
-                                playsInline
-                                preload="auto"
-                            />
-
-                            <div className="absolute bottom-0 inset-x-0 p-6 bg-gradient-to-t from-black/90 to-transparent pointer-events-none">
-                                <h3 className="text-2xl font-bold text-white">{selectedVideo.title}</h3>
-                                <p className="text-gray-300 mt-2">{selectedVideo.context}</p>
-                            </div>
-                        </motion.div>
-                    </motion.div>
-                )}
-            </AnimatePresence>
+            {/* The Screening Room */}
+            <CinemaModal
+                video={selectedVideo ? {
+                    src: selectedVideo.blobUrl || selectedVideo.url,
+                    title: selectedVideo.title,
+                    subtitle: selectedVideo.context,
+                    category: 'Verified Ambassador',
+                } : null}
+                onClose={() => setSelectedVideo(null)}
+            />
         </>
     );
 }
