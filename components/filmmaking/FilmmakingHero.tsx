@@ -29,12 +29,12 @@ export default function FilmmakingHero() {
                     initial={{ opacity: 0, y: 20 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 1, ease: 'easeOut' }}
-                    className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.9] mb-8"
+                    className="text-4xl md:text-6xl lg:text-7xl font-bold text-white tracking-tight leading-[0.95] mb-8"
                 >
-                    AI COMMERCIAL<br />
-                    FILMMAKING<br />
-                    BUILT FOR<br />
-                    SCALE, SPEED, & CONTROL
+                    AI-NATIVE FILM, TV,<br />
+                    COMMERCIAL, MUSIC VIDEO<br />
+                    <span className="text-white/70">BUILT FOR SCALE,<br />
+                    SPEED, & CONTROL</span>
                 </motion.h1>
 
                 <div className="flex flex-col gap-6">

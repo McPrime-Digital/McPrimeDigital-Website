@@ -206,21 +206,21 @@ export default function HeroSketch() {
                     className="text-center max-w-6xl mx-auto relative z-20 md:-mt-8" // Adjusted spacing and centered
                 >
                     <div className="inline-block mb-6 px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-sm tracking-widest uppercase backdrop-blur-sm shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                        The Future of Digital Excellence
+                        Production as Infrastructure
                     </div>
 
                     {/* Headline: Responsive Wrap */}
                     <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        <span className="block mb-2 !font-serif">
-                            <span className="text-white block md:inline">CRAFTING HIGH-END </span>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline mt-1 md:mt-0">
-                                VISUAL STORYTELLING
-                            </span>
-                        </span>
+                        <span className="block mb-2 !font-serif text-white">ARCHITECTS OF</span>
                         <span className="block !font-serif">
-                            <span className="text-white block md:inline">BUILDING ADVANCED </span>
-                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 !font-serif block md:inline mt-1 md:mt-0">
-                                AUTOMATION SYSTEMS
+                            <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
+                                AI-NATIVE FILM
+                            </span>
+                            <span className="block md:inline mt-1 md:mt-0">
+                                <span className="text-white">& </span>
+                                <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 !font-serif">
+                                    AUTOMATION SYSTEMS
+                                </span>
                             </span>
                         </span>
                     </h1>

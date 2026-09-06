@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, CheckCircle } from 'lucide-react';
 import Button from './ui/Button';
 import BlueprintSection from './BlueprintSection'; // Import the new component
+import AutomationFlow from './AutomationFlow';
 
 export default function ExploreSection() {
     return (
@@ -37,7 +38,7 @@ export default function ExploreSection() {
                         description="Streamline your business with AI chatbots, workflow automations, and performance dashboards. Efficiency meets intelligence to save you 38% on dev spend."
                         icon={Cpu}
                         color="orange"
-                        mediaPlaceholder="Video: Workflow Demo"
+                        media={<AutomationFlow />}
                         href="/automations"
                     />
                 </div>
@@ -141,7 +142,7 @@ function SectionHeader({ title, subtitle, color = "text-white", align = "left" }
     );
 }
 
-function SolutionCard({ title, description, icon: Icon, color, mediaPlaceholder, href }: any) {
+function SolutionCard({ title, description, icon: Icon, color, media, href }: any) {
     const colorClasses: { [key: string]: string } = {
         teal: "from-blue-600 via-cyan-500 to-emerald-400", // Cyber-Cinematic: Deep Blue -> Cyan -> Emerald
         orange: "from-purple-600 via-pink-500 to-orange-400" // High-Energy: Purple -> Pink -> Orange
@@ -165,11 +166,13 @@ function SolutionCard({ title, description, icon: Icon, color, mediaPlaceholder,
             <div className="aspect-video bg-black/50 relative flex items-center justify-center group-hover:bg-black/30 transition-colors overflow-hidden">
                 <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[color]} opacity-20 group-hover:opacity-30 transition-opacity duration-500 mix-blend-overlay`} />
 
-                <div className="flex flex-col items-center gap-4 relative z-10">
-                    <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-                        <Play className="w-8 h-8 text-white ml-1 fill-white/20" />
+                {media ?? (
+                    <div className="flex flex-col items-center gap-4 relative z-10">
+                        <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 group-hover:scale-110 group-hover:bg-white/20 transition-all duration-300 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
+                            <Play className="w-8 h-8 text-white ml-1 fill-white/20" />
+                        </div>
                     </div>
-                </div>
+                )}
             </div>
             <div className="p-8 relative">
                 <div className="flex items-center gap-4 mb-4 relative z-10">
