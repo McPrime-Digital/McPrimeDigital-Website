@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client } from "@/lib/s3";
+import { r2Client } from "@/lib/r2";
 
 export const dynamic = 'force-dynamic';
 
@@ -10,10 +10,10 @@ export async function GET(request: Request) {
         const { searchParams } = new URL(request.url);
         const category = searchParams.get('category');
 
-        const bucketName = process.env.AWS_BUCKET_NAME;
+        const bucketName = process.env.R2_BUCKET_NAME;
         if (!bucketName) {
             return NextResponse.json(
-                { error: "S3 Bucket name is not configured." },
+                { error: "R2 bucket name is not configured." },
                 { status: 500 }
             );
         }
@@ -26,7 +26,7 @@ export async function GET(request: Request) {
             Prefix: prefix,
         });
 
-        const response = await s3Client.send(command);
+        const response = await r2Client.send(command);
 
         const sortedContents = (response.Contents || [])
             .filter(item => !item.Key?.endsWith('/') && item.Key)
@@ -41,7 +41,7 @@ export async function GET(request: Request) {
                 Bucket: bucketName,
                 Key: item.Key,
             });
-            const signedUrl = await getSignedUrl(s3Client, getCommand, { expiresIn: 3600 });
+            const signedUrl = await getSignedUrl(r2Client, getCommand, { expiresIn: 3600 });
 
             // Extract category from key: videos/{category}/{filename}
             const parts = item.Key!.split('/');
@@ -61,7 +61,7 @@ export async function GET(request: Request) {
 
         return NextResponse.json({ videos, categories });
     } catch (error) {
-        console.error("Error fetching videos from S3:", error);
+        console.error("Error fetching videos from R2:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },
             { status: 500 }

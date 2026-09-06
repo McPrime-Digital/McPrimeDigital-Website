@@ -36,7 +36,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
         }
     };
 
-    const uploadToS3 = async () => {
+    const uploadToR2 = async () => {
         if (!file) return;
 
         setUploading(true);
@@ -63,7 +63,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
 
             const { uploadUrl, fileKey, publicUrl } = await response.json();
 
-            // 2. Upload directly to S3
+            // 2. Upload directly to R2
             const uploadPromise = new Promise((resolve, reject) => {
                 const xhr = new XMLHttpRequest();
                 xhr.open("PUT", uploadUrl);
@@ -194,7 +194,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                                 className="space-y-2"
                             >
                                 <div className="flex justify-between text-sm text-white/60">
-                                    <span>Uploading to S3...</span>
+                                    <span>Uploading to R2...</span>
                                     <span>{progress}%</span>
                                 </div>
                                 <div className="w-full h-2 bg-white/10 rounded-full overflow-hidden">
@@ -249,7 +249,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                         <motion.button
                             whileHover={{ scale: 1.02 }}
                             whileTap={{ scale: 0.98 }}
-                            onClick={uploadToS3}
+                            onClick={uploadToR2}
                             className="w-full bg-blue-600 hover:bg-blue-500 text-white font-bold py-4 rounded-2xl transition-all shadow-xl shadow-blue-600/20 flex items-center justify-center gap-2"
                         >
                             Start Upload

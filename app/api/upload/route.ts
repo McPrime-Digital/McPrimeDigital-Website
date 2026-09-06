@@ -1,20 +1,19 @@
 import { NextResponse } from "next/server";
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { s3Client } from "@/lib/s3";
+import { r2Client } from "@/lib/r2";
 
 /**
- * API route to generate a pre-signed S3 URL for secure direct uploads.
- * 
+ * API route to generate a pre-signed Cloudflare R2 URL for secure direct uploads.
+ *
  * Flow:
- * 1. The frontend asks for a pre-signed URL by providing filename and content type.
+ * 1. The frontend asks for a pre-signed URL by providing filename, content type and category.
  * 2. The backend generates a signed URL and returns it to the frontend.
- * 3. The frontend then uploads the file directly to S3 using that URL.
+ * 3. The frontend then uploads the file directly to R2 using that URL.
  */
 export async function POST(request: Request) {
     try {
         const { fileName, fileType, category = "uncategorized" } = await request.json();
-        console.log(fileName, fileType, category)
 
         if (!fileName || !fileType) {
             return NextResponse.json(
@@ -23,20 +22,20 @@ export async function POST(request: Request) {
             );
         }
 
-        const bucketName = process.env.AWS_BUCKET_NAME;
-        console.log(bucketName)
+        const bucketName = process.env.R2_BUCKET_NAME;
         if (!bucketName) {
             return NextResponse.json(
-                { error: "S3 Bucket name is not configured." },
+                { error: "R2 bucket name is not configured." },
                 { status: 500 }
             );
         }
 
-        // Define the S3 object key (path and filename)
+        // Define the object key (path and filename)
         // We organize uploads into folders based on their website category.
+        // Filenames are normalized so keys and URLs stay clean.
         const safeCategory = category.replace(/[^a-zA-Z0-9-]/g, '-').toLowerCase();
-        const key = `videos/${safeCategory}/${Date.now()}-${fileName}`;
-        console.log("Uploading to S3 Key:", key)
+        const safeName = fileName.replace(/\s+/g, "-").replace(/[^a-zA-Z0-9._-]/g, "");
+        const key = `videos/${safeCategory}/${Date.now()}-${safeName}`;
 
         const command = new PutObjectCommand({
             Bucket: bucketName,
@@ -45,13 +44,16 @@ export async function POST(request: Request) {
         });
 
         // Generate the signed URL with a 5-minute expiration
-        const signedUrl = await getSignedUrl(s3Client, command, { expiresIn: 300 });
-        console.log(signedUrl)
+        const signedUrl = await getSignedUrl(r2Client, command, { expiresIn: 300 });
+
+        // Public base is optional (e.g. the bucket's r2.dev subdomain or a custom
+        // domain); the site itself plays videos through presigned URLs from /api/videos.
+        const publicBase = process.env.R2_PUBLIC_BASE_URL?.replace(/\/$/, "");
 
         return NextResponse.json({
             uploadUrl: signedUrl,
             fileKey: key,
-            publicUrl: `https://${bucketName}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`
+            publicUrl: publicBase ? `${publicBase}/${key}` : key,
         });
     } catch (error) {
         console.error("Error generating pre-signed URL:", error);

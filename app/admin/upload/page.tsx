@@ -162,7 +162,7 @@ export default function UploadPage() {
 
                         <div className="p-1 px-6">
                             <p className="text-xs text-white/20 italic">
-                                Note: Ensure you have populated your .env.local with AWS credentials before uploading.
+                                Note: Ensure your R2 credentials are configured in the environment before uploading.
                             </p>
                         </div>
                     </section>
@@ -284,7 +284,7 @@ export default function UploadPage() {
                 {/* Footer info/stats */}
                 <footer className="pt-20 text-center opacity-20 hover:opacity-100 transition-opacity duration-500">
                     <p className="text-xs font-mono uppercase tracking-[0.2em] text-white">
-                        Powered by McPrime Digital & AWS Infrastructure
+                        Powered by McPrime Digital & Cloudflare R2
                     </p>
                 </footer>
             </div>

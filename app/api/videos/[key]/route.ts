@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { DeleteObjectCommand } from "@aws-sdk/client-s3";
-import { s3Client } from "@/lib/s3";
+import { r2Client } from "@/lib/r2";
 
 /**
- * API route to delete a video from S3.
+ * API route to delete a video from R2.
  * The [key] param is the URL-encoded S3 object key.
  */
 export async function DELETE(
@@ -14,10 +14,10 @@ export async function DELETE(
         const { key: encodedKey } = await params;
         const key = decodeURIComponent(encodedKey);
 
-        const bucketName = process.env.AWS_BUCKET_NAME;
+        const bucketName = process.env.R2_BUCKET_NAME;
         if (!bucketName) {
             return NextResponse.json(
-                { error: "S3 Bucket name is not configured." },
+                { error: "R2 bucket name is not configured." },
                 { status: 500 }
             );
         }
@@ -35,11 +35,11 @@ export async function DELETE(
             Key: key,
         });
 
-        await s3Client.send(command);
+        await r2Client.send(command);
 
         return NextResponse.json({ success: true, deletedKey: key });
     } catch (error) {
-        console.error("Error deleting video from S3:", error);
+        console.error("Error deleting video from R2:", error);
         return NextResponse.json(
             { error: "Internal Server Error" },
             { status: 500 }
