@@ -23,14 +23,13 @@ export default function ExploreSection() {
 
             {/* 1. Innovative Solutions */}
             <div className="mb-32">
-                <SectionHeader title="Our Innovative Solutions" subtitle="Core services driven by cutting-edge AI." color="text-teal-400" />
+                <SectionHeader title="Our Innovative Solutions" subtitle="Core services engineered on enterprise-grade AI infrastructure." color="text-teal-400" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <SolutionCard
-                        title="AI Commercial Video"
-                        description="Ultra-realistic 8K quality videos with fast turnaround. We blend creativity with AI precision to produce stunning commercial content that converts."
+                        title="AI Film Production"
+                        description="Broadcast-grade film, TV, and commercial content delivered through a hybrid production model — AI-native pipelines fused with traditional cinematographic standards for precision, speed, and repeatable output."
                         icon={Clapperboard}
                         color="teal"
-                        mediaPlaceholder="Video: AI Commercial Showcase"
                         href="/filmmaking"
                     />
                     <SolutionCard

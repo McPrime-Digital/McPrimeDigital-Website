@@ -17,7 +17,7 @@ const testimonials = [
         company: "GrowthX"
     },
     {
-        quote: "I was skeptical about AI influencers, but the engagement has been phenomenal. Truly cutting edge.",
+        quote: "I was skeptical about AI influencers, but the engagement has been phenomenal. A step ahead of anything we've run before.",
         author: "Elena V.",
         role: "Brand Manager",
         company: "LuxeLife"

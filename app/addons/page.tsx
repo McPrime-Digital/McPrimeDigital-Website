@@ -242,7 +242,7 @@ export default function AddonsPage() {
                                 className="space-y-6 text-gray-400 text-lg leading-relaxed"
                             >
                                 <p>
-                                    Elevate your brand with our cutting-edge, <span className="text-white font-medium">ultra-realistic AI-generated influencers</span>. Meticulously designed to align with your specific objectives, our avatars foster authentic engagement without the headaches of traditional production.
+                                    Elevate your brand with production-grade, <span className="text-white font-medium">ultra-realistic AI-generated influencers</span>. Meticulously designed to align with your specific objectives, our avatars foster authentic engagement without the headaches of traditional production.
                                 </p>
                                 <p>
                                     Avoid the expense. Skip the casting calls. Produce unlimited, high-fidelity content that resonates with your audience 24/7.

@@ -205,19 +205,22 @@ export default function HeroSketch() {
                     transition={{ delay: 1.8, duration: 0.8 }}
                     className="text-center max-w-6xl mx-auto relative z-20 md:-mt-8" // Adjusted spacing and centered
                 >
-                    <div className="inline-block mb-6 px-4 py-1 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 text-sm tracking-widest uppercase backdrop-blur-sm shadow-[0_0_15px_rgba(34,211,238,0.2)]">
-                        Production as Infrastructure
-                    </div>
-
                     {/* Headline: Responsive Wrap */}
-                    <h1 className="text-2xl md:text-4xl lg:text-5xl font-bold mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        <span className="block mb-2 !font-serif text-white">ARCHITECTS OF</span>
-                        <span className="block !font-serif">
+                    <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
+                        <span
+                            className="block mb-2 !font-serif text-white text-4xl md:text-6xl lg:text-7xl font-black"
+                            style={{
+                                textShadow: '0 1px 0 #94a3b8, 0 2px 0 #64748b, 0 3px 0 #475569, 0 4px 0 #334155, 0 6px 12px rgba(0,0,0,0.75), 0 12px 30px rgba(34,211,238,0.15)'
+                            }}
+                        >
+                            ARCHITECTS OF
+                        </span>
+                        <span className="block !font-serif text-2xl md:text-4xl lg:text-5xl font-bold">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
                                 AI-NATIVE FILM
                             </span>
                             <span className="block md:inline mt-1 md:mt-0">
-                                <span className="text-white">& </span>
+                                <span className="text-white/60 text-[0.6em] font-normal align-middle mx-3 md:mx-4">&</span>
                                 <span className="text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-pink-500 !font-serif">
                                     AUTOMATION SYSTEMS
                                 </span>
@@ -225,8 +228,8 @@ export default function HeroSketch() {
                         </span>
                     </h1>
 
-                    <p className="text-gray-300 text-lg md:text-xl max-w-4xl mx-auto font-light leading-relaxed mb-8">
-                        Built to rigorous production standards and designed for speed, our AI-driven infrastructure replaces manual processes with structured execution. The result is faster delivery, reduced errors, and scalable growth.
+                    <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed mb-8">
+                        AI-driven infrastructure that replaces manual process with structured execution — faster delivery, fewer errors, compounding scale.
                     </p>
                 </motion.div>
             </div>

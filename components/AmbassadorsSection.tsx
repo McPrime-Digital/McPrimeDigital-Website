@@ -64,7 +64,7 @@ export default function AmbassadorsSection() {
                     transition={{ delay: 0.2 }}
                     className="text-gray-400 max-w-4xl mx-auto leading-relaxed"
                 >
-                    Meet our cutting-edge AI Ambassadors designed for ultra-realistic user-generated content. With a personality that engages, they operate across various social media platforms, effortlessly capturing daily activities and securing promotional partnerships. Experience the future of influence, where creativity knows no bounds and every post feels authentically human.
+                    Meet our enterprise-grade AI Ambassadors designed for ultra-realistic user-generated content. With a personality that engages, they operate across various social media platforms, effortlessly capturing daily activities and securing promotional partnerships. Experience the future of influence, where creativity knows no bounds and every post feels authentically human.
                 </motion.p>
             </div>
 
