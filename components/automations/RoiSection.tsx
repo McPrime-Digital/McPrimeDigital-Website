@@ -1,94 +1,25 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
-    FileSearch,
-    Route,
-    Cpu,
-    CheckCircle2,
+    LayoutDashboard,
+    Zap,
     FileText,
-    Layers,
+    Users,
     GitMerge,
-    ShieldCheck,
+    RefreshCw,
+    Send,
     Database,
-    Workflow,
+    Mic,
+    Code2,
+    Smartphone,
+    Layers
 } from 'lucide-react';
 
-// --- DELIVERABLE MODULES: rendered as controlled specification documents ---
-const modules = [
-    {
-        id: 'MOD-01',
-        phase: 'DISCOVERY',
-        title: 'Complete AI Opportunity Report',
-        summary: 'A clear breakdown of your business processes showing exactly where AI can bring the strongest and fastest ROI.',
-        icon: FileSearch,
-        accent: 'indigo',
-        spec: [
-            { label: 'Process coverage', value: 'Full workflow inventory, department-level' },
-            { label: 'Assessment model', value: 'ROI × implementation-effort matrix' },
-            { label: 'Opportunity register', value: 'Ranked AI touchpoints with owners' },
-            { label: 'Output format', value: 'Structured report + prioritized register' },
-            { label: 'Review gate', value: 'Findings walkthrough with leadership' },
-        ],
-        deliverables: [
-            { icon: Workflow, text: 'Workflow map of current operations' },
-            { icon: Layers, text: 'AI touchpoint register, ranked by ROI' },
-            { icon: FileText, text: 'Insights report with projections' },
-        ],
-    },
-    {
-        id: 'MOD-02',
-        phase: 'STRATEGY',
-        title: 'Adoption Blueprint',
-        summary: 'A practical roadmap that outlines how AI fits into your workflows and helps your team embrace it with ease.',
-        icon: Route,
-        accent: 'purple',
-        spec: [
-            { label: 'Rollout design', value: 'Phased, mapped to team capacity' },
-            { label: 'Integration plan', value: 'Existing stack — no rip-and-replace' },
-            { label: 'Enablement', value: 'Team training + operating procedures' },
-            { label: 'Governance', value: 'Review gates and feedback loops' },
-            { label: 'Change control', value: 'Documented, versioned, auditable' },
-        ],
-        deliverables: [
-            { icon: GitMerge, text: 'Workflow integration design' },
-            { icon: FileText, text: 'Phased rollout plan with milestones' },
-            { icon: ShieldCheck, text: 'Governance and review framework' },
-        ],
-    },
-    {
-        id: 'MOD-03',
-        phase: 'BUILD',
-        title: 'Custom Built AI Solutions',
-        summary: 'Tailored systems designed around your existing tools that scale effortlessly and deliver measurable business results.',
-        icon: Cpu,
-        accent: 'cyan',
-        spec: [
-            { label: 'Architecture', value: 'Custom agents + workflow engine' },
-            { label: 'Integrations', value: 'CRM · ERP · comms · data stores' },
-            { label: 'Validation', value: 'Staged testing before deployment' },
-            { label: 'Observability', value: 'Execution logs and audit trails' },
-            { label: 'Handover', value: 'Documentation + accountability framework' },
-        ],
-        deliverables: [
-            { icon: Cpu, text: 'Production-ready automation systems' },
-            { icon: Database, text: 'Validated integrations across your stack' },
-            { icon: FileText, text: 'Operational documentation and runbooks' },
-        ],
-    },
-];
-
-const accentStyles: Record<string, { text: string; border: string; bg: string; bar: string; glow: string }> = {
-    indigo: { text: 'text-indigo-400', border: 'border-indigo-500/40', bg: 'bg-indigo-500/10', bar: 'bg-indigo-400', glow: 'rgba(129,140,248,0.25)' },
-    purple: { text: 'text-purple-400', border: 'border-purple-500/40', bg: 'bg-purple-500/10', bar: 'bg-purple-400', glow: 'rgba(192,132,252,0.25)' },
-    cyan: { text: 'text-cyan-400', border: 'border-cyan-500/40', bg: 'bg-cyan-500/10', bar: 'bg-cyan-400', glow: 'rgba(34,211,238,0.25)' },
-};
-
 export default function RoiSection() {
-    const [activeId, setActiveId] = useState('MOD-01');
-    const active = modules.find(m => m.id === activeId)!;
-    const accent = accentStyles[active.accent];
+    const [isConnecting, setIsConnecting] = useState(false);
+    const [isCard1Active, setIsCard1Active] = useState(false);
+    const [isCard2Active, setIsCard2Active] = useState(false);
 
     return (
         <section className="py-24 sm:py-32 relative bg-[#050505] text-white overflow-hidden">
@@ -99,8 +30,9 @@ export default function RoiSection() {
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
+
                 {/* --- HEADER --- */}
-                <div className="text-center mb-16 max-w-4xl mx-auto">
+                <div className="text-center mb-20 max-w-4xl mx-auto">
                     <div className="inline-block px-4 py-1 rounded-full border border-white/10 bg-white/5 backdrop-blur-md mb-6 shadow-[0_0_20px_rgba(255,255,255,0.05)]">
                         <span className="text-xs font-medium text-gray-300 uppercase tracking-widest">What We Deliver</span>
                     </div>
@@ -115,130 +47,249 @@ export default function RoiSection() {
                     </p>
                 </div>
 
-                {/* --- SPEC CONSOLE --- */}
-                <div className="max-w-6xl mx-auto rounded-3xl border border-white/10 bg-[#08090C] overflow-hidden shadow-[0_40px_80px_-32px_rgba(0,0,0,0.9)]">
-                    {/* Document header bar */}
-                    <div className="flex items-center justify-between px-5 md:px-8 py-3 border-b border-white/5 bg-black/40">
-                        <div className="flex items-center gap-3">
-                            <span className="relative flex w-1.5 h-1.5">
-                                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
-                                <span className="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-400" />
-                            </span>
-                            <span className="text-[10px] md:text-[11px] font-mono tracking-[0.22em] text-white/60 uppercase">McPrime · Engagement Specification</span>
-                        </div>
-                        <span className="text-[9px] md:text-[10px] font-mono tracking-[0.18em] text-white/30 uppercase">Doc MCP-ENG-SPEC · Rev 3.2 · Controlled</span>
-                    </div>
+                {/* --- CARDS GRID --- */}
+                <div className="grid lg:grid-cols-3 gap-8 items-stretch">
 
-                    <div className="grid grid-cols-1 lg:grid-cols-[300px_1fr]">
-                        {/* Module rail */}
-                        <div className="flex lg:flex-col border-b lg:border-b-0 lg:border-r border-white/5 bg-black/20">
-                            {modules.map((mod) => {
-                                const isActive = mod.id === activeId;
-                                const modAccent = accentStyles[mod.accent];
-                                return (
-                                    <button
-                                        key={mod.id}
-                                        onClick={() => setActiveId(mod.id)}
-                                        className={`relative flex-1 lg:flex-none text-left px-4 md:px-6 py-4 lg:py-6 transition-colors duration-300 border-b border-white/5 last:border-b-0 group
-                                            ${isActive ? 'bg-white/[0.04]' : 'hover:bg-white/[0.02]'}`}
-                                    >
-                                        {/* Active accent bar */}
-                                        <span className={`absolute left-0 top-0 bottom-0 w-[3px] transition-opacity duration-300 ${modAccent.bar} ${isActive ? 'opacity-100' : 'opacity-0'}`} />
-                                        <div className="flex items-center gap-3">
-                                            <div className={`w-9 h-9 shrink-0 rounded-lg border flex items-center justify-center transition-colors duration-300 ${isActive ? `${modAccent.bg} ${modAccent.border}` : 'bg-white/[0.03] border-white/10'}`}>
-                                                <mod.icon className={`w-4 h-4 ${isActive ? modAccent.text : 'text-white/40'}`} />
-                                            </div>
-                                            <div className="min-w-0 hidden sm:block">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`text-[9px] font-mono tracking-[0.2em] ${isActive ? modAccent.text : 'text-white/30'}`}>{mod.id}</span>
-                                                    <span className="text-[9px] font-mono tracking-[0.2em] text-white/25">{mod.phase}</span>
-                                                </div>
-                                                <p className={`text-sm font-bold leading-tight truncate transition-colors ${isActive ? 'text-white' : 'text-white/55 group-hover:text-white/80'}`}>
-                                                    {mod.title}
-                                                </p>
-                                            </div>
-                                        </div>
-                                    </button>
-                                );
-                            })}
-                            {/* Rail footer */}
-                            <div className="hidden lg:block mt-auto px-6 py-5 border-t border-white/5">
-                                <p className="text-[9px] font-mono tracking-[0.18em] text-white/25 uppercase leading-relaxed">
-                                    Sequential engagement<br />Each module gates the next
-                                </p>
+                    {/* Card 1: Complete AI Opportunity Report */}
+                    <div
+                        onMouseEnter={() => setIsCard1Active(true)}
+                        onMouseLeave={() => setIsCard1Active(false)}
+                        onClick={() => setIsCard1Active(!isCard1Active)}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard1Active ? 'bg-[#0b0b10] border-indigo-500/40 shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-indigo-500/40 hover:shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]'}`}
+                    >
+                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isCard1Active ? 'opacity-100' : 'opacity-40'}`} />
+
+                        {/* Module strip */}
+                        <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">
+                            <span className={`text-[9px] font-mono tracking-[0.22em] uppercase transition-colors ${isCard1Active ? 'text-indigo-400' : 'text-white/35'}`}>MOD-01 · Discovery</span>
+                            <span className="text-[8px] font-mono px-2 py-0.5 rounded-full border border-indigo-500/30 bg-indigo-500/10 text-indigo-300 tracking-widest uppercase">Scoped</span>
+                        </div>
+
+                        <div className="p-8 flex flex-col flex-1">
+                            <h3 className="text-2xl font-bold mb-4">Complete AI Opportunity Report</h3>
+                            <p className="text-gray-400 text-sm leading-relaxed mb-10 min-h-[3rem]">
+                                A clear breakdown of your business processes showing exactly where AI can bring the strongest and fastest ROI.
+                            </p>
+
+                            {/* Visual: Stacked List */}
+                            <div className="space-y-3.5 relative mt-auto">
+                                {/* Item 1 */}
+                                <div className={`flex items-center gap-4 p-3 rounded-xl border relative overflow-hidden group/item transition-colors duration-300 ${isCard1Active ? 'bg-white/[0.07] border-white/15' : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/15'}`}>
+                                    <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-indigo-300' : 'text-gray-400 group-hover/item:text-white'}`}>
+                                        <LayoutDashboard size={18} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium text-white">Map all Workflows</div>
+                                        <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>Visualize business operations</div>
+                                    </div>
+                                    <span className="text-[9px] font-mono font-bold bg-indigo-500/15 text-indigo-300 px-2 py-0.5 rounded border border-indigo-500/30 tracking-widest">01</span>
+                                </div>
+
+                                {/* Item 2 */}
+                                <div className={`flex items-center gap-4 p-3 rounded-xl border relative overflow-hidden group/item transition-colors duration-300 ${isCard1Active ? 'bg-white/[0.07] border-white/15' : 'bg-white/[0.03] border-white/5 hover:bg-white/[0.07] hover:border-white/15'}`}>
+                                    <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-purple-300' : 'text-gray-400 group-hover/item:text-white'}`}>
+                                        <Zap size={18} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium text-white">Add AI Touchpoints</div>
+                                        <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>Spot automation opportunities</div>
+                                    </div>
+                                    <span className="text-[9px] font-mono font-bold bg-purple-500/15 text-purple-300 px-2 py-0.5 rounded border border-purple-500/30 tracking-widest">02</span>
+                                </div>
+
+                                {/* Item 3 */}
+                                <div className={`flex items-center gap-4 p-3 rounded-xl border relative overflow-hidden group/item transition-all duration-300 ${isCard1Active ? 'bg-white/[0.07] border-white/15 opacity-100' : 'bg-white/[0.03] border-white/5 opacity-70 hover:opacity-100 hover:bg-white/[0.07] hover:border-white/15'}`}>
+                                    <div className={`p-2 rounded-lg bg-black/40 border border-white/10 transition-colors ${isCard1Active ? 'text-blue-300' : 'text-gray-400 group-hover/item:text-white'}`}>
+                                        <FileText size={18} />
+                                    </div>
+                                    <div className="flex-1">
+                                        <div className="text-sm font-medium text-white">Generate Insights Report</div>
+                                        <div className={`text-xs transition-colors ${isCard1Active ? 'text-gray-400' : 'text-gray-500 group-hover/item:text-gray-400'}`}>See ROI projections</div>
+                                    </div>
+                                    <span className="text-[9px] font-mono font-bold bg-blue-500/15 text-blue-300 px-2 py-0.5 rounded border border-blue-500/30 tracking-widest">03</span>
+                                </div>
                             </div>
                         </div>
 
-                        {/* Spec sheet */}
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={active.id}
-                                initial={{ opacity: 0, y: 8 }}
-                                animate={{ opacity: 1, y: 0 }}
-                                exit={{ opacity: 0, y: -8 }}
-                                transition={{ duration: 0.25 }}
-                                className="relative p-6 md:p-10"
-                            >
-                                {/* Accent atmosphere */}
-                                <div className="absolute -top-20 -right-20 w-72 h-72 rounded-full blur-[100px] pointer-events-none" style={{ background: accent.glow }} />
-
-                                {/* Sheet header */}
-                                <div className="relative z-10 flex flex-wrap items-start justify-between gap-4 mb-8">
-                                    <div>
-                                        <div className="flex items-center gap-3 mb-2">
-                                            <span className={`text-[10px] font-mono tracking-[0.25em] ${accent.text}`}>{active.id} · {active.phase}</span>
-                                            <span className={`px-2 py-0.5 rounded-full border text-[8px] font-mono tracking-widest uppercase ${accent.border} ${accent.bg} ${accent.text}`}>Scoped Deliverable</span>
-                                        </div>
-                                        <h3 className="text-2xl md:text-3xl font-bold text-white leading-tight max-w-lg">{active.title}</h3>
-                                    </div>
-                                    <div className={`w-12 h-12 rounded-xl border flex items-center justify-center ${accent.bg} ${accent.border}`}>
-                                        <active.icon className={`w-6 h-6 ${accent.text}`} />
-                                    </div>
-                                </div>
-
-                                <p className="relative z-10 text-gray-400 leading-relaxed max-w-2xl mb-10">{active.summary}</p>
-
-                                <div className="relative z-10 grid grid-cols-1 md:grid-cols-[1.4fr_1fr] gap-10">
-                                    {/* Specification table */}
-                                    <div>
-                                        <p className="text-[10px] font-mono tracking-[0.25em] text-white/35 uppercase mb-4">Specification</p>
-                                        <div className="divide-y divide-white/5 border-y border-white/5">
-                                            {active.spec.map((row) => (
-                                                <div key={row.label} className="flex items-baseline justify-between gap-6 py-3 group/row hover:bg-white/[0.02] transition-colors px-2 -mx-2">
-                                                    <span className="text-[11px] font-mono tracking-wider text-white/40 uppercase shrink-0">{row.label}</span>
-                                                    <span className="text-sm text-gray-200 text-right leading-snug">{row.value}</span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-
-                                    {/* Deliverables */}
-                                    <div>
-                                        <p className="text-[10px] font-mono tracking-[0.25em] text-white/35 uppercase mb-4">You Receive</p>
-                                        <div className="space-y-3">
-                                            {active.deliverables.map((d) => (
-                                                <div key={d.text} className="flex items-start gap-3 p-3 rounded-xl border border-white/5 bg-white/[0.02] hover:border-white/15 transition-colors">
-                                                    <div className={`w-8 h-8 shrink-0 rounded-lg border flex items-center justify-center ${accent.bg} ${accent.border}`}>
-                                                        <d.icon className={`w-4 h-4 ${accent.text}`} />
-                                                    </div>
-                                                    <div className="flex items-start gap-2 pt-1">
-                                                        <CheckCircle2 className={`w-3.5 h-3.5 mt-0.5 shrink-0 ${accent.text}`} />
-                                                        <span className="text-sm text-gray-300 leading-snug">{d.text}</span>
-                                                    </div>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    </div>
-                                </div>
-
-                                {/* Sheet footer */}
-                                <div className="relative z-10 mt-10 pt-5 border-t border-white/5 flex flex-wrap items-center justify-between gap-3">
-                                    <span className="text-[9px] font-mono tracking-[0.18em] text-white/25 uppercase">Mapped before implementation · Validated before deployment</span>
-                                    <span className="text-[9px] font-mono tracking-[0.18em] text-white/35 uppercase tabular-nums">{active.id} / MOD-0{modules.length}</span>
-                                </div>
-                            </motion.div>
-                        </AnimatePresence>
+                        {/* Module footer */}
+                        <div className="px-6 py-2.5 border-t border-white/5 bg-black/30">
+                            <span className="text-[8px] font-mono tracking-[0.18em] text-white/25 uppercase">Findings reviewed with leadership before build</span>
+                        </div>
                     </div>
+
+
+                    {/* Card 2: Adoption Blueprint */}
+                    <div
+                        onMouseEnter={() => setIsCard2Active(true)}
+                        onMouseLeave={() => setIsCard2Active(false)}
+                        onClick={() => setIsCard2Active(!isCard2Active)}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard2Active ? 'bg-[#0b0b10] border-purple-500/40 shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-purple-500/40 hover:shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]'}`}
+                    >
+                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isCard2Active ? 'opacity-100' : 'opacity-40'}`} />
+
+                        {/* Module strip */}
+                        <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">
+                            <span className={`text-[9px] font-mono tracking-[0.22em] uppercase transition-colors ${isCard2Active ? 'text-purple-400' : 'text-white/35'}`}>MOD-02 · Strategy</span>
+                            <span className="text-[8px] font-mono px-2 py-0.5 rounded-full border border-purple-500/30 bg-purple-500/10 text-purple-300 tracking-widest uppercase">Governed</span>
+                        </div>
+
+                        <div className="p-8 flex flex-col flex-1">
+                            <h3 className="text-2xl font-bold mb-4">Adoption Blueprint</h3>
+                            <p className="text-gray-400 text-sm leading-relaxed mb-10 min-h-[3rem]">
+                                A practical roadmap that outlines how AI fits into your workflows and helps your team embrace it with ease.
+                            </p>
+
+                            {/* Visual: Flow Chart */}
+                            <div className="relative h-64 flex flex-col items-center justify-center gap-6 mt-auto">
+                                {/* Connecting Line */}
+                                <div className={`absolute top-1/2 left-10 right-10 h-[1px] border-t border-dashed -z-10 hidden md:block transition-colors duration-500 ${isCard2Active ? 'border-white/40' : 'border-white/20 group-hover:border-white/40'}`} />
+
+                                <div className="flex flex-wrap justify-center gap-4 w-full">
+                                    <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 ${isCard2Active ? 'border-indigo-500/50 bg-indigo-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-indigo-500/50 group-hover:bg-indigo-900/10 group-hover:text-white'}`}>
+                                        <Users size={14} className={`transition-colors ${isCard2Active ? 'text-indigo-400' : 'group-hover:text-indigo-400'}`} /> Align team
+                                    </div>
+                                    <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-75 ${isCard2Active ? 'border-purple-500/50 bg-purple-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-purple-500/50 group-hover:bg-purple-900/10 group-hover:text-white'}`}>
+                                        <GitMerge size={14} className={`transition-colors ${isCard2Active ? 'text-purple-400' : 'group-hover:text-purple-400'}`} /> Design Workflow
+                                    </div>
+                                </div>
+
+                                {/* Central Active Node */}
+                                <div className={`relative z-10 p-1 rounded-xl bg-gradient-to-br from-indigo-500 to-purple-600 transition-all duration-500 ${isCard2Active ? 'shadow-[0_0_50px_rgba(129,140,248,0.6)]' : 'shadow-[0_0_30px_rgba(129,140,248,0.3)] group-hover:shadow-[0_0_50px_rgba(129,140,248,0.6)]'}`}>
+                                    <div className="bg-black rounded-lg p-2">
+                                        <RefreshCw size={24} className={`animate-spin-slow transition-colors ${isCard2Active ? 'text-white' : 'text-indigo-400 group-hover:text-white'}`} />
+                                    </div>
+                                </div>
+
+                                <div className="flex flex-wrap justify-center gap-4 w-full">
+                                    <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-100 ${isCard2Active ? 'border-blue-500/50 bg-blue-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-blue-500/50 group-hover:bg-blue-900/10 group-hover:text-white'}`}>
+                                        <RefreshCw size={14} className={`transition-colors ${isCard2Active ? 'text-blue-400' : 'group-hover:text-blue-400'}`} /> Feedback loop
+                                    </div>
+                                    <div className={`px-4 py-2 rounded-full border bg-black/40 text-xs flex items-center gap-2 transition-all duration-300 delay-150 ${isCard2Active ? 'border-emerald-500/50 bg-emerald-900/10 text-white' : 'border-white/10 text-gray-300 group-hover:border-emerald-500/50 group-hover:bg-emerald-900/10 group-hover:text-white'}`}>
+                                        <Send size={14} className={`transition-colors ${isCard2Active ? 'text-emerald-400' : 'group-hover:text-emerald-400'}`} /> Rollout plan
+                                    </div>
+                                </div>
+
+                                {/* Bottom Note */}
+                                <div className={`w-full mt-4 px-4 py-2 border border-white/5 bg-white/[0.03] rounded-lg text-center text-xs transition-colors ${isCard2Active ? 'text-gray-300' : 'text-gray-400 group-hover:text-gray-300'}`}>
+                                    Continuous improvement plan.
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Module footer */}
+                        <div className="px-6 py-2.5 border-t border-white/5 bg-black/30">
+                            <span className="text-[8px] font-mono tracking-[0.18em] text-white/25 uppercase">Phased rollout · review gates · change control</span>
+                        </div>
+                    </div>
+
+
+                    {/* Card 3: Custom Built AI Solutions */}
+                    <div
+                        onMouseEnter={() => setIsConnecting(true)}
+                        onMouseLeave={() => setIsConnecting(false)}
+                        onClick={() => setIsConnecting(!isConnecting)}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isConnecting ? 'bg-[#0b0b10] border-cyan-500/40 shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-cyan-500/40 hover:shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]'}`}
+                    >
+                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isConnecting ? 'opacity-100' : 'opacity-40'}`} />
+
+                        {/* Module strip */}
+                        <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">
+                            <span className={`text-[9px] font-mono tracking-[0.22em] uppercase transition-colors ${isConnecting ? 'text-cyan-400' : 'text-white/35'}`}>MOD-03 · Build</span>
+                            <span className="text-[8px] font-mono px-2 py-0.5 rounded-full border border-cyan-500/30 bg-cyan-500/10 text-cyan-300 tracking-widest uppercase">Validated</span>
+                        </div>
+
+                        <div className="p-8 flex flex-col flex-1">
+                            <h3 className="text-2xl font-bold mb-4">Custom Built AI Solutions</h3>
+                            <p className="text-gray-400 text-sm leading-relaxed mb-10 min-h-[3rem]">
+                                Tailored systems designed around your existing tools that scale effortlessly and deliver measurable business results.
+                            </p>
+
+                            {/* Visual: Central Hub */}
+                            <div className="relative h-64 flex items-center justify-center mt-auto">
+
+                                {/* SVG Overlay for connecting lines */}
+                                <svg className="absolute inset-0 w-full h-full pointer-events-none z-0" xmlns="http://www.w3.org/2000/svg">
+                                    <defs>
+                                        <linearGradient id="lineGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="#818cf8" stopOpacity="0" />
+                                            <stop offset="50%" stopColor="#818cf8" stopOpacity="1" />
+                                            <stop offset="100%" stopColor="#818cf8" stopOpacity="0" />
+                                        </linearGradient>
+                                        <linearGradient id="lineGradActive" x1="0%" y1="0%" x2="100%" y2="0%">
+                                            <stop offset="0%" stopColor="#3b82f6" stopOpacity="0" />
+                                            <stop offset="50%" stopColor="#06b6d4" stopOpacity="1" />
+                                            <stop offset="100%" stopColor="#10b981" stopOpacity="0" />
+                                        </linearGradient>
+                                    </defs>
+
+                                    <line x1="50%" y1="50%" x2="50%" y2="15%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
+                                        className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
+                                        style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100 }}
+                                    />
+                                    <line x1="50%" y1="50%" x2="85%" y2="35%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
+                                        className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
+                                        style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '100ms' }}
+                                    />
+                                    <line x1="50%" y1="50%" x2="75%" y2="80%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
+                                        className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
+                                        style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '200ms' }}
+                                    />
+                                    <line x1="50%" y1="50%" x2="25%" y2="80%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
+                                        className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
+                                        style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '300ms' }}
+                                    />
+                                    <line x1="50%" y1="50%" x2="15%" y2="35%" stroke={isConnecting ? "url(#lineGradActive)" : "url(#lineGrad)"} strokeWidth={isConnecting ? "3" : "2"}
+                                        className={`transition-all duration-700 ease-out ${isConnecting ? 'opacity-100' : 'opacity-0'}`}
+                                        style={{ strokeDasharray: 100, strokeDashoffset: isConnecting ? 0 : 100, transitionDelay: '400ms' }}
+                                    />
+                                </svg>
+
+                                {/* Orbit Rings */}
+                                <div className={`absolute w-56 h-56 border border-white/5 rounded-full transition-all duration-700 ${isConnecting ? 'border-cyan-400/30 scale-105' : ''}`} />
+                                <div className={`absolute w-36 h-36 border border-white/10 rounded-full transition-all duration-700 ${isConnecting ? 'border-indigo-400/40 scale-95' : ''}`} />
+
+                                {/* 5 Satellites */}
+                                <div className={`absolute top-2 left-1/2 -translate-x-1/2 p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-emerald-900/60 border-emerald-400 text-emerald-300 shadow-[0_0_25px_rgba(16,185,129,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                                    <Database size={20} />
+                                </div>
+                                <div className={`absolute top-[25%] right-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-cyan-900/60 border-cyan-400 text-cyan-300 shadow-[0_0_25px_rgba(6,182,212,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                                    <Layers size={20} />
+                                </div>
+                                <div className={`absolute bottom-[10%] right-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-purple-900/60 border-purple-400 text-purple-300 shadow-[0_0_25px_rgba(168,85,247,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                                    <Code2 size={20} />
+                                </div>
+                                <div className={`absolute bottom-[10%] left-[15%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-blue-900/60 border-blue-400 text-blue-300 shadow-[0_0_25px_rgba(59,130,246,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                                    <Smartphone size={20} />
+                                </div>
+                                <div className={`absolute top-[25%] left-[5%] p-3 rounded-full border transition-all duration-500 z-10 ${isConnecting ? 'bg-rose-900/60 border-rose-400 text-rose-300 shadow-[0_0_25px_rgba(244,63,94,0.7)] scale-110' : 'bg-black/50 border-white/10 text-gray-500'}`}>
+                                    <Mic size={20} />
+                                </div>
+
+                                {/* Central Core */}
+                                <div className={`relative z-20 w-28 h-28 bg-black rounded-2xl border flex items-center justify-center shadow-2xl transition-all duration-500 ${isConnecting ? 'border-cyan-400 shadow-[0_0_50px_rgba(6,182,212,0.6)]' : 'border-white/10'}`}>
+                                    <div className={`absolute -top-8 px-4 py-1.5 rounded-full text-[11px] font-bold tracking-widest flex items-center gap-2 transition-all duration-300 ${isConnecting ? 'bg-gradient-to-r from-emerald-600 to-cyan-600 border border-cyan-400/50 text-white shadow-[0_0_15px_rgba(6,182,212,0.8)]' : 'bg-indigo-900/40 border border-indigo-500/30 text-indigo-300'}`}>
+                                        <span className={`w-2 h-2 rounded-full ${isConnecting ? 'bg-white shadow-[0_0_8px_white]' : 'bg-indigo-400 animate-pulse'}`} />
+                                        {isConnecting ? 'CONNECTED' : 'CONNECTING'}
+                                    </div>
+                                    {/* Chip Grid */}
+                                    <div className="grid grid-cols-4 gap-1 opacity-50">
+                                        {[...Array(16)].map((_, i) => (
+                                            <div key={i} className={`w-1 h-1 rounded-full transition-colors duration-300 ${isConnecting ? 'bg-indigo-400 shadow-[0_0_5px_rgba(129,140,248,0.8)]' : (i % 3 === 0 ? 'bg-indigo-500' : 'bg-gray-600')}`} />
+                                        ))}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Module footer */}
+                        <div className="px-6 py-2.5 border-t border-white/5 bg-black/30">
+                            <span className="text-[8px] font-mono tracking-[0.18em] text-white/25 uppercase">Staged testing · execution logs · audit trails</span>
+                        </div>
+                    </div>
+
                 </div>
             </div>
         </section>

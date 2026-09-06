@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Play, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import CinemaModal from '@/components/CinemaModal';
+import PortfolioTheater from './PortfolioTheater';
 import { prettifyFilename } from '@/lib/video-utils';
 
 // Metadata map matched to stored filenames (keyword-based).
@@ -65,7 +65,7 @@ function getMetaForVideo(key: string) {
 export default function FilmmakingPortfolio() {
     const [videos, setVideos] = useState<S3Video[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedVideo, setSelectedVideo] = useState<S3Video | null>(null);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -136,7 +136,7 @@ export default function FilmmakingPortfolio() {
                                         key={slot.data.key}
                                         video={slot.data as S3Video}
                                         index={index}
-                                        onOpen={() => setSelectedVideo(slot.data as S3Video)}
+                                        onOpen={() => setSelectedIndex(index)}
                                     />
                                 ) : (
                                     <PlaceholderCard key={`placeholder-${index}`} data={slot.data} index={index} />
@@ -147,15 +147,17 @@ export default function FilmmakingPortfolio() {
                 </div>
             </section>
 
-            {/* The Screening Room */}
-            <CinemaModal
-                video={selectedVideo ? {
-                    src: selectedVideo.blobUrl || selectedVideo.url,
-                    title: selectedVideo.title,
-                    subtitle: selectedVideo.subtitle,
-                    category: selectedVideo.category,
-                } : null}
-                onClose={() => setSelectedVideo(null)}
+            {/* The Portfolio Theater: widescreen 35mm catalog player */}
+            <PortfolioTheater
+                films={videos.map(v => ({
+                    src: v.blobUrl || v.url,
+                    title: v.title,
+                    subtitle: v.subtitle,
+                    category: v.category,
+                }))}
+                index={selectedIndex}
+                onClose={() => setSelectedIndex(null)}
+                onNavigate={(i) => setSelectedIndex(i)}
             />
         </>
     );
