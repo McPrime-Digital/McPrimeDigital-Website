@@ -21,10 +21,6 @@ export default function HeroSketch() {
     const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), springConfig);
     const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [-15, 15]), springConfig);
 
-    // Headline 3D: rests at a visible tilt so the extrusion always shows,
-    // and leans further toward the cursor
-    const headRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [17, 3]), { damping: 40, stiffness: 250 });
-    const headRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-18, 18]), { damping: 40, stiffness: 250 });
 
     const handleMouseMove = (e: React.MouseEvent) => {
         const rect = containerRef.current?.getBoundingClientRect();
@@ -212,17 +208,11 @@ export default function HeroSketch() {
                 >
                     {/* Headline: Responsive Wrap */}
                     <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        {/* True 3D lettering: mouse-tilted, Z-extruded, glass surface with light sweep */}
-                        <motion.span
-                            style={{ rotateX: headRotateX, rotateY: headRotateY, transformPerspective: 750, transformStyle: 'preserve-3d' }}
-                            className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif will-change-transform"
+                        {/* Sculpted 3D lettering: static tilt, Z-extruded, glass surface with light sweep */}
+                        <span
+                            style={{ transform: 'perspective(750px) rotateX(14deg) rotateY(-6deg)', transformStyle: 'preserve-3d' }}
+                            className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif"
                         >
-                            <motion.span
-                                className="relative block"
-                                style={{ transformStyle: 'preserve-3d' }}
-                                animate={{ rotateY: [-4, 4, -4], rotateX: [-2, 2, -2] }}
-                                transition={{ duration: 9, repeat: Infinity, ease: 'easeInOut' }}
-                            >
                             <style>{`@keyframes heroShine { 0% { background-position: 220% 0; } 55%, 100% { background-position: -120% 0; } }`}</style>
                             {/* Aura, deep behind the letterforms */}
                             <span
@@ -263,8 +253,7 @@ export default function HeroSketch() {
                             >
                                 ARCHITECTS OF
                             </span>
-                            </motion.span>
-                        </motion.span>
+                        </span>
                         <span className="block !font-serif text-2xl md:text-4xl lg:text-5xl font-bold">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
                                 AI-NATIVE FILM
