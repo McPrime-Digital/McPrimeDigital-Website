@@ -44,8 +44,8 @@ export default function FilmmakingHero() {
                     className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6"
                 >
                     AI-NATIVE<br />
-                    FILM, TV<br />
-                    COMMERCIAL<br />
+                    FILM, TV,<br />
+                    COMMERCIAL,<br />
                     MUSIC VIDEO
                 </motion.h1>
 

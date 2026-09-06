@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, CheckCircle } from 'lucide-react';
 import Button from './ui/Button';
 import AutomationFlow from './AutomationFlow';
+import FilmProductionMedia from './FilmProductionMedia';
 
 export default function ExploreSection() {
     return (
@@ -29,11 +30,12 @@ export default function ExploreSection() {
                         description="Broadcast-grade film, TV, and commercial content delivered through a hybrid production model — AI-native pipelines fused with traditional cinematographic standards for precision, speed, and repeatable output."
                         icon={Clapperboard}
                         color="teal"
+                        media={<FilmProductionMedia />}
                         href="/filmmaking"
                     />
                     <SolutionCard
                         title="AI Automations"
-                        description="Mission-critical workflow orchestration for regulated operations — agentic pipelines, deep system integrations, and governed execution with complete audit trails. Engineered to remove manual load and reduce operational development spend by 38%."
+                        description="Mission-critical workflow orchestration for regulated operations — agentic pipelines, deep system integrations, and governed execution with complete audit trails. Engineered to remove manual load and reduce operational development spend."
                         icon={Cpu}
                         color="orange"
                         media={<AutomationFlow />}

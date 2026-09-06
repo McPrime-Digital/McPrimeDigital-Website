@@ -121,7 +121,7 @@ function BookPanelSystem() {
     const [activeIndex, setActiveIndex] = useState<number | null>(2);
 
     return (
-        <div className="flex gap-4 h-full w-full max-w-7xl">
+        <div className="flex gap-3 h-full w-full max-w-7xl">
             {capabilities.map((cap, i) => {
                 const isActive = activeIndex === i;
 
@@ -130,93 +130,79 @@ function BookPanelSystem() {
                         key={cap.id}
                         onHoverStart={() => setActiveIndex(i)}
                         onClick={() => setActiveIndex(i)}
-                        // Removed onHoverEnd to maintain state until another is hovered
-                        className="relative h-full cursor-pointer group rounded-2xl overflow-hidden"
-                        style={{ transformStyle: "preserve-3d" }}
-                        animate={{
-                            flex: isActive ? 2.5 : 1, // Flex grow ratio
-                            transform: isActive
-                                ? "perspective(1000px) rotateY(0deg) translateZ(50px)"
-                                : "perspective(1000px) rotateY(10deg) translateZ(0px)",
-                            zIndex: isActive ? 50 : 1
-                        }}
-                        transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+                        animate={{ flexGrow: isActive ? 2.8 : 1 }}
+                        transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+                        style={{ flexBasis: 0 }}
+                        className={`relative h-full min-w-[64px] cursor-pointer overflow-hidden rounded-2xl border backdrop-blur-md transition-[border-color,box-shadow,background-color] duration-500
+                            ${isActive
+                                ? 'border-[#2D6BFF]/40 bg-black/50 shadow-[0_24px_60px_-20px_rgba(45,107,255,0.4)]'
+                                : 'border-white/[0.08] bg-white/[0.03] hover:border-white/20 hover:bg-white/[0.06]'
+                            }`}
                     >
-                        {/* 80% Transparent Liquid Glass Material */}
-                        <div className="absolute inset-0 bg-white/[0.03] backdrop-blur-md border border-white/[0.1] rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)] group-hover:bg-white/[0.08] group-hover:border-white/[0.2] transition-all duration-500">
+                        {/* Top light edge */}
+                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/25 to-transparent pointer-events-none z-20" />
 
-                            {/* Inner Glass Reflection */}
-                            <div className="absolute inset-0 bg-gradient-to-br from-white/[0.1] via-transparent to-transparent opacity-50 pointer-events-none rounded-2xl" />
-
-                            {/* --- CONTENT --- */}
-                            <div className="relative z-10 w-full h-full flex flex-col">
-
-                                {/* Top Image Area (Only visible on open) */}
-                                <AnimatePresence>
-                                    {isActive && (
-                                        <motion.div
-                                            initial={{ opacity: 0, height: 0 }}
-                                            animate={{ opacity: 1, height: "45%" }}
-                                            exit={{ opacity: 0, height: 0 }}
-                                            className="w-full relative overflow-hidden rounded-t-2xl border-b border-white/10"
-                                        >
-                                            <Image
-                                                src={cap.img}
-                                                alt={cap.title}
-                                                fill
-                                                className="object-cover object-center"
-                                            />
-                                            <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />
-                                        </motion.div>
-                                    )}
-                                </AnimatePresence>
-
-                                {/* Text Content Area */}
-                                <div className={`flex-1 p-6 flex flex-col justify-between ${isActive ? 'bg-black/40' : ''} transition-colors duration-500`}>
-
-                                    {/* Header / Vertical Text */}
-                                    <div className="relative h-full">
-                                        {/* Number */}
-                                        <div className={`text-4xl font-mono font-bold transition-all duration-300 ${isActive ? 'text-[#2D6BFF]' : 'text-white/20'}`}>
-                                            {cap.id}
-                                        </div>
-
-                                        {/* Collapsed Title */}
-                                        {!isActive && (
-                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2">
-                                                <h3 className="text-white/60 text-xs font-bold tracking-[0.2em] uppercase whitespace-nowrap -rotate-90">
-                                                    {cap.title.substring(0, 20)}...
-                                                </h3>
-                                            </div>
-                                        )}
-
-                                        {/* Expanded Title & Desc */}
-                                        <AnimatePresence>
-                                            {isActive && (
-                                                <motion.div
-                                                    initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1 }}
-                                                    exit={{ opacity: 0 }}
-                                                    className="mt-4 space-y-4"
-                                                >
-                                                    <h3 className="text-xl font-bold text-white leading-tight">
-                                                        {cap.title}
-                                                    </h3>
-                                                    <p className="text-gray-300 text-sm leading-relaxed border-l-2 border-[#2D6BFF] pl-4">
-                                                        {cap.desc}
-                                                    </p>
-
-                                                    {/* Active Indicator Icon */}
-                                                    <div className="pt-4 text-[#2D6BFF] opacity-80">
-                                                        <cap.icon size={28} />
-                                                    </div>
-                                                </motion.div>
-                                            )}
-                                        </AnimatePresence>
-                                    </div>
+                        {/* Collapsed state: number / vertical title / icon */}
+                        {!isActive && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-between py-6">
+                                <span className="text-sm font-mono font-bold text-white/25 tracking-widest">{cap.id}</span>
+                                <h3
+                                    className="text-white/50 text-[11px] font-bold tracking-[0.26em] uppercase whitespace-nowrap"
+                                    style={{ writingMode: 'vertical-rl' }}
+                                >
+                                    {cap.title}
+                                </h3>
+                                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                                    <cap.icon className="w-4 h-4 text-white/50" />
                                 </div>
                             </div>
-                        </div>
+                        )}
+
+                        {/* Expanded state */}
+                        <AnimatePresence>
+                            {isActive && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3, delay: 0.18 }}
+                                    className="absolute inset-0 flex flex-col"
+                                >
+                                    {/* Still frame */}
+                                    <div className="relative h-[45%] shrink-0 overflow-hidden border-b border-white/10" style={{ minWidth: 300 }}>
+                                        <Image
+                                            src={cap.img}
+                                            alt={cap.title}
+                                            fill
+                                            className="object-cover object-center"
+                                        />
+                                        <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
+                                        <span className="absolute bottom-3 left-6 text-[10px] font-mono tracking-[0.28em] text-[#2D6BFF] uppercase">
+                                            {cap.id} / 0{capabilities.length} — Core Capability
+                                        </span>
+                                    </div>
+
+                                    {/* Spec content */}
+                                    <div className="flex-1 p-6 lg:p-8 flex flex-col justify-between bg-black/40" style={{ minWidth: 300 }}>
+                                        <div className="space-y-4">
+                                            <h3 className="text-xl lg:text-2xl font-bold text-white leading-tight max-w-md">
+                                                {cap.title}
+                                            </h3>
+                                            <div className="w-12 h-1 bg-[#2D6BFF] rounded-full" />
+                                            <p className="text-gray-300 text-sm lg:text-[15px] leading-relaxed max-w-lg">
+                                                {cap.desc}
+                                            </p>
+                                        </div>
+                                        <div className="flex items-center justify-between pt-4">
+                                            <div className="w-10 h-10 rounded-lg bg-[#2D6BFF]/15 border border-[#2D6BFF]/30 flex items-center justify-center">
+                                                <cap.icon className="w-5 h-5 text-[#2D6BFF]" />
+                                            </div>
+                                            <span className="text-5xl font-mono font-bold text-white/[0.07] select-none leading-none">{cap.id}</span>
+                                        </div>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 );
             })}
@@ -258,9 +244,9 @@ function BookPanelMobileCarousel() {
                                     scale: isCenter ? 1 : 0.85,
                                     zIndex: 10 - Math.abs(offset),
                                     opacity: Math.abs(offset) >= 2 ? 0 : isCenter ? 1 : 0.6,
-                                    rotateY: offset * -15, // Light 3D angle
+                                    rotateY: offset * -8, // Restrained 3D angle
                                 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 32 }}
                                 onClick={() => setActiveIndex(i)}
                                 drag="x"
                                 dragConstraints={{ left: 0, right: 0 }}

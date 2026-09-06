@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PremiumCard from './PremiumCard';
 import { Volume2, Loader2 } from 'lucide-react';
 import { useState, useRef, useEffect } from 'react';
-import CinemaModal from '@/components/CinemaModal';
+import AmbassadorTheater from './AmbassadorTheater';
 import { prettifyFilename } from '@/lib/video-utils';
 
 // Metadata matched to S3 filenames (case-insensitive partial match)
@@ -47,7 +47,7 @@ function getMetaForVideo(key: string) {
 export default function UGCGrid() {
     const [videos, setVideos] = useState<S3Video[]>([]);
     const [loading, setLoading] = useState(true);
-    const [selectedVideo, setSelectedVideo] = useState<S3Video | null>(null);
+    const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
@@ -98,19 +98,16 @@ export default function UGCGrid() {
             {/* 3-Column Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8 perspective-1000">
                 {videos.map((video, index) => (
-                    <VideoCard key={video.key} video={video} index={index} onOpen={() => setSelectedVideo(video)} />
+                    <VideoCard key={video.key} video={video} index={index} onOpen={() => setSelectedIndex(index)} />
                 ))}
             </div>
 
-            {/* The Screening Room */}
-            <CinemaModal
-                video={selectedVideo ? {
-                    src: selectedVideo.blobUrl || selectedVideo.url,
-                    title: selectedVideo.title,
-                    subtitle: selectedVideo.context,
-                    category: 'Verified Ambassador',
-                } : null}
-                onClose={() => setSelectedVideo(null)}
+            {/* The Ambassador Theater: film-frame catalog player */}
+            <AmbassadorTheater
+                videos={videos.map(v => ({ src: v.blobUrl || v.url, title: v.title, context: v.context }))}
+                index={selectedIndex}
+                onClose={() => setSelectedIndex(null)}
+                onNavigate={(i) => setSelectedIndex(i)}
             />
         </>
     );

@@ -10,7 +10,7 @@ interface VideoUploaderProps {
 
 export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }) => {
     const [file, setFile] = useState<File | null>(null);
-    const [category, setCategory] = useState<string>("home-hero");
+    const [category, setCategory] = useState<string>("homepage-core-services");
     const [uploading, setUploading] = useState(false);
     const [progress, setProgress] = useState(0);
     const [error, setError] = useState<string | null>(null);

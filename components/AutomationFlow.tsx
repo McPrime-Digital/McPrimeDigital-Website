@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Landmark, BrainCircuit, GitBranch, ShieldAlert, BookText, UserCheck, Hand, Fingerprint, Globe, Banknote, CheckCircle2, AlertTriangle, Clock3 } from 'lucide-react';
+import { Landmark, BrainCircuit, GitBranch, ShieldAlert, BookText, UserCheck, Hand, Fingerprint, Globe, Banknote, CheckCircle2, AlertTriangle, Clock3, ZoomIn, ZoomOut, Scan } from 'lucide-react';
 
 // Virtual canvas coordinate space (scaled to fit the card, pannable beyond it)
 const SCALE_BASE = 640;
@@ -88,27 +88,56 @@ function nextResult(seq: number): RunResult {
  * dispositions, ledger commit and T+0 settlement — draggable nodes, pannable
  * canvas, and a live execution result readout.
  */
+// Default view: the whole pipeline fits inside the card
+const FIT_ZOOM = 0.65;
+const FIT_PAN = { x: 19, y: 64 };
+const MIN_ZOOM = 0.35;
+const MAX_ZOOM = 1.8;
+
 export default function AutomationFlow() {
     const containerRef = useRef<HTMLDivElement>(null);
-    const [scale, setScale] = useState(1);
+    const [fitScale, setFitScale] = useState(1);
+    const [zoom, setZoom] = useState(FIT_ZOOM);
     const [positions, setPositions] = useState(INITIAL_POS);
-    const [pan, setPan] = useState({ x: -160, y: -20 });
+    const [pan, setPan] = useState(FIT_PAN);
     const [dragging, setDragging] = useState<string | null>(null);
     const [hintVisible, setHintVisible] = useState(true);
     const [runSeq, setRunSeq] = useState(128);
     const [result, setResult] = useState<RunResult | null>(null);
     const dragRef = useRef<{ mode: 'node' | 'pan'; id?: string; startX: number; startY: number; origin: { x: number; y: number } } | null>(null);
+    const pinchRef = useRef<Map<number, { x: number; y: number }>>(new Map());
+    const pinchDistRef = useRef<number | null>(null);
+
+    const scale = fitScale * zoom;
 
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
         const observer = new ResizeObserver(entries => {
             const w = entries[0]?.contentRect.width || SCALE_BASE;
-            setScale(w / SCALE_BASE);
+            setFitScale(w / SCALE_BASE);
         });
         observer.observe(el);
         return () => observer.disconnect();
     }, []);
+
+    // Zoom about the card center so the view stays anchored
+    const zoomTo = (nextZoomRaw: number) => {
+        const el = containerRef.current;
+        if (!el) return;
+        const nextZoom = Math.min(MAX_ZOOM, Math.max(MIN_ZOOM, nextZoomRaw));
+        const s1 = fitScale * zoom;
+        const s2 = fitScale * nextZoom;
+        const cx = el.clientWidth / 2;
+        const cy = el.clientHeight / 2;
+        setPan(p => ({ x: p.x + cx * (1 / s2 - 1 / s1), y: p.y + cy * (1 / s2 - 1 / s1) }));
+        setZoom(nextZoom);
+    };
+
+    const resetView = () => {
+        setZoom(FIT_ZOOM);
+        setPan(FIT_PAN);
+    };
 
     // Execution loop: each cycle produces a verifiable run result
     useEffect(() => {
@@ -133,11 +162,31 @@ export default function AutomationFlow() {
 
     const onCanvasPointerDown = (e: React.PointerEvent) => {
         (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        pinchRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        if (pinchRef.current.size === 2) {
+            const [a, b] = Array.from(pinchRef.current.values());
+            pinchDistRef.current = Math.hypot(a.x - b.x, a.y - b.y);
+            dragRef.current = null; // pinch takes over from pan
+            return;
+        }
         dragRef.current = { mode: 'pan', startX: e.clientX, startY: e.clientY, origin: pan };
         setHintVisible(false);
     };
 
     const onPointerMove = (e: React.PointerEvent) => {
+        if (pinchRef.current.has(e.pointerId)) {
+            pinchRef.current.set(e.pointerId, { x: e.clientX, y: e.clientY });
+        }
+        // Two-finger pinch: zoom
+        if (pinchRef.current.size === 2 && pinchDistRef.current !== null) {
+            const [a, b] = Array.from(pinchRef.current.values());
+            const dist = Math.hypot(a.x - b.x, a.y - b.y);
+            if (dist > 0 && pinchDistRef.current > 0) {
+                zoomTo(zoom * (dist / pinchDistRef.current));
+                pinchDistRef.current = dist;
+            }
+            return;
+        }
         const drag = dragRef.current;
         if (!drag) return;
         const dx = (e.clientX - drag.startX) / scale;
@@ -150,7 +199,9 @@ export default function AutomationFlow() {
         }
     };
 
-    const endDrag = () => {
+    const endDrag = (e?: React.PointerEvent) => {
+        if (e) pinchRef.current.delete(e.pointerId);
+        if (pinchRef.current.size < 2) pinchDistRef.current = null;
         dragRef.current = null;
         setDragging(null);
     };
@@ -313,11 +364,36 @@ export default function AutomationFlow() {
                 </div>
             )}
 
+            {/* Zoom controls */}
+            <div className="absolute bottom-9 left-2.5 z-30 flex flex-col gap-1" onPointerDown={(e) => e.stopPropagation()}>
+                <button
+                    onClick={() => zoomTo(zoom * 1.25)}
+                    aria-label="Zoom in"
+                    className="w-7 h-7 rounded-lg bg-black/60 border border-white/10 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white hover:border-white/25 transition-colors"
+                >
+                    <ZoomIn className="w-3.5 h-3.5" />
+                </button>
+                <button
+                    onClick={() => zoomTo(zoom / 1.25)}
+                    aria-label="Zoom out"
+                    className="w-7 h-7 rounded-lg bg-black/60 border border-white/10 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white hover:border-white/25 transition-colors"
+                >
+                    <ZoomOut className="w-3.5 h-3.5" />
+                </button>
+                <button
+                    onClick={resetView}
+                    aria-label="Fit workflow to view"
+                    className="w-7 h-7 rounded-lg bg-black/60 border border-white/10 backdrop-blur-sm flex items-center justify-center text-white/60 hover:text-white hover:border-white/25 transition-colors"
+                >
+                    <Scan className="w-3.5 h-3.5" />
+                </button>
+            </div>
+
             {/* Interaction hint */}
             {hintVisible && (
                 <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm pointer-events-none">
                     <Hand className="w-3 h-3 text-white/50" />
-                    <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">Drag nodes · Pan canvas</span>
+                    <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">Drag · Pan · Zoom</span>
                 </div>
             )}
 
