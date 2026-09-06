@@ -21,6 +21,10 @@ export default function HeroSketch() {
     const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), springConfig);
     const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [-15, 15]), springConfig);
 
+    // Headline 3D: the lettering tilts toward the cursor, revealing its extruded depth
+    const headRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [10, -10]), { damping: 40, stiffness: 250 });
+    const headRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-13, 13]), { damping: 40, stiffness: 250 });
+
     const handleMouseMove = (e: React.MouseEvent) => {
         const rect = containerRef.current?.getBoundingClientRect();
         if (rect) {
@@ -207,35 +211,52 @@ export default function HeroSketch() {
                 >
                     {/* Headline: Responsive Wrap */}
                     <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        {/* 4D glass lettering: aura -> extruded depth -> glass surface */}
-                        <span className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif">
-                            {/* Aura */}
+                        {/* True 3D lettering: mouse-tilted, Z-extruded, glass surface with light sweep */}
+                        <motion.span
+                            style={{ rotateX: headRotateX, rotateY: headRotateY, transformPerspective: 900, transformStyle: 'preserve-3d' }}
+                            className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif will-change-transform"
+                        >
+                            <style>{`@keyframes heroShine { 0% { background-position: 220% 0; } 55%, 100% { background-position: -120% 0; } }`}</style>
+                            {/* Aura, deep behind the letterforms */}
                             <span
                                 aria-hidden
-                                className="absolute inset-0 !font-serif text-transparent bg-clip-text bg-gradient-to-b from-cyan-200/80 via-white/50 to-blue-400/40 blur-[14px] opacity-70 select-none"
+                                className="absolute inset-0 !font-serif text-transparent bg-clip-text bg-gradient-to-b from-cyan-300/80 via-white/40 to-blue-500/40 blur-[20px] opacity-70 select-none"
+                                style={{ transform: 'translateZ(-70px)' }}
                             >
                                 ARCHITECTS OF
                             </span>
-                            {/* Extruded depth */}
+                            {/* Physical extrusion: stacked Z-layers, darkening into depth */}
+                            {['#475569', '#3d4859', '#353f50', '#2d3747', '#252e3d', '#1e2634', '#171e2a', '#111721', '#0c1018', '#07090e'].map((color, i) => (
+                                <span
+                                    key={i}
+                                    aria-hidden
+                                    className="absolute inset-0 !font-serif select-none"
+                                    style={{ color, transform: `translateZ(${-2.5 * (i + 1)}px)` }}
+                                >
+                                    ARCHITECTS OF
+                                </span>
+                            ))}
+                            {/* Glass surface */}
+                            <span
+                                className="relative !font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100/95 to-slate-400/55"
+                                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)', transform: 'translateZ(2px)' }}
+                            >
+                                ARCHITECTS OF
+                            </span>
+                            {/* Specular light sweep across the glass */}
                             <span
                                 aria-hidden
-                                className="absolute inset-0 !font-serif select-none"
+                                className="absolute inset-0 !font-serif text-transparent bg-clip-text select-none pointer-events-none"
                                 style={{
-                                    color: '#0f172a',
-                                    textShadow: '0 2px 0 #1e293b, 0 4px 0 #16202f, 0 6px 0 #101826, 0 8px 0 #0b111c, 0 10px 24px rgba(0,0,0,0.85), 0 18px 48px rgba(34,211,238,0.18)',
-                                    transform: 'translateY(4px)'
+                                    transform: 'translateZ(4px)',
+                                    backgroundImage: 'linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.9) 50%, transparent 70%)',
+                                    backgroundSize: '250% 100%',
+                                    animation: 'heroShine 5.5s ease-in-out infinite',
                                 }}
                             >
                                 ARCHITECTS OF
                             </span>
-                            {/* Glass surface */}
-                            <span
-                                className="relative !font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100/95 to-slate-400/55"
-                                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.28)' }}
-                            >
-                                ARCHITECTS OF
-                            </span>
-                        </span>
+                        </motion.span>
                         <span className="block !font-serif text-2xl md:text-4xl lg:text-5xl font-bold">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
                                 AI-NATIVE FILM
@@ -249,7 +270,7 @@ export default function HeroSketch() {
                         </span>
                     </h1>
 
-                    <p className="text-gray-300 text-lg md:text-xl max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
+                    <p className="text-gray-300 text-base md:text-lg italic max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
                         From first treatment to final conform, every picture moves through a governed, AI-native pipeline built to broadcast standard — while automation systems carry scheduling, versioning, and delivery in the background. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
                     </p>
                 </motion.div>

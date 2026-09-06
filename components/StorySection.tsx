@@ -98,7 +98,7 @@ export default function StorySection() {
                 </motion.div>
 
                 {/* Desktop Version - Horizontal Accordion Container */}
-                <div className="hidden md:flex w-full max-w-6xl mx-auto h-[600px] items-center justify-center md:px-0 perspective-[800px] overflow-hidden">
+                <div className="hidden md:flex w-full max-w-6xl mx-auto h-[500px] items-center justify-center md:px-0 overflow-hidden">
                     <WhyChooseUsVault />
                 </div>
 
@@ -111,13 +111,13 @@ export default function StorySection() {
     );
 }
 
-// --- SUB-COMPONENT: Replicated Vault Logic ---
+// --- SUB-COMPONENT: Expanding Vault (enterprise spec) ---
 function WhyChooseUsVault() {
     // Default to index 2 open
-    const [activeIndex, setActiveIndex] = useState<number | null>(2);
+    const [activeIndex, setActiveIndex] = useState<number>(2);
 
     return (
-        <div className="flex gap-4 h-full w-full px-4 overflow-visible">
+        <div className="flex gap-3 h-full w-full">
             {features.map((item, i) => {
                 const isActive = activeIndex === i;
 
@@ -126,105 +126,69 @@ function WhyChooseUsVault() {
                         key={item.id}
                         onHoverStart={() => setActiveIndex(i)}
                         onClick={() => setActiveIndex(i)}
-                        className="relative h-full cursor-pointer group rounded-3xl overflow-hidden min-w-[60px] md:min-w-[80px] transition-all duration-700 ease-[cubic-bezier(0.25,1,0.5,1)]"
-                        animate={{
-                            flex: isActive ? 2 : 1, // More dramatic size difference
-                            y: isActive ? -10 : 0, // Lift active card
-                        }}
+                        animate={{ flexGrow: isActive ? 3.4 : 1 }}
+                        transition={{ duration: 0.55, ease: [0.32, 0.72, 0, 1] }}
+                        style={{ flexBasis: 0 }}
+                        className={`relative h-full min-w-[68px] cursor-pointer overflow-hidden rounded-2xl border transition-[border-color,box-shadow,background-color] duration-500
+                            ${isActive
+                                ? 'border-[#2D6BFF]/40 bg-gradient-to-b from-[#0E1526] to-[#080B12] shadow-[0_24px_60px_-20px_rgba(45,107,255,0.35)]'
+                                : 'border-white/[0.08] bg-[#0A0E16] hover:border-white/20 hover:bg-[#0C1019]'
+                            }`}
                     >
-                        {/* Continuous Floating Animation Wrapper */}
-                        <motion.div
-                            className="w-full h-full relative"
-                            animate={{
-                                y: [0, -8, 0],
-                            }}
-                            transition={{
-                                duration: 4 + i, // Staggered float duration
-                                repeat: Infinity,
-                                ease: "easeInOut",
-                                delay: i * 0.2
-                            }}
-                        >
-                            {/* --- GLASS SURFACE --- */}
-                            {/* Removed rigid border, added gradient glow via shadow and internal gradient */}
-                            <div className={`absolute inset-0 rounded-3xl backdrop-blur-xl transition-all duration-500
-                                ${isActive
-                                    ? 'bg-gradient-to-b from-white/10 to-transparent shadow-[0_0_50px_-10px_rgba(45,107,255,0.3)]'
-                                    : 'bg-white/5 hover:bg-white/10'
-                                }`
-                            }>
-                                {/* Subtle Gradient Border (Top/Left light source) */}
-                                <div className="absolute inset-0 rounded-3xl border border-white/10 opacity-50 pointer-events-none" />
-                                <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-60 pointer-events-none" />
-                            </div>
+                        {/* Top light edge */}
+                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
 
-                            {/* --- CONTENT --- */}
-                            <div className="relative z-10 w-full h-full flex flex-col p-2 md:p-4">
-
-                                {/* Top Image Area (Only visible on open) */}
-                                <div className="relative w-full overflow-hidden rounded-2xl flex-shrink-0 transition-all duration-500"
-                                    style={{ height: isActive ? "45%" : "0%", opacity: isActive ? 1 : 0 }}
+                        {/* Collapsed state: number / vertical title / icon */}
+                        {!isActive && (
+                            <div className="absolute inset-0 flex flex-col items-center justify-between py-6">
+                                <span className="text-[11px] font-mono text-white/30 tracking-widest">{item.id}</span>
+                                <h3
+                                    className="text-white/45 text-[11px] font-bold tracking-[0.28em] uppercase whitespace-nowrap"
+                                    style={{ writingMode: 'vertical-rl' }}
                                 >
-                                    {isActive && (
-                                        <motion.div
-                                            initial={{ opacity: 0, scale: 1.1 }}
-                                            animate={{ opacity: 1, scale: 1 }}
-                                            className="w-full h-full relative overflow-hidden rounded-2xl bg-black/20"
-                                        >
-                                            {/* Live & Free - Animated Gradient Orb */}
-                                            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-[#2D6BFF]/20" />
-                                            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-48 h-48 bg-[#2D6BFF]/30 rounded-full blur-[60px] animate-pulse" />
-
-                                            <div className="relative z-10 w-full h-full flex items-center justify-center">
-                                                <div className="relative group-hover:scale-110 transition-transform duration-700">
-                                                    <div className="absolute inset-0 bg-[#2D6BFF]/40 blur-xl rounded-full" />
-                                                    <item.icon className="relative z-10 w-16 h-16 text-white drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]" />
-                                                </div>
-                                            </div>
-                                        </motion.div>
-                                    )}
+                                    {item.title}
+                                </h3>
+                                <div className="w-9 h-9 rounded-lg bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                                    <item.icon className="w-4 h-4 text-white/50" />
                                 </div>
+                            </div>
+                        )}
 
-                                {/* Text Content Area */}
-                                <div className="flex-1 flex flex-col justify-end relative overflow-hidden mt-4">
-                                    {/* ID Number - Floating Background Element */}
-                                    <div className={`absolute top-0 right-0 text-6xl font-black transition-all duration-500 select-none pointer-events-none
-                                        ${isActive ? 'text-white/10 translate-y-0 rotate-0' : 'text-white/5 translate-y-8 rotate-90 origin-bottom-right'}`}>
-                                        {item.id}
+                        {/* Expanded state */}
+                        <AnimatePresence>
+                            {isActive && (
+                                <motion.div
+                                    initial={{ opacity: 0 }}
+                                    animate={{ opacity: 1 }}
+                                    exit={{ opacity: 0 }}
+                                    transition={{ duration: 0.3, delay: 0.18 }}
+                                    className="absolute inset-0 flex flex-col p-8 md:p-10"
+                                >
+                                    {/* Accent atmosphere */}
+                                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2D6BFF]/10 rounded-full blur-[80px] pointer-events-none" />
+
+                                    <div className="flex items-start justify-between mb-auto relative z-10" style={{ minWidth: 300 }}>
+                                        <div className="w-12 h-12 rounded-xl bg-[#2D6BFF]/15 border border-[#2D6BFF]/30 flex items-center justify-center shadow-[0_0_24px_rgba(45,107,255,0.2)]">
+                                            <item.icon className="w-6 h-6 text-[#2D6BFF]" />
+                                        </div>
+                                        <span className="text-6xl font-black text-white/[0.07] select-none leading-none pointer-events-none">{item.id}</span>
                                     </div>
 
-                                    {/* Collapsed Title - Vertical */}
-                                    {!isActive && (
-                                        <div className="absolute inset-0 flex items-center justify-center">
-                                            <h3 className="text-white/50 text-sm font-bold tracking-[0.2em] uppercase whitespace-nowrap -rotate-90">
-                                                {item.title.split(' ')[0]}...
-                                            </h3>
-                                        </div>
-                                    )}
-
-                                    {/* Expanded Content */}
-                                    <AnimatePresence>
-                                        {isActive && (
-                                            <motion.div
-                                                initial={{ opacity: 0, y: 20 }}
-                                                animate={{ opacity: 1, y: 0 }}
-                                                exit={{ opacity: 0, y: 10 }}
-                                                transition={{ delay: 0.1 }}
-                                                className="relative z-10 space-y-4 p-2"
-                                            >
-                                                <h3 className="text-xl md:text-2xl font-bold text-white leading-tight">
-                                                    {item.title}
-                                                </h3>
-                                                <div className="w-12 h-1 bg-[#2D6BFF]/80 rounded-full" />
-                                                <p className="text-gray-300 text-sm md:text-base leading-relaxed line-clamp-4 md:line-clamp-none">
-                                                    {item.content}
-                                                </p>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
-                                </div>
-                            </div>
-                        </motion.div>
+                                    <div className="space-y-5 relative z-10" style={{ minWidth: 300 }}>
+                                        <span className="text-[10px] font-mono tracking-[0.28em] text-[#2D6BFF]/80 uppercase block">
+                                            {item.id} / 0{features.length}
+                                        </span>
+                                        <h3 className="text-2xl md:text-[1.7rem] font-bold text-white leading-tight max-w-md">
+                                            {item.title}
+                                        </h3>
+                                        <div className="w-12 h-1 bg-[#2D6BFF] rounded-full" />
+                                        <p className="text-gray-400 text-[15px] leading-relaxed max-w-lg">
+                                            {item.content}
+                                        </p>
+                                    </div>
+                                </motion.div>
+                            )}
+                        </AnimatePresence>
                     </motion.div>
                 );
             })}
@@ -261,13 +225,13 @@ function WhyChooseUsMobileCarousel() {
                                 className="absolute h-[90%] w-[75%] max-w-[300px] cursor-pointer rounded-3xl overflow-hidden"
                                 initial={false}
                                 animate={{
-                                    x: offset * 80, // Horizontal shift for side panels
-                                    scale: isCenter ? 1 : 0.85,
+                                    x: offset * 72, // Horizontal shift for side panels
+                                    scale: isCenter ? 1 : 0.88,
                                     zIndex: 10 - Math.abs(offset),
-                                    opacity: Math.abs(offset) >= 2 ? 0 : isCenter ? 1 : 0.6,
-                                    rotateY: offset * -15, // Light 3D angle
+                                    opacity: Math.abs(offset) >= 2 ? 0 : isCenter ? 1 : 0.5,
+                                    rotateY: offset * -8, // Restrained 3D angle
                                 }}
-                                transition={{ type: "spring", stiffness: 300, damping: 30 }}
+                                transition={{ type: "spring", stiffness: 260, damping: 32 }}
                                 onClick={() => setActiveIndex(i)}
                                 drag="x"
                                 dragConstraints={{ left: 0, right: 0 }}
@@ -277,11 +241,11 @@ function WhyChooseUsMobileCarousel() {
                                 {/* Glass Surface Details */}
                                 <div className={`absolute inset-0 rounded-3xl backdrop-blur-xl transition-all duration-500
                                     ${isCenter
-                                        ? 'bg-gradient-to-b from-[#2D6BFF]/20 to-black/80 shadow-[0_0_40px_-10px_rgba(45,107,255,0.4)] border border-white/20'
-                                        : 'bg-white/5 border border-white/5'
+                                        ? 'bg-gradient-to-b from-[#0E1526] to-[#080B12] shadow-[0_24px_60px_-20px_rgba(45,107,255,0.4)] border border-[#2D6BFF]/40'
+                                        : 'bg-[#0A0E16] border border-white/[0.08]'
                                     }`
                                 }>
-                                    <div className="absolute inset-0 rounded-3xl bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.03] pointer-events-none" />
+                                    <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
                                 </div>
 
                                 {/* Inner Content */}

@@ -31,7 +31,7 @@ export default function FilmmakingHero() {
                 className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10"
             >
                 <div className="px-5 py-1.5 rounded-full border border-white/15 bg-black/30 text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase backdrop-blur-sm whitespace-nowrap">
-                    Production as Infrastructure
+                    Genreline as Infrastructure
                 </div>
             </motion.div>
 
@@ -43,8 +43,9 @@ export default function FilmmakingHero() {
                     transition={{ duration: 1, ease: 'easeOut' }}
                     className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6"
                 >
-                    AI-NATIVE FILM<br />
-                    TV, COMMERCIAL,<br />
+                    AI-NATIVE<br />
+                    FILM, TV<br />
+                    COMMERCIAL<br />
                     MUSIC VIDEO
                 </motion.h1>
 
@@ -62,7 +63,7 @@ export default function FilmmakingHero() {
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.3, duration: 1, ease: 'easeOut' }}
-                        className="text-lg md:text-xl text-gray-300 font-light leading-relaxed max-w-lg"
+                        className="text-lg md:text-xl text-gray-300 font-light italic leading-relaxed max-w-lg"
                     >
                         An AI-native production system delivering broadcast-grade film without physical shoot constraints — compressed timelines, full creative control.
                     </motion.p>

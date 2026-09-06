@@ -123,20 +123,16 @@ export default function SelectedEngagementsHorizontal() {
                 </motion.div>
             </div>
 
-            {/* Horizontal Continuous Marquee */}
-            <div className="relative w-full flex overflow-hidden group">
+            {/* Horizontal Continuous Marquee — pauses on hover for reading */}
+            <div className="relative w-full flex overflow-hidden group/marquee">
+                <style>{`@keyframes engagementsMarquee { from { transform: translateX(-50%); } to { transform: translateX(0); } }`}</style>
                 {/* Left/Right Fade Masks */}
                 <div className="absolute left-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-r from-[#050505] to-transparent z-10 pointer-events-none" />
                 <div className="absolute right-0 top-0 bottom-0 w-16 md:w-32 bg-gradient-to-l from-[#050505] to-transparent z-10 pointer-events-none" />
 
-                <motion.div
-                    className="flex gap-6 px-4"
-                    animate={{ x: ["-50%", "0%"] }}
-                    transition={{
-                        ease: "linear",
-                        duration: 40,
-                        repeat: Infinity,
-                    }}
+                <div
+                    className="flex gap-6 px-4 py-3 will-change-transform group-hover/marquee:[animation-play-state:paused]"
+                    style={{ animation: 'engagementsMarquee 52s linear infinite' }}
                 >
                     {doubledEngagements.map((item, index) => (
                         <div
@@ -144,33 +140,37 @@ export default function SelectedEngagementsHorizontal() {
                             onMouseEnter={() => setTouchedCard(index)}
                             onMouseLeave={() => setTouchedCard(null)}
                             onClick={() => setTouchedCard(touchedCard === index ? null : index)} // Toggle on Touch
-                            className={`w-[350px] md:w-[450px] flex-shrink-0 relative rounded-2xl border bg-[#0a0a0a]/80 backdrop-blur-xl p-8 transition-all duration-500 overflow-hidden flex flex-col cursor-pointer ${touchedCard === index ? 'border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] bg-[#111] scale-105 z-20' : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] hover:bg-[#111] hover:scale-105 z-10'}`}
+                            className={`w-[350px] md:w-[450px] flex-shrink-0 relative rounded-2xl border bg-[#0a0a0a]/90 p-8 transition-[border-color,box-shadow,transform,background-color] duration-500 overflow-hidden flex flex-col cursor-pointer ${touchedCard === index ? 'border-white/25 shadow-[0_24px_48px_-16px_rgba(0,0,0,0.85)] bg-[#101014] -translate-y-1.5 z-20' : 'border-white/10 hover:border-white/25 hover:shadow-[0_24px_48px_-16px_rgba(0,0,0,0.85)] hover:bg-[#101014] hover:-translate-y-1.5 z-10'}`}
                         >
+                            {/* Top light edge */}
+                            <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
                             {/* Card Hover Glow (Active on Touch) */}
-                            <div className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${item.color} rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${touchedCard === index ? 'opacity-60' : 'opacity-20 hover:opacity-60'}`} />
+                            <div className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${item.color} rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${touchedCard === index ? 'opacity-50' : 'opacity-20'}`} />
 
-                            <div className="mb-6 flex items-center justify-between relative z-10">
-                                <span className="text-xs font-bold tracking-widest uppercase text-gray-400 bg-white/5 border border-white/5 px-3 py-1 rounded-full">{item.client}</span>
-                                <item.icon className={`w-6 h-6 ${item.iconColor} drop-shadow-[0_0_10px_currentColor]`} />
+                            <div className="mb-6 flex items-center justify-between gap-3 relative z-10">
+                                <span className="text-[11px] font-bold tracking-widest uppercase text-gray-400 bg-white/5 border border-white/10 px-3 py-1 rounded-full truncate">{item.client}</span>
+                                <div className="w-10 h-10 shrink-0 rounded-xl bg-white/[0.04] border border-white/10 flex items-center justify-center">
+                                    <item.icon className={`w-5 h-5 ${item.iconColor}`} />
+                                </div>
                             </div>
 
-                            <h3 className="text-xl font-bold mb-4 text-white leading-tight uppercase tracking-wide relative z-10">{item.title}</h3>
+                            <h3 className="text-xl font-bold mb-4 text-white leading-tight uppercase tracking-wide relative z-10 min-h-[3.5rem]">{item.title}</h3>
 
                             <p className="text-gray-400 text-sm leading-relaxed mb-8 flex-grow relative z-10 font-light">
                                 {item.description}
                             </p>
 
-                            <div className="space-y-3 relative z-10 mt-auto border-t border-white/5 pt-6">
+                            <div className="space-y-3 relative z-10 mt-auto border-t border-white/10 pt-6">
                                 {item.points.map((point, idx) => (
                                     <div key={idx} className="flex items-start gap-3 text-sm text-gray-300">
-                                        <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${item.iconColor} shadow-[0_0_8px_currentColor] flex-shrink-0`} />
+                                        <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-current ${item.iconColor} shadow-[0_0_8px_currentColor] flex-shrink-0`} />
                                         <span className="font-medium tracking-wide">{point}</span>
                                     </div>
                                 ))}
                             </div>
                         </div>
                     ))}
-                </motion.div>
+                </div>
             </div>
         </section>
     );

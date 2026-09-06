@@ -1,11 +1,12 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { Landmark, BrainCircuit, GitBranch, ShieldAlert, BookText, UserCheck, Hand } from 'lucide-react';
+import { Landmark, BrainCircuit, GitBranch, ShieldAlert, BookText, UserCheck, Hand, Fingerprint, Globe, Banknote, CheckCircle2, AlertTriangle, Clock3 } from 'lucide-react';
 
-// Virtual canvas coordinate space (scaled to fit the card)
-const CANVAS_W = 640;
-const CANVAS_H = 340;
+// Virtual canvas coordinate space (scaled to fit the card, pannable beyond it)
+const SCALE_BASE = 640;
+const SVG_W = 1100;
+const SVG_H = 460;
 const NODE_W = 138;
 const NODE_H = 56;
 
@@ -14,61 +15,112 @@ interface NodeDef {
     name: string;
     sub: string;
     icon: typeof Landmark;
-    accent: string;   // tailwind text color for icon
-    tile: string;     // icon tile gradient
-    glow: string;     // ground glow rgba
+    tile: string;
+    glow: string;
 }
 
 const NODE_DEFS: NodeDef[] = [
-    { id: 'intake', name: 'Transaction Intake', sub: 'core-banking · webhook', icon: Landmark, accent: 'text-amber-300', tile: 'from-amber-500/80 to-amber-700/80', glow: 'rgba(251,191,36,0.25)' },
-    { id: 'fraud', name: 'AI Fraud Scoring', sub: 'model · risk-v4', icon: BrainCircuit, accent: 'text-pink-300', tile: 'from-pink-500/80 to-fuchsia-700/80', glow: 'rgba(244,114,182,0.25)' },
-    { id: 'gate', name: 'Risk Gate', sub: 'if score ≥ 0.85', icon: GitBranch, accent: 'text-purple-300', tile: 'from-purple-500/80 to-violet-700/80', glow: 'rgba(192,132,252,0.25)' },
-    { id: 'freeze', name: 'Freeze & Escalate', sub: 'compliance queue', icon: ShieldAlert, accent: 'text-red-300', tile: 'from-red-500/80 to-rose-700/80', glow: 'rgba(248,113,113,0.25)' },
-    { id: 'ledger', name: 'Post to Ledger', sub: 'double-entry commit', icon: BookText, accent: 'text-emerald-300', tile: 'from-emerald-500/80 to-teal-700/80', glow: 'rgba(52,211,153,0.25)' },
-    { id: 'review', name: 'Manual Review', sub: 'ops · four-eyes check', icon: UserCheck, accent: 'text-sky-300', tile: 'from-sky-500/80 to-blue-700/80', glow: 'rgba(56,189,248,0.25)' },
+    { id: 'intake', name: 'Transaction Intake', sub: 'core-banking · webhook', icon: Landmark, tile: 'from-amber-500/80 to-amber-700/80', glow: 'rgba(251,191,36,0.25)' },
+    { id: 'kyc', name: 'KYC Verification', sub: 'identity · doc match', icon: Fingerprint, tile: 'from-orange-500/80 to-amber-700/80', glow: 'rgba(251,146,60,0.25)' },
+    { id: 'sanctions', name: 'Sanctions Screen', sub: 'OFAC · AML watchlists', icon: Globe, tile: 'from-yellow-500/80 to-orange-700/80', glow: 'rgba(250,204,21,0.22)' },
+    { id: 'fraud', name: 'AI Fraud Scoring', sub: 'model · risk-v4', icon: BrainCircuit, tile: 'from-pink-500/80 to-fuchsia-700/80', glow: 'rgba(244,114,182,0.25)' },
+    { id: 'gate', name: 'Risk Gate', sub: 'if score ≥ 0.85', icon: GitBranch, tile: 'from-purple-500/80 to-violet-700/80', glow: 'rgba(192,132,252,0.25)' },
+    { id: 'freeze', name: 'Freeze & Escalate', sub: 'compliance queue', icon: ShieldAlert, tile: 'from-red-500/80 to-rose-700/80', glow: 'rgba(248,113,113,0.25)' },
+    { id: 'ledger', name: 'Post to Ledger', sub: 'double-entry commit', icon: BookText, tile: 'from-emerald-500/80 to-teal-700/80', glow: 'rgba(52,211,153,0.25)' },
+    { id: 'review', name: 'Manual Review', sub: 'ops · four-eyes check', icon: UserCheck, tile: 'from-sky-500/80 to-blue-700/80', glow: 'rgba(56,189,248,0.25)' },
+    { id: 'settle', name: 'Settlement', sub: 'T+0 · core sync', icon: Banknote, tile: 'from-emerald-400/80 to-green-700/80', glow: 'rgba(52,211,153,0.3)' },
 ];
 
 const EDGES: { from: string; to: string; label?: string; color: string }[] = [
-    { from: 'intake', to: 'fraud', color: '#fbbf24' },
-    { from: 'fraud', to: 'gate', color: '#f472b6' },
+    { from: 'intake', to: 'kyc', label: 'KYC', color: '#fb923c' },
+    { from: 'intake', to: 'sanctions', label: 'AML', color: '#facc15' },
+    { from: 'kyc', to: 'fraud', color: '#f472b6' },
+    { from: 'sanctions', to: 'fraud', color: '#f472b6' },
+    { from: 'fraud', to: 'gate', label: 'SCORE', color: '#c084fc' },
     { from: 'gate', to: 'freeze', label: 'HIGH', color: '#f87171' },
     { from: 'gate', to: 'ledger', label: 'CLEAR', color: '#34d399' },
     { from: 'gate', to: 'review', label: 'REVIEW', color: '#38bdf8' },
+    { from: 'ledger', to: 'settle', label: 'T+0', color: '#34d399' },
 ];
 
 const INITIAL_POS: Record<string, { x: number; y: number }> = {
-    intake: { x: 16, y: 142 },
-    fraud: { x: 186, y: 142 },
-    gate: { x: 356, y: 142 },
-    freeze: { x: 494, y: 34 },
-    ledger: { x: 494, y: 142 },
-    review: { x: 494, y: 250 },
+    intake: { x: 14, y: 172 },
+    kyc: { x: 170, y: 88 },
+    sanctions: { x: 170, y: 256 },
+    fraud: { x: 326, y: 172 },
+    gate: { x: 482, y: 172 },
+    freeze: { x: 638, y: 56 },
+    ledger: { x: 638, y: 172 },
+    review: { x: 638, y: 288 },
+    settle: { x: 794, y: 172 },
 };
 
+interface RunResult {
+    id: string;
+    score: string;
+    disposition: 'CLEAR' | 'HIGH' | 'REVIEW';
+    detail: string;
+    elapsed: string;
+    audit: string;
+}
+
+function nextResult(seq: number): RunResult {
+    const roll = Math.random();
+    const score = roll < 0.72 ? Math.random() * 0.5 : roll < 0.88 ? 0.6 + Math.random() * 0.24 : 0.86 + Math.random() * 0.13;
+    const disposition = score >= 0.85 ? 'HIGH' : score >= 0.6 ? 'REVIEW' : 'CLEAR';
+    const detail =
+        disposition === 'CLEAR' ? `ledger L-${88300 + seq} · settled T+0`
+        : disposition === 'REVIEW' ? `queued · four-eyes pending`
+        : `case C-${2200 + seq} opened · funds held`;
+    return {
+        id: `TG-2026-${String(84000 + seq).padStart(6, '0')}`,
+        score: score.toFixed(2),
+        disposition,
+        detail,
+        elapsed: (0.9 + Math.random() * 0.9).toFixed(2),
+        audit: Math.random().toString(16).slice(2, 8),
+    };
+}
+
 /**
- * An interactive n8n-style workflow: a banking transaction pipeline whose
- * nodes can be dragged (mouse or touch) and whose canvas pans, with live
- * data flow along the connectors.
+ * An interactive n8n-style banking workflow (Transaction-Guard): KYC and
+ * sanctions verification, AI fraud scoring, a risk gate with three governed
+ * dispositions, ledger commit and T+0 settlement — draggable nodes, pannable
+ * canvas, and a live execution result readout.
  */
 export default function AutomationFlow() {
     const containerRef = useRef<HTMLDivElement>(null);
     const [scale, setScale] = useState(1);
     const [positions, setPositions] = useState(INITIAL_POS);
-    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [pan, setPan] = useState({ x: -160, y: -20 });
     const [dragging, setDragging] = useState<string | null>(null);
     const [hintVisible, setHintVisible] = useState(true);
+    const [runSeq, setRunSeq] = useState(128);
+    const [result, setResult] = useState<RunResult | null>(null);
     const dragRef = useRef<{ mode: 'node' | 'pan'; id?: string; startX: number; startY: number; origin: { x: number; y: number } } | null>(null);
 
-    // Fit the virtual canvas to the card
     useEffect(() => {
         const el = containerRef.current;
         if (!el) return;
         const observer = new ResizeObserver(entries => {
-            const w = entries[0]?.contentRect.width || CANVAS_W;
-            setScale(w / CANVAS_W);
+            const w = entries[0]?.contentRect.width || SCALE_BASE;
+            setScale(w / SCALE_BASE);
         });
         observer.observe(el);
         return () => observer.disconnect();
+    }, []);
+
+    // Execution loop: each cycle produces a verifiable run result
+    useEffect(() => {
+        setResult(nextResult(128));
+        const interval = setInterval(() => {
+            setRunSeq(seq => {
+                const next = seq + 1;
+                setResult(nextResult(next));
+                return next;
+            });
+        }, 4200);
+        return () => clearInterval(interval);
     }, []);
 
     const onNodePointerDown = (e: React.PointerEvent, id: string) => {
@@ -108,6 +160,14 @@ export default function AutomationFlow() {
         return { x: p.x + (side === 'out' ? NODE_W : 0), y: p.y + NODE_H / 2 };
     };
 
+    const dispositionStyles = {
+        CLEAR: { color: 'text-emerald-300', badge: 'border-emerald-400/40 bg-emerald-400/10 text-emerald-300', icon: CheckCircle2, label: 'SETTLED' },
+        REVIEW: { color: 'text-sky-300', badge: 'border-sky-400/40 bg-sky-400/10 text-sky-300', icon: Clock3, label: 'PENDING' },
+        HIGH: { color: 'text-red-300', badge: 'border-red-400/40 bg-red-400/10 text-red-300', icon: AlertTriangle, label: 'FROZEN' },
+    } as const;
+
+    const ds = result ? dispositionStyles[result.disposition] : null;
+
     return (
         <div
             ref={containerRef}
@@ -127,7 +187,6 @@ export default function AutomationFlow() {
                     backgroundPosition: `${pan.x * scale}px ${pan.y * scale}px`,
                 }}
             />
-            {/* Depth vignette */}
             <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.65)_100%)]" />
 
             {/* Header strip */}
@@ -145,10 +204,9 @@ export default function AutomationFlow() {
             {/* Scaled virtual canvas */}
             <div
                 className="absolute top-0 left-0 origin-top-left"
-                style={{ transform: `scale(${scale}) translate(${pan.x}px, ${pan.y}px)`, width: CANVAS_W, height: CANVAS_H }}
+                style={{ transform: `scale(${scale}) translate(${pan.x}px, ${pan.y}px)`, width: SVG_W, height: SVG_H }}
             >
-                {/* Connectors */}
-                <svg width={CANVAS_W} height={CANVAS_H} className="absolute top-0 left-0 overflow-visible pointer-events-none">
+                <svg width={SVG_W} height={SVG_H} className="absolute top-0 left-0 overflow-visible pointer-events-none">
                     <style>{`@keyframes af-flow { to { stroke-dashoffset: -24; } }`}</style>
                     {EDGES.map((edge) => {
                         const a = port(edge.from, 'out');
@@ -179,7 +237,6 @@ export default function AutomationFlow() {
                     })}
                 </svg>
 
-                {/* Nodes */}
                 {NODE_DEFS.map((node) => {
                     const p = positions[node.id];
                     const isDragging = dragging === node.id;
@@ -198,12 +255,10 @@ export default function AutomationFlow() {
                                 zIndex: isDragging ? 30 : 10,
                             }}
                         >
-                            {/* Ground glow — volume under the node */}
                             <div
                                 className="absolute -inset-x-2 top-1/2 bottom-[-14px] rounded-[50%] blur-md pointer-events-none"
                                 style={{ background: node.glow, opacity: isDragging ? 0.8 : 0.4 }}
                             />
-                            {/* Body */}
                             <div
                                 className="relative w-full h-full rounded-xl border border-white/10 bg-gradient-to-b from-[#151B29] to-[#0B0F18] flex items-center gap-2.5 px-2.5"
                                 style={{
@@ -212,7 +267,6 @@ export default function AutomationFlow() {
                                         : '0 12px 22px -10px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.09)',
                                 }}
                             >
-                                {/* Icon tile */}
                                 <div className={`w-9 h-9 shrink-0 rounded-lg bg-gradient-to-br ${node.tile} border border-white/15 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_8px_rgba(0,0,0,0.5)]`}>
                                     <node.icon className="w-[18px] h-[18px] text-white drop-shadow" />
                                 </div>
@@ -220,7 +274,6 @@ export default function AutomationFlow() {
                                     <p className="text-[10px] font-bold text-white leading-tight truncate">{node.name}</p>
                                     <p className="text-[8px] font-mono text-white/40 leading-tight truncate">{node.sub}</p>
                                 </div>
-                                {/* Ports */}
                                 <span className="absolute -left-[5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#0B0F18] border border-white/30" />
                                 <span className="absolute -right-[5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#0B0F18] border border-white/30" />
                             </div>
@@ -229,9 +282,40 @@ export default function AutomationFlow() {
                 })}
             </div>
 
+            {/* Execution result readout */}
+            {result && ds && (
+                <div className="absolute bottom-9 right-2.5 z-20 w-[186px] md:w-[210px] rounded-xl border border-white/10 bg-black/70 backdrop-blur-md shadow-[0_16px_32px_-12px_rgba(0,0,0,0.9)] pointer-events-none overflow-hidden">
+                    <div className="flex items-center justify-between px-3 py-1.5 border-b border-white/5">
+                        <span className="text-[8px] font-mono tracking-[0.18em] text-white/45 uppercase">Execution Result</span>
+                        <span className={`flex items-center gap-1 px-1.5 py-0.5 rounded-full border text-[7px] font-mono tracking-widest uppercase ${ds.badge}`}>
+                            <ds.icon className="w-2.5 h-2.5" />
+                            {ds.label}
+                        </span>
+                    </div>
+                    <div className="px-3 py-2 space-y-1 font-mono text-[8px] md:text-[9px] leading-relaxed">
+                        <div className="flex justify-between gap-2">
+                            <span className="text-white/35">run</span>
+                            <span className="text-white/80 tabular-nums truncate">{result.id}</span>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                            <span className="text-white/35">risk</span>
+                            <span className={ds.color}>{result.score} → {result.disposition}</span>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                            <span className="text-white/35">action</span>
+                            <span className="text-white/70 truncate">{result.detail}</span>
+                        </div>
+                        <div className="flex justify-between gap-2">
+                            <span className="text-white/35">audit</span>
+                            <span className="text-white/60 tabular-nums">{result.elapsed}s · #{result.audit}</span>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             {/* Interaction hint */}
             {hintVisible && (
-                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm pointer-events-none">
+                <div className="absolute bottom-9 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm pointer-events-none">
                     <Hand className="w-3 h-3 text-white/50" />
                     <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">Drag nodes · Pan canvas</span>
                 </div>
@@ -240,7 +324,7 @@ export default function AutomationFlow() {
             {/* Compliance strip */}
             <div className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-4 py-1.5 border-t border-white/5 bg-black/40 backdrop-blur-sm pointer-events-none">
                 <span className="text-[8px] md:text-[9px] font-mono tracking-[0.15em] text-white/35 uppercase">PCI-DSS Scoped · SOC 2 Type II</span>
-                <span className="text-[8px] md:text-[9px] font-mono tracking-[0.15em] text-white/50 uppercase tabular-nums">4,128 Executions Today</span>
+                <span className="text-[8px] md:text-[9px] font-mono tracking-[0.15em] text-white/50 uppercase tabular-nums">{(4000 + runSeq).toLocaleString()} Executions Today</span>
             </div>
         </div>
     );
