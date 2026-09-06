@@ -168,8 +168,8 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                         >
                             {/* Top frame marking */}
                             <div className="flex items-center justify-between px-4 h-7 bg-[#0B0B0E] border-b border-black text-[8px] md:text-[9px] font-mono tracking-[0.25em] text-white/35 uppercase select-none">
-                                <span>MCPD · 35MM · KODAK 5219</span>
-                                <span className="tabular-nums">REEL {String(index! + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span>
+                                <span className="truncate">McPrime Digital · AI Brand Ambassador</span>
+                                <span className="tabular-nums shrink-0">{String(index! + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span>
                             </div>
 
                             <div className="flex items-stretch">
@@ -246,7 +246,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                             {/* Bottom frame marking */}
                             <div className="flex items-center justify-between px-4 h-7 bg-[#0B0B0E] border-t border-black text-[8px] md:text-[9px] font-mono tracking-[0.25em] text-white/35 uppercase select-none">
                                 <span className="truncate max-w-[60%]">{current.title}</span>
-                                <span>SCENE 0{index! + 1} · TAKE 01</span>
+                                <span className="tabular-nums shrink-0">{duration > 0 ? `Runtime ${formatTime(duration)}` : ''}</span>
                             </div>
                         </motion.div>
                     </div>

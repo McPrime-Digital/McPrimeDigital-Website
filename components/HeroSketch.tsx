@@ -21,10 +21,6 @@ export default function HeroSketch() {
     const x = useSpring(useTransform(mouseX, [-0.5, 0.5], [-15, 15]), springConfig);
     const y = useSpring(useTransform(mouseY, [-0.5, 0.5], [-15, 15]), springConfig);
 
-    // Headline: upright at rest, subtle lean toward the cursor
-    const headRotateX = useSpring(useTransform(mouseY, [-0.5, 0.5], [5, -5]), { damping: 45, stiffness: 220 });
-    const headRotateY = useSpring(useTransform(mouseX, [-0.5, 0.5], [-6, 6]), { damping: 45, stiffness: 220 });
-
 
     const handleMouseMove = (e: React.MouseEvent) => {
         const rect = containerRef.current?.getBoundingClientRect();
@@ -212,35 +208,39 @@ export default function HeroSketch() {
                 >
                     {/* Headline: Responsive Wrap */}
                     <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        {/* 3D lettering: upright, Z-extruded, subtly reactive to the cursor */}
-                        <motion.span
-                            style={{ rotateX: headRotateX, rotateY: headRotateY, transformPerspective: 800, transformStyle: 'preserve-3d' }}
-                            className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif"
-                        >
+                        {/* 3D lettering: perfectly straight, depth built as a straight-down extrusion */}
+                        <span className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif">
                             <style>{`@keyframes heroShine { 0% { background-position: 220% 0; } 55%, 100% { background-position: -120% 0; } }`}</style>
-                            {/* Aura, deep behind the letterforms */}
+                            {/* Aura behind the letterforms */}
                             <span
                                 aria-hidden
-                                className="absolute inset-0 !font-serif text-transparent bg-clip-text bg-gradient-to-b from-cyan-300/80 via-white/40 to-blue-500/40 blur-[20px] opacity-70 select-none"
-                                style={{ transform: 'translateZ(-70px)' }}
+                                className="absolute inset-0 !font-serif text-transparent bg-clip-text bg-gradient-to-b from-cyan-300/70 via-white/35 to-blue-500/35 blur-[18px] opacity-70 select-none"
                             >
                                 ARCHITECTS OF
                             </span>
-                            {/* Physical extrusion: stacked Z-layers, darkening into depth */}
-                            {['#5a6b81', '#4d5c70', '#475569', '#3d4859', '#353f50', '#2d3747', '#252e3d', '#1e2634', '#171e2a', '#111721', '#0c1018', '#090d14', '#07090e', '#04060a'].map((color, i) => (
+                            {/* Extrusion: stacked layers stepping straight down, darkening into depth */}
+                            {['#4d5c70', '#435063', '#3a4656', '#313c4a', '#28323f', '#202835', '#19202b', '#131922', '#0e131a', '#0a0d13'].map((color, i) => (
                                 <span
                                     key={i}
                                     aria-hidden
                                     className="absolute inset-0 !font-serif select-none"
-                                    style={{ color, transform: `translateZ(${-3.4 * (i + 1)}px)` }}
+                                    style={{ color, transform: `translateY(${1.2 * (i + 1)}px)` }}
                                 >
                                     ARCHITECTS OF
                                 </span>
                             ))}
+                            {/* Soft ground shadow beneath the extrusion */}
+                            <span
+                                aria-hidden
+                                className="absolute inset-0 !font-serif select-none text-black/70 blur-[6px]"
+                                style={{ transform: 'translateY(16px)' }}
+                            >
+                                ARCHITECTS OF
+                            </span>
                             {/* Glass surface */}
                             <span
                                 className="relative !font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100/95 to-slate-400/55"
-                                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)', transform: 'translateZ(2px)' }}
+                                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.3)' }}
                             >
                                 ARCHITECTS OF
                             </span>
@@ -249,7 +249,6 @@ export default function HeroSketch() {
                                 aria-hidden
                                 className="absolute inset-0 !font-serif text-transparent bg-clip-text select-none pointer-events-none"
                                 style={{
-                                    transform: 'translateZ(4px)',
                                     backgroundImage: 'linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.9) 50%, transparent 70%)',
                                     backgroundSize: '250% 100%',
                                     animation: 'heroShine 5.5s ease-in-out infinite',
@@ -257,7 +256,7 @@ export default function HeroSketch() {
                             >
                                 ARCHITECTS OF
                             </span>
-                        </motion.span>
+                        </span>
                         <span className="block !font-serif text-2xl md:text-4xl lg:text-5xl font-bold">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
                                 AI-NATIVE FILM

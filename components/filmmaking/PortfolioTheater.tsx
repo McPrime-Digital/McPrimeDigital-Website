@@ -233,8 +233,8 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                             >
                                 {/* Top marking + sprockets */}
                                 <div className="flex items-center justify-between px-4 h-6 bg-[#0B0B0E] text-[8px] md:text-[9px] font-mono tracking-[0.25em] text-white/35 uppercase select-none">
-                                    <span>MCPD · 35MM · VISION3 500T</span>
-                                    <span className="tabular-nums">REEL {String(index! + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span>
+                                    <span className="truncate">McPrime Digital · {current.category || 'Original'}</span>
+                                    <span className="tabular-nums shrink-0">Film {String(index! + 1).padStart(2, '0')} / {String(count).padStart(2, '0')}</span>
                                 </div>
                                 <SprocketRow />
 
@@ -316,7 +316,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                 <SprocketRow />
                                 <div className="flex items-center justify-between px-4 h-6 bg-[#0B0B0E] text-[8px] md:text-[9px] font-mono tracking-[0.25em] text-white/35 uppercase select-none">
                                     <span className="truncate max-w-[60%]">{current.title}</span>
-                                    <span>SCENE 0{index! + 1} · TAKE 01</span>
+                                    <span className="tabular-nums shrink-0">{duration > 0 ? `Runtime ${formatTime(duration)}` : ''}</span>
                                 </div>
                             </motion.div>
                         </div>
