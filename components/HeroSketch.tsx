@@ -207,13 +207,34 @@ export default function HeroSketch() {
                 >
                     {/* Headline: Responsive Wrap */}
                     <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
-                        <span
-                            className="block mb-2 !font-serif text-white text-4xl md:text-6xl lg:text-7xl font-black"
-                            style={{
-                                textShadow: '0 1px 0 #94a3b8, 0 2px 0 #64748b, 0 3px 0 #475569, 0 4px 0 #334155, 0 6px 12px rgba(0,0,0,0.75), 0 12px 30px rgba(34,211,238,0.15)'
-                            }}
-                        >
-                            ARCHITECTS OF
+                        {/* 4D glass lettering: aura -> extruded depth -> glass surface */}
+                        <span className="relative block mb-2 text-5xl md:text-7xl lg:text-8xl font-black !font-serif">
+                            {/* Aura */}
+                            <span
+                                aria-hidden
+                                className="absolute inset-0 !font-serif text-transparent bg-clip-text bg-gradient-to-b from-cyan-200/80 via-white/50 to-blue-400/40 blur-[14px] opacity-70 select-none"
+                            >
+                                ARCHITECTS OF
+                            </span>
+                            {/* Extruded depth */}
+                            <span
+                                aria-hidden
+                                className="absolute inset-0 !font-serif select-none"
+                                style={{
+                                    color: '#0f172a',
+                                    textShadow: '0 2px 0 #1e293b, 0 4px 0 #16202f, 0 6px 0 #101826, 0 8px 0 #0b111c, 0 10px 24px rgba(0,0,0,0.85), 0 18px 48px rgba(34,211,238,0.18)',
+                                    transform: 'translateY(4px)'
+                                }}
+                            >
+                                ARCHITECTS OF
+                            </span>
+                            {/* Glass surface */}
+                            <span
+                                className="relative !font-serif text-transparent bg-clip-text bg-gradient-to-b from-white via-slate-100/95 to-slate-400/55"
+                                style={{ WebkitTextStroke: '1px rgba(255,255,255,0.28)' }}
+                            >
+                                ARCHITECTS OF
+                            </span>
                         </span>
                         <span className="block !font-serif text-2xl md:text-4xl lg:text-5xl font-bold">
                             <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-blue-500 !font-serif block md:inline">
@@ -228,8 +249,8 @@ export default function HeroSketch() {
                         </span>
                     </h1>
 
-                    <p className="text-gray-300 text-lg md:text-xl max-w-3xl mx-auto font-light leading-relaxed mb-8">
-                        AI-driven infrastructure that replaces manual process with structured execution — faster delivery, fewer errors, compounding scale.
+                    <p className="text-gray-300 text-lg md:text-xl max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
+                        From first treatment to final conform, every picture moves through a governed, AI-native pipeline built to broadcast standard — while automation systems carry scheduling, versioning, and delivery in the background. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
                     </p>
                 </motion.div>
             </div>

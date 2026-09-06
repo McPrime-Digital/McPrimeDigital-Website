@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, CheckCircle } from 'lucide-react';
 import Button from './ui/Button';
-import BlueprintSection from './BlueprintSection'; // Import the new component
 import AutomationFlow from './AutomationFlow';
 
 export default function ExploreSection() {
@@ -34,7 +33,7 @@ export default function ExploreSection() {
                     />
                     <SolutionCard
                         title="AI Automations"
-                        description="Streamline your business with AI chatbots, workflow automations, and performance dashboards. Efficiency meets intelligence to save you 38% on dev spend."
+                        description="Mission-critical workflow orchestration for regulated operations — agentic pipelines, deep system integrations, and governed execution with complete audit trails. Engineered to remove manual load and reduce operational development spend by 38%."
                         icon={Cpu}
                         color="orange"
                         media={<AutomationFlow />}
@@ -43,32 +42,45 @@ export default function ExploreSection() {
                 </div>
             </div>
 
-            {/* 2. Add-on Services - Integrated Extensions */}
-            <div className="mb-32">
+            {/* 2. Add-on Services - Integrated Extensions (single lit-amber card) */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative mb-32 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 backdrop-blur-md border border-amber-500/10 overflow-hidden"
+            >
+                {/* Amber atmosphere */}
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-900/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
+                <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-yellow-900/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
+
                 {/* Top Row: Header & Alignment Context */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-start">
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-start">
                     {/* Left: Header */}
-                    <div className="border-l-4 pl-6 border-indigo-500/50">
-                        <h3 className="text-3xl font-bold mb-4 text-indigo-400">Integrated Extensions for Active Partners</h3>
-                        <p className="text-gray-400 text-lg leading-relaxed">
+                    <div>
+                        <p className="text-amber-500 font-mono tracking-[0.2em] mb-4 text-sm uppercase">Integrated Extensions</p>
+                        <h3 className="text-3xl md:text-4xl font-bold font-serif mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-100 via-yellow-200 to-amber-500 leading-tight">
+                            Integrated Extensions for Active Partners
+                        </h3>
+                        <p className="text-amber-100/60 text-lg leading-relaxed font-light">
                             Available exclusively to clients engaged in our AI Commercial Filmmaking or Automation programs, these add-ons extend your existing infrastructure without fragmentation or vendor complexity.
                         </p>
                     </div>
 
                     {/* Right: Access & Alignment Disclaimer */}
-                    <div className="p-8 rounded-2xl bg-indigo-900/10 border border-indigo-500/20 relative overflow-hidden">
+                    <div className="p-8 rounded-3xl bg-gradient-to-br from-amber-950/40 to-black border border-amber-500/10 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-20">
-                            <div className="w-24 h-24 bg-indigo-500/30 rounded-full blur-2xl" />
+                            <div className="w-24 h-24 bg-amber-500/30 rounded-full blur-2xl" />
                         </div>
-                        <h4 className="text-xl font-bold text-white mb-2">Access & Alignment</h4>
-                        <p className="text-gray-300 leading-relaxed text-sm">
+                        <h4 className="text-xl font-bold text-amber-100 font-serif mb-2">Access & Alignment</h4>
+                        <p className="text-amber-200/60 leading-relaxed text-sm">
                             These services are not offered as standalone engagements. They are available only to active partners to preserve alignment, operational clarity, and structured execution across all initiatives.
                         </p>
                     </div>
                 </div>
 
                 {/* Bottom Row: Service Cards */}
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-16">
+                <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8">
                     {/* Left Column: AI Brand Ambassador */}
                     <a href="/add-ons" className="block h-full">
                         <AddOnCard
@@ -85,7 +97,7 @@ export default function ExploreSection() {
                                         <li>Controlled brand voice</li>
                                         <li>Rapid iteration</li>
                                     </ul>
-                                    <p className="text-indigo-400 font-medium italic">
+                                    <p className="text-amber-400/90 font-medium italic">
                                         The result is predictable, repeatable communication infrastructure rather than personality-driven campaigns.
                                     </p>
                                 </>
@@ -109,7 +121,7 @@ export default function ExploreSection() {
                                         <li>Measurable return tracking</li>
                                         <li>Continuous optimization</li>
                                     </ul>
-                                    <p className="text-indigo-400 font-medium italic">
+                                    <p className="text-amber-400/90 font-medium italic">
                                         Paid advertising, when integrated properly, becomes a performance extension of your creative and operational systems — not a disconnected channel.
                                     </p>
                                 </>
@@ -117,10 +129,7 @@ export default function ExploreSection() {
                         />
                     </a>
                 </div>
-            </div>
-
-            {/* 3. Blueprint Approach (Redesigned) */}
-            <BlueprintSection />
+            </motion.div>
         </section>
     );
 }
@@ -204,24 +213,25 @@ function AddOnCard({ title, content, icon: Icon }: any) {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             whileHover={{ y: -5 }}
-            className="group relative p-8 rounded-3xl bg-gradient-to-b from-white/5 to-black border border-white/10 overflow-hidden shadow-lg h-full transition-all duration-300 hover:border-indigo-500/30"
+            className="group relative p-8 rounded-3xl bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 border border-amber-500/10 overflow-hidden shadow-lg h-full transition-all duration-300 hover:border-amber-500/30 hover:bg-amber-900/10"
         >
             {/* Elegant Background Glow from Blueprint */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all group-hover:bg-indigo-500/15 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all group-hover:bg-amber-500/15 pointer-events-none" />
+            <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-3xl" />
 
             <div className="relative z-10 flex flex-col h-full">
-                <div className="w-14 h-14 rounded-2xl bg-indigo-500/10 flex items-center justify-center mb-6 border border-white/5 group-hover:border-indigo-500/30 transition-colors">
-                    <Icon className="w-7 h-7 text-indigo-400 group-hover:text-indigo-300 transition-colors" />
+                <div className="w-14 h-14 rounded-2xl bg-gradient-to-br from-white/10 to-white/0 flex items-center justify-center mb-6 border border-white/10 shadow-[inset_0_0_20px_rgba(255,255,255,0.05)] group-hover:border-amber-500/30 group-hover:-translate-y-1 transition-all">
+                    <Icon className="w-7 h-7 text-amber-200 group-hover:text-amber-100 transition-colors drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)]" />
                 </div>
 
-                <h4 className="text-2xl font-bold mb-4 group-hover:text-white transition-colors">{title}</h4>
+                <h4 className="text-2xl font-bold font-serif text-amber-100 mb-4 group-hover:text-white transition-colors">{title}</h4>
 
                 {/* Content Rendered Here */}
-                <div className="text-gray-400 text-sm leading-relaxed group-hover:text-gray-300 transition-colors mb-4 flex-grow">
+                <div className="text-amber-200/50 text-sm leading-relaxed group-hover:text-amber-100/70 transition-colors mb-4 flex-grow">
                     {content}
                 </div>
 
-                <div className="w-10 h-1 bg-indigo-500/30 rounded-full mt-auto group-hover:w-full transition-all duration-500" />
+                <div className="w-10 h-1 bg-amber-800/50 rounded-full mt-auto group-hover:w-full group-hover:bg-amber-500/50 transition-all duration-700" />
             </div>
         </motion.div>
     );

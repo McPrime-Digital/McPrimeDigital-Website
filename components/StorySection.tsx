@@ -44,59 +44,44 @@ export default function StorySection() {
             {/* Ambient Background Glow */}
             <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-900/10 blur-[150px] -z-10 rounded-full" />
 
-            {/* Top Section: Split Narrative */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+            {/* Top Section: Story Card */}
+            <motion.div
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-indigo-950/20 via-black/40 to-black/60 backdrop-blur-md border border-indigo-500/10 overflow-hidden"
+            >
+                {/* Indigo atmosphere */}
+                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
+                <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
+                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
 
-                {/* Left Column: Know Our Story */}
-                <motion.div
-                    initial={{ opacity: 0, x: -20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="flex flex-col gap-8"
-                >
-                    <h2 className="text-3xl md:text-5xl font-bold font-serif">Know Our <span className="text-indigo-500">Story</span></h2>
-                    <p className="text-gray-300 text-lg leading-relaxed">
-                        We started as a small team of filmmakers and developers who realized that the future of creativity wasn't just human—it was hybrid.
-                        By combining cinematic storytelling with algorithmic precision, we unlocked a new era of digital expression.
-                    </p>
-                    <div className="border border-amber-500/30 bg-amber-500/5 rounded-2xl p-6 relative overflow-hidden group hover:bg-amber-500/10 transition-colors duration-500">
+                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
+                    {/* Left: Know Our Story */}
+                    <div className="flex flex-col gap-6">
+                        <h2 className="text-3xl md:text-5xl font-bold font-serif">Know Our <span className="text-indigo-500">Story</span></h2>
+                        <div className="w-12 h-1 bg-indigo-500/60 rounded-full" />
+                        <p className="text-gray-300 text-lg leading-relaxed">
+                            We started as a small team of filmmakers and developers who realized that the future of creativity wasn't just human—it was hybrid.
+                            By combining cinematic storytelling with algorithmic precision, we unlocked a new era of digital expression.
+                        </p>
+                    </div>
+
+                    {/* Right: Chosen By */}
+                    <div className="p-8 rounded-3xl bg-gradient-to-br from-indigo-950/40 to-black border border-indigo-500/15 relative overflow-hidden group hover:border-indigo-500/30 transition-colors duration-500">
                         <div className="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
-                            <ArrowUpRight className="w-6 h-6 text-amber-500" />
+                            <ArrowUpRight className="w-6 h-6 text-indigo-500" />
                         </div>
-                        <h3 className="text-xl font-bold text-amber-400 mb-3 font-serif">True Partnership Means Alignment, Not Just Service.</h3>
-                        <p className="text-gray-400 italic">
-                            "We align our systems with your business objectives so every initiative is tied to measurable outcomes. We build for performance, and shared results drive sustained growth."
-                        </p>
-                    </div>
-                </motion.div>
-
-                {/* Right Column: Built for Standards */}
-                <motion.div
-                    initial={{ opacity: 0, x: 20 }}
-                    whileInView={{ opacity: 1, x: 0 }}
-                    viewport={{ once: true }}
-                    className="flex flex-col gap-8"
-                >
-                    {/* Spacer removed for alignment */}
-                    <div>
-                        <h3 className="text-2xl md:text-3xl font-bold mb-6 text-white">Built for Standards, Not Shortcuts</h3>
-                        <p className="text-gray-400 leading-relaxed mb-4 text-lg">
-                            We do not operate as a traditional agency. We build structured systems for commercial filmmaking and business automation designed to perform under real operational pressure.
-                        </p>
-                        <p className="text-white font-medium text-lg">
-                            Our work is defined by discipline, precision, and measurable execution.
-                        </p>
-                    </div>
-                    <div className="p-6 rounded-2xl bg-white/[0.03] border border-white/5 hover:border-white/10 transition-colors">
-                        <p className="text-gray-300 italic mb-4">
+                        <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <p className="text-gray-300 italic mb-4 text-lg leading-relaxed">
                             "We are chosen by organizations that value structured execution, measurable performance, and long-term scalability over short-term activity."
                         </p>
                         <p className="text-indigo-400 font-bold tracking-wide">
                             Where creativity meets intelligence, growth becomes engineered.
                         </p>
                     </div>
-                </motion.div>
-            </div>
+                </div>
+            </motion.div>
 
             {/* Bottom Section: Why Choose Us - Cinematic Vault Style */}
             <div className="w-full">

@@ -1,145 +1,246 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
+import { Landmark, BrainCircuit, GitBranch, ShieldAlert, BookText, UserCheck, Hand } from 'lucide-react';
 
-interface LogLine {
-    id: number;
-    time: string;
-    tag: string;
-    color: string;
-    message: string;
+// Virtual canvas coordinate space (scaled to fit the card)
+const CANVAS_W = 640;
+const CANVAS_H = 340;
+const NODE_W = 138;
+const NODE_H = 56;
+
+interface NodeDef {
+    id: string;
+    name: string;
+    sub: string;
+    icon: typeof Landmark;
+    accent: string;   // tailwind text color for icon
+    tile: string;     // icon tile gradient
+    glow: string;     // ground glow rgba
 }
 
-// One full pipeline run, as it appears in the event ledger
-const RUN_SCRIPT: Omit<LogLine, 'id' | 'time'>[] = [
-    { tag: 'TRG', color: 'text-amber-400', message: 'inbound.lead captured' },
-    { tag: 'AGT', color: 'text-pink-400', message: 'intent classified · conf 0.98' },
-    { tag: 'ENR', color: 'text-purple-400', message: 'crm.record enriched + synced' },
-    { tag: 'EXE', color: 'text-purple-400', message: 'proposal.pdf generated' },
-    { tag: 'NTF', color: 'text-sky-400', message: 'ops channel notified' },
-    { tag: 'AUD', color: 'text-emerald-400', message: 'run committed · immutable log' },
+const NODE_DEFS: NodeDef[] = [
+    { id: 'intake', name: 'Transaction Intake', sub: 'core-banking · webhook', icon: Landmark, accent: 'text-amber-300', tile: 'from-amber-500/80 to-amber-700/80', glow: 'rgba(251,191,36,0.25)' },
+    { id: 'fraud', name: 'AI Fraud Scoring', sub: 'model · risk-v4', icon: BrainCircuit, accent: 'text-pink-300', tile: 'from-pink-500/80 to-fuchsia-700/80', glow: 'rgba(244,114,182,0.25)' },
+    { id: 'gate', name: 'Risk Gate', sub: 'if score ≥ 0.85', icon: GitBranch, accent: 'text-purple-300', tile: 'from-purple-500/80 to-violet-700/80', glow: 'rgba(192,132,252,0.25)' },
+    { id: 'freeze', name: 'Freeze & Escalate', sub: 'compliance queue', icon: ShieldAlert, accent: 'text-red-300', tile: 'from-red-500/80 to-rose-700/80', glow: 'rgba(248,113,113,0.25)' },
+    { id: 'ledger', name: 'Post to Ledger', sub: 'double-entry commit', icon: BookText, accent: 'text-emerald-300', tile: 'from-emerald-500/80 to-teal-700/80', glow: 'rgba(52,211,153,0.25)' },
+    { id: 'review', name: 'Manual Review', sub: 'ops · four-eyes check', icon: UserCheck, accent: 'text-sky-300', tile: 'from-sky-500/80 to-blue-700/80', glow: 'rgba(56,189,248,0.25)' },
 ];
 
+const EDGES: { from: string; to: string; label?: string; color: string }[] = [
+    { from: 'intake', to: 'fraud', color: '#fbbf24' },
+    { from: 'fraud', to: 'gate', color: '#f472b6' },
+    { from: 'gate', to: 'freeze', label: 'HIGH', color: '#f87171' },
+    { from: 'gate', to: 'ledger', label: 'CLEAR', color: '#34d399' },
+    { from: 'gate', to: 'review', label: 'REVIEW', color: '#38bdf8' },
+];
+
+const INITIAL_POS: Record<string, { x: number; y: number }> = {
+    intake: { x: 16, y: 142 },
+    fraud: { x: 186, y: 142 },
+    gate: { x: 356, y: 142 },
+    freeze: { x: 494, y: 34 },
+    ledger: { x: 494, y: 142 },
+    review: { x: 494, y: 250 },
+};
+
 /**
- * A live orchestration console: a branching pipeline DAG with continuous
- * packet flow, a timestamped event ledger, and run-level operations metrics.
+ * An interactive n8n-style workflow: a banking transaction pipeline whose
+ * nodes can be dragged (mouse or touch) and whose canvas pans, with live
+ * data flow along the connectors.
  */
 export default function AutomationFlow() {
-    const [lines, setLines] = useState<LogLine[]>([]);
-    const [runs, setRuns] = useState(1284);
-    const [latency, setLatency] = useState('1.4');
-    const idRef = useRef(0);
-    const stepRef = useRef(0);
+    const containerRef = useRef<HTMLDivElement>(null);
+    const [scale, setScale] = useState(1);
+    const [positions, setPositions] = useState(INITIAL_POS);
+    const [pan, setPan] = useState({ x: 0, y: 0 });
+    const [dragging, setDragging] = useState<string | null>(null);
+    const [hintVisible, setHintVisible] = useState(true);
+    const dragRef = useRef<{ mode: 'node' | 'pan'; id?: string; startX: number; startY: number; origin: { x: number; y: number } } | null>(null);
 
+    // Fit the virtual canvas to the card
     useEffect(() => {
-        const interval = setInterval(() => {
-            const step = stepRef.current % RUN_SCRIPT.length;
-            const entry = RUN_SCRIPT[step];
-            const now = new Date();
-            const time = now.toLocaleTimeString('en-GB', { hour12: false });
-            idRef.current += 1;
-            setLines(prev => [...prev.slice(-5), { ...entry, id: idRef.current, time }]);
-            if (step === RUN_SCRIPT.length - 1) {
-                setRuns(r => r + 1);
-                setLatency((1.1 + Math.random() * 0.6).toFixed(1));
-            }
-            stepRef.current += 1;
-        }, 950);
-        return () => clearInterval(interval);
+        const el = containerRef.current;
+        if (!el) return;
+        const observer = new ResizeObserver(entries => {
+            const w = entries[0]?.contentRect.width || CANVAS_W;
+            setScale(w / CANVAS_W);
+        });
+        observer.observe(el);
+        return () => observer.disconnect();
     }, []);
 
-    return (
-        <div className="absolute inset-0 flex flex-col bg-[#05070C] select-none text-left">
-            {/* Faint blueprint grid */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px]" />
+    const onNodePointerDown = (e: React.PointerEvent, id: string) => {
+        e.stopPropagation();
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        dragRef.current = { mode: 'node', id, startX: e.clientX, startY: e.clientY, origin: positions[id] };
+        setDragging(id);
+        setHintVisible(false);
+    };
 
-            {/* Console header */}
-            <div className="relative flex items-center justify-between px-4 md:px-5 pt-3 pb-2 border-b border-white/5">
+    const onCanvasPointerDown = (e: React.PointerEvent) => {
+        (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+        dragRef.current = { mode: 'pan', startX: e.clientX, startY: e.clientY, origin: pan };
+        setHintVisible(false);
+    };
+
+    const onPointerMove = (e: React.PointerEvent) => {
+        const drag = dragRef.current;
+        if (!drag) return;
+        const dx = (e.clientX - drag.startX) / scale;
+        const dy = (e.clientY - drag.startY) / scale;
+        if (drag.mode === 'node' && drag.id) {
+            const id = drag.id;
+            setPositions(prev => ({ ...prev, [id]: { x: drag.origin.x + dx, y: drag.origin.y + dy } }));
+        } else {
+            setPan({ x: drag.origin.x + dx, y: drag.origin.y + dy });
+        }
+    };
+
+    const endDrag = () => {
+        dragRef.current = null;
+        setDragging(null);
+    };
+
+    const port = (id: string, side: 'in' | 'out') => {
+        const p = positions[id];
+        return { x: p.x + (side === 'out' ? NODE_W : 0), y: p.y + NODE_H / 2 };
+    };
+
+    return (
+        <div
+            ref={containerRef}
+            className="absolute inset-0 bg-[#070A11] overflow-hidden select-none"
+            style={{ touchAction: 'none' }}
+            onPointerDown={onCanvasPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={endDrag}
+            onPointerCancel={endDrag}
+        >
+            {/* Dot grid, n8n style */}
+            <div
+                className="absolute inset-0"
+                style={{
+                    backgroundImage: 'radial-gradient(rgba(255,255,255,0.07) 1px, transparent 1px)',
+                    backgroundSize: `${18 * scale}px ${18 * scale}px`,
+                    backgroundPosition: `${pan.x * scale}px ${pan.y * scale}px`,
+                }}
+            />
+            {/* Depth vignette */}
+            <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_45%,rgba(0,0,0,0.65)_100%)]" />
+
+            {/* Header strip */}
+            <div className="absolute top-0 inset-x-0 z-20 flex items-center justify-between px-4 py-2 pointer-events-none">
                 <div className="flex items-center gap-2">
                     <span className="relative flex w-1.5 h-1.5">
                         <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-60" />
                         <span className="relative inline-flex rounded-full w-1.5 h-1.5 bg-emerald-400" />
                     </span>
-                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.22em] text-white/60 uppercase">McPrime Orchestrator</span>
+                    <span className="text-[9px] md:text-[10px] font-mono tracking-[0.2em] text-white/60 uppercase">Workflow · Transaction-Guard</span>
                 </div>
-                <span className="text-[8px] md:text-[9px] font-mono tracking-[0.18em] text-white/30 uppercase">Pipeline · Lead-to-Invoice</span>
+                <span className="text-[8px] md:text-[9px] font-mono px-2 py-0.5 rounded-full border border-emerald-400/30 bg-emerald-400/10 text-emerald-300 tracking-widest uppercase">Active</span>
             </div>
 
-            {/* Body: DAG + event ledger */}
-            <div className="relative flex-1 flex min-h-0">
-                {/* Pipeline DAG */}
-                <div className="flex-1 min-w-0 flex items-center">
-                    <svg viewBox="0 0 240 140" className="w-full h-full" preserveAspectRatio="xMidYMid meet">
-                        {/* Edges */}
-                        <g stroke="rgba(255,255,255,0.12)" strokeWidth="1" fill="none">
-                            <path id="e-t1" d="M 30 70 C 62 70, 70 28, 102 28" />
-                            <path id="e-t2" d="M 30 70 L 102 70" />
-                            <path id="e-t3" d="M 30 70 C 62 70, 70 112, 102 112" />
-                            <path id="e-1v" d="M 118 28 C 152 28, 160 70, 188 70" />
-                            <path id="e-2v" d="M 118 70 L 188 70" />
-                            <path id="e-3v" d="M 118 112 C 152 112, 160 70, 188 70" />
-                        </g>
-
-                        {/* Continuous packet flow (SMIL, zero JS) */}
-                        {[
-                            { path: 'M 30 70 C 62 70, 70 28, 102 28', begin: '0s', color: '#fbbf24' },
-                            { path: 'M 30 70 L 102 70', begin: '0.35s', color: '#f472b6' },
-                            { path: 'M 30 70 C 62 70, 70 112, 102 112', begin: '0.7s', color: '#c084fc' },
-                            { path: 'M 118 28 C 152 28, 160 70, 188 70', begin: '1.05s', color: '#f472b6' },
-                            { path: 'M 118 70 L 188 70', begin: '1.4s', color: '#fb923c' },
-                            { path: 'M 118 112 C 152 112, 160 70, 188 70', begin: '1.75s', color: '#c084fc' },
-                        ].map((p, i) => (
-                            <circle key={i} r="2.4" fill={p.color} opacity="0.9">
-                                <animateMotion dur="2.1s" begin={p.begin} repeatCount="indefinite" path={p.path} />
-                            </circle>
-                        ))}
-
-                        {/* Nodes */}
-                        {[
-                            { x: 22, y: 70, label: 'TRIGGER', stroke: '#fbbf24' },
-                            { x: 110, y: 28, label: 'PARSE', stroke: '#f472b6' },
-                            { x: 110, y: 70, label: 'ENRICH', stroke: '#f472b6' },
-                            { x: 110, y: 112, label: 'ROUTE', stroke: '#c084fc' },
-                            { x: 196, y: 70, label: 'COMMIT', stroke: '#34d399' },
-                        ].map((n) => (
-                            <g key={n.label}>
-                                <circle cx={n.x} cy={n.y} r="8" fill="#05070C" stroke={n.stroke} strokeOpacity="0.55" strokeWidth="1.2" />
-                                <circle cx={n.x} cy={n.y} r="2.5" fill={n.stroke} fillOpacity="0.9" />
-                                <text x={n.x} y={n.y + 19} textAnchor="middle" fontSize="6" fontFamily="monospace" fill="rgba(255,255,255,0.45)" letterSpacing="1">
-                                    {n.label}
-                                </text>
+            {/* Scaled virtual canvas */}
+            <div
+                className="absolute top-0 left-0 origin-top-left"
+                style={{ transform: `scale(${scale}) translate(${pan.x}px, ${pan.y}px)`, width: CANVAS_W, height: CANVAS_H }}
+            >
+                {/* Connectors */}
+                <svg width={CANVAS_W} height={CANVAS_H} className="absolute top-0 left-0 overflow-visible pointer-events-none">
+                    <style>{`@keyframes af-flow { to { stroke-dashoffset: -24; } }`}</style>
+                    {EDGES.map((edge) => {
+                        const a = port(edge.from, 'out');
+                        const b = port(edge.to, 'in');
+                        const bend = Math.max(40, Math.abs(b.x - a.x) / 2);
+                        const d = `M ${a.x} ${a.y} C ${a.x + bend} ${a.y}, ${b.x - bend} ${b.y}, ${b.x} ${b.y}`;
+                        const mid = { x: (a.x + b.x) / 2, y: (a.y + b.y) / 2 - 8 };
+                        return (
+                            <g key={`${edge.from}-${edge.to}`}>
+                                <path d={d} stroke="rgba(255,255,255,0.14)" strokeWidth="2" fill="none" />
+                                <path
+                                    d={d}
+                                    stroke={edge.color}
+                                    strokeWidth="2"
+                                    strokeOpacity="0.75"
+                                    fill="none"
+                                    strokeDasharray="5 19"
+                                    strokeLinecap="round"
+                                    style={{ animation: 'af-flow 0.9s linear infinite' }}
+                                />
+                                {edge.label && (
+                                    <text x={mid.x} y={mid.y} textAnchor="middle" fontSize="8" fontFamily="monospace" fill={edge.color} fillOpacity="0.9" letterSpacing="1.5">
+                                        {edge.label}
+                                    </text>
+                                )}
                             </g>
-                        ))}
+                        );
+                    })}
+                </svg>
 
-                        {/* Commit node success pulse */}
-                        <circle cx="196" cy="70" r="8" fill="none" stroke="#34d399" strokeOpacity="0.5">
-                            <animate attributeName="r" values="8;14;8" dur="2.1s" repeatCount="indefinite" />
-                            <animate attributeName="stroke-opacity" values="0.5;0;0.5" dur="2.1s" repeatCount="indefinite" />
-                        </circle>
-                    </svg>
-                </div>
-
-                {/* Event ledger */}
-                <div className="hidden sm:flex flex-col justify-end w-[44%] border-l border-white/5 px-3 py-2 gap-[5px] overflow-hidden bg-black/30">
-                    {lines.length === 0 && (
-                        <span className="text-[8px] font-mono text-white/25 tracking-widest">AWAITING EVENTS…</span>
-                    )}
-                    {lines.map((line) => (
-                        <div key={line.id} className="flex items-baseline gap-1.5 font-mono text-[8px] md:text-[9px] leading-tight">
-                            <span className="text-white/25 tabular-nums shrink-0">{line.time}</span>
-                            <span className={`${line.color} font-bold shrink-0`}>{line.tag}</span>
-                            <span className="text-white/55 truncate">{line.message}</span>
+                {/* Nodes */}
+                {NODE_DEFS.map((node) => {
+                    const p = positions[node.id];
+                    const isDragging = dragging === node.id;
+                    return (
+                        <div
+                            key={node.id}
+                            onPointerDown={(e) => onNodePointerDown(e, node.id)}
+                            className="absolute cursor-grab active:cursor-grabbing"
+                            style={{
+                                left: p.x,
+                                top: p.y,
+                                width: NODE_W,
+                                height: NODE_H,
+                                transform: isDragging ? 'scale(1.06)' : 'scale(1)',
+                                transition: isDragging ? 'none' : 'transform 0.2s ease, box-shadow 0.2s ease',
+                                zIndex: isDragging ? 30 : 10,
+                            }}
+                        >
+                            {/* Ground glow — volume under the node */}
+                            <div
+                                className="absolute -inset-x-2 top-1/2 bottom-[-14px] rounded-[50%] blur-md pointer-events-none"
+                                style={{ background: node.glow, opacity: isDragging ? 0.8 : 0.4 }}
+                            />
+                            {/* Body */}
+                            <div
+                                className="relative w-full h-full rounded-xl border border-white/10 bg-gradient-to-b from-[#151B29] to-[#0B0F18] flex items-center gap-2.5 px-2.5"
+                                style={{
+                                    boxShadow: isDragging
+                                        ? `0 18px 32px -8px rgba(0,0,0,0.9), 0 0 24px ${node.glow}, inset 0 1px 0 rgba(255,255,255,0.12)`
+                                        : '0 12px 22px -10px rgba(0,0,0,0.85), inset 0 1px 0 rgba(255,255,255,0.09)',
+                                }}
+                            >
+                                {/* Icon tile */}
+                                <div className={`w-9 h-9 shrink-0 rounded-lg bg-gradient-to-br ${node.tile} border border-white/15 flex items-center justify-center shadow-[inset_0_1px_0_rgba(255,255,255,0.3),0_4px_8px_rgba(0,0,0,0.5)]`}>
+                                    <node.icon className="w-[18px] h-[18px] text-white drop-shadow" />
+                                </div>
+                                <div className="min-w-0">
+                                    <p className="text-[10px] font-bold text-white leading-tight truncate">{node.name}</p>
+                                    <p className="text-[8px] font-mono text-white/40 leading-tight truncate">{node.sub}</p>
+                                </div>
+                                {/* Ports */}
+                                <span className="absolute -left-[5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#0B0F18] border border-white/30" />
+                                <span className="absolute -right-[5px] top-1/2 -translate-y-1/2 w-2.5 h-2.5 rounded-full bg-[#0B0F18] border border-white/30" />
+                            </div>
                         </div>
-                    ))}
-                </div>
+                    );
+                })}
             </div>
 
-            {/* Operations metrics */}
-            <div className="relative flex items-center justify-between px-4 md:px-5 py-2 border-t border-white/5 font-mono text-[8px] md:text-[9px] tracking-[0.14em] uppercase">
-                <span className="text-white/40">Runs <span className="text-white/80 tabular-nums">{runs.toLocaleString()}</span></span>
-                <span className="text-white/40">Success <span className="text-emerald-400 tabular-nums">99.97%</span></span>
-                <span className="text-white/40">Avg <span className="text-white/80 tabular-nums">{latency}s</span></span>
-                <span className="text-orange-400/80 hidden md:inline">24/7 Execution</span>
+            {/* Interaction hint */}
+            {hintVisible && (
+                <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5 px-3 py-1 rounded-full bg-black/50 border border-white/10 backdrop-blur-sm pointer-events-none">
+                    <Hand className="w-3 h-3 text-white/50" />
+                    <span className="text-[9px] font-mono tracking-widest text-white/50 uppercase">Drag nodes · Pan canvas</span>
+                </div>
+            )}
+
+            {/* Compliance strip */}
+            <div className="absolute bottom-0 inset-x-0 z-20 flex items-center justify-between px-4 py-1.5 border-t border-white/5 bg-black/40 backdrop-blur-sm pointer-events-none">
+                <span className="text-[8px] md:text-[9px] font-mono tracking-[0.15em] text-white/35 uppercase">PCI-DSS Scoped · SOC 2 Type II</span>
+                <span className="text-[8px] md:text-[9px] font-mono tracking-[0.15em] text-white/50 uppercase tabular-nums">4,128 Executions Today</span>
             </div>
         </div>
     );
