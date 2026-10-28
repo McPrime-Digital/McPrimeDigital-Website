@@ -43,3 +43,6 @@ next-env.d.ts
 # local cache
 .npm-local-cache/
 
+
+# local web encodes awaiting upload (see README: Publishing new films)
+/media-encoded/
