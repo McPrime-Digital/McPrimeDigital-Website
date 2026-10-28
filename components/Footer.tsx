@@ -1,8 +1,9 @@
 'use client';
 
-import { motion } from 'framer-motion';
+import type { SVGProps } from 'react';
 import { Facebook, Instagram, Linkedin, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 export default function Footer() {
     const scrollToTop = () => {
@@ -13,10 +14,12 @@ export default function Footer() {
         <footer className="relative bg-[#050505] text-white overflow-hidden font-sans border-t border-white/5">
             {/* --- Background Layer --- */}
             <div className="absolute inset-0 z-0 select-none">
-                <img
+                <Image
                     src="/footer-bg-premium.png"
-                    alt="City Horizon"
-                    className="w-full h-full object-cover opacity-40 mix-blend-luminosity"
+                    alt=""
+                    fill
+                    sizes="100vw"
+                    className="object-cover opacity-40 mix-blend-luminosity"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
                 <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
@@ -55,7 +58,7 @@ export default function Footer() {
                     <div className="flex flex-col space-y-6">
                         {/* Logo */}
                         <div className="w-48">
-                            <img src="/logo.png" alt="McPrime Digital" className="h-10 w-auto opacity-100" />
+                            <Image src="/logo.png" alt="McPrime Digital" width={160} height={40} className="h-10 w-auto opacity-100" />
                         </div>
 
                         {/* Tagline */}
@@ -74,7 +77,7 @@ export default function Footer() {
                             {[
                                 { Icon: Facebook, href: "https://www.facebook.com/share/14VRKiD58fL/?mibextid=wwXIfr" },
                                 { 
-                                  Icon: (props: any) => (
+                                  Icon: (props: SVGProps<SVGSVGElement>) => (
                                     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
                                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                     </svg>

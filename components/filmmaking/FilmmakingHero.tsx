@@ -1,23 +1,19 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import InViewVideo from '@/components/media/InViewVideo';
 
 export default function FilmmakingHero() {
     return (
         <section className="relative h-screen w-full overflow-hidden bg-[#0B0D12]">
             {/* Background Video */}
             <div className="absolute inset-0 z-0 select-none bg-[#0a0a0d]">
-                <video
-                    key="filmmaking-hero-v2"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
+                <InViewVideo
+                    src="/compressed_videos/filmmaking-hero.mp4"
+                    poster="/compressed_videos/filmmaking-hero.jpg"
+                    eager
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
-                >
-                    <source src="/compressed_videos/filmmaking-hero-v2.mp4" type="video/mp4" />
-                </video>
+                />
                 {/* Cinematic Overlay - Darkened for text readability */}
                 <div className="absolute inset-0 bg-gradient-to-t from-[#0B0D12] via-black/40 to-transparent opacity-90" />
                 <div className="absolute inset-0 bg-[#0B0D12]/20" /> {/* General tint */}

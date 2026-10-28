@@ -1,7 +1,9 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 import { Instagram, Facebook, Linkedin } from 'lucide-react';
+import type { ComponentType } from 'react';
 
 // Custom SVGs for brand icons not in lucide-react
 const XIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -45,6 +47,8 @@ const ambassadors = [
     }
 ];
 
+type Ambassador = (typeof ambassadors)[number];
+
 export default function AmbassadorsSection() {
     return (
         <section>
@@ -77,7 +81,7 @@ export default function AmbassadorsSection() {
     );
 }
 
-function AmbassadorCard({ person, index }: { person: any, index: number }) {
+function AmbassadorCard({ person, index }: { person: Ambassador, index: number }) {
     return (
         <motion.div
             initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
@@ -88,10 +92,12 @@ function AmbassadorCard({ person, index }: { person: any, index: number }) {
         >
             {/* Image Frame */}
             <div className="relative aspect-[3/4] rounded-3xl overflow-hidden mb-6 border border-white/10 bg-white/5 group-hover:border-purple-500/50 transition-colors duration-500">
-                <img
+                <Image
                     src={person.image}
                     alt={person.name}
-                    className="absolute inset-0 w-full h-full object-cover object-top group-hover:scale-105 transition-transform duration-700"
+                    fill
+                    sizes="(max-width: 768px) 100vw, 50vw"
+                    className="object-cover object-top group-hover:scale-105 transition-transform duration-700"
                 />
 
                 {/* Gradient Overlay for text readability */}
@@ -122,7 +128,7 @@ function AmbassadorCard({ person, index }: { person: any, index: number }) {
     );
 }
 
-function SocialLink({ icon: Icon, href, label }: { icon: any, href: string, label: string }) {
+function SocialLink({ icon: Icon, href, label }: { icon: ComponentType<{ className?: string }>, href: string, label: string }) {
     return (
         <a
             href={href}

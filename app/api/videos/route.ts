@@ -1,70 +1,35 @@
-import { NextResponse } from "next/server";
-import { ListObjectsV2Command, GetObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
-import { r2Client } from "@/lib/r2";
+import { NextResponse, type NextRequest } from "next/server";
+import { listVideos } from "@/lib/media";
+import { isR2Configured } from "@/lib/r2";
+import { isAdminRequest } from "@/lib/auth";
 
-export const dynamic = 'force-dynamic';
+export const dynamic = "force-dynamic";
 
-export async function GET(request: Request) {
+/**
+ * Public catalogue of films. Results are cached in-process and at the CDN so a
+ * page view costs no R2 operations; the admin gallery passes ?fresh=1 to bypass.
+ */
+export async function GET(request: NextRequest) {
+    if (!isR2Configured()) {
+        return NextResponse.json({ error: "Video storage is not configured." }, { status: 503 });
+    }
+
     try {
-        const { searchParams } = new URL(request.url);
-        const category = searchParams.get('category');
+        const { searchParams } = request.nextUrl;
+        const category = searchParams.get("category");
+        const fresh = searchParams.get("fresh") === "1" && (await isAdminRequest(request));
+        const data = await listVideos({ category, fresh });
+        const maxAge = data.delivery === "public" ? 300 : 600;
 
-        const bucketName = process.env.R2_BUCKET_NAME;
-        if (!bucketName) {
-            return NextResponse.json(
-                { error: "R2 bucket name is not configured." },
-                { status: 500 }
-            );
-        }
-
-        // List from the specific category folder if requested, otherwise list all videos
-        const prefix = category ? `videos/${category}/` : `videos/`;
-
-        const command = new ListObjectsV2Command({
-            Bucket: bucketName,
-            Prefix: prefix,
+        return NextResponse.json(data, {
+            headers: {
+                "Cache-Control": fresh
+                    ? "no-store"
+                    : `public, s-maxage=${maxAge}, stale-while-revalidate=${maxAge * 2}`,
+            },
         });
-
-        const response = await r2Client.send(command);
-
-        const sortedContents = (response.Contents || [])
-            .filter(item => !item.Key?.endsWith('/') && item.Key)
-            .sort((a, b) => {
-                const aTime = a.LastModified?.getTime() || 0;
-                const bTime = b.LastModified?.getTime() || 0;
-                return bTime - aTime;
-            });
-
-        const videos = await Promise.all(sortedContents.map(async (item) => {
-            const getCommand = new GetObjectCommand({
-                Bucket: bucketName,
-                Key: item.Key,
-            });
-            const signedUrl = await getSignedUrl(r2Client, getCommand, { expiresIn: 3600 });
-
-            // Extract category from key: videos/{category}/{filename}
-            const parts = item.Key!.split('/');
-            const videoCategory = parts.length >= 3 ? parts[1] : 'uncategorized';
-
-            return {
-                key: item.Key,
-                url: signedUrl,
-                lastModified: item.LastModified,
-                size: item.Size,
-                category: videoCategory,
-            };
-        }));
-
-        // Collect unique categories
-        const categories = [...new Set(videos.map(v => v.category))];
-
-        return NextResponse.json({ videos, categories });
     } catch (error) {
-        console.error("Error fetching videos from R2:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+        console.error("Error listing videos from R2:", error);
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

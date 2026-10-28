@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import Link from 'next/link';
+import Image from 'next/image';
 import { ArrowLeft, Calendar, Tag, User } from 'lucide-react';
 import { getAllArticles, getArticleBySlug } from '@/lib/data';
 import Footer from '@/components/Footer';
@@ -123,7 +124,7 @@ export default async function ArticlePage({ params }: Props) {
                     {/* Featured Image */}
                     <div className="relative aspect-video w-full rounded-3xl overflow-hidden border border-white/10 bg-gray-900 mb-16 shadow-2xl">
                         <div className="absolute inset-0 bg-indigo-900/10 z-10" />
-                        <img src={article.image} alt={article.title} className="w-full h-full object-cover opacity-90" />
+                        <Image src={article.image} alt={article.title} fill priority sizes="(max-width: 1024px) 100vw, 1024px" className="object-cover opacity-90" />
                         <div className="absolute bottom-0 left-0 w-full p-8 bg-gradient-to-t from-black via-black/80 to-transparent z-20">
                             <div className="w-16 h-1 bg-indigo-500" />
                         </div>

@@ -1,7 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, CheckCircle } from 'lucide-react';
+import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, type LucideIcon } from 'lucide-react';
+import type { ReactNode } from 'react';
 import Button from './ui/Button';
 import AutomationFlow from './AutomationFlow';
 import FilmProductionMedia from './FilmProductionMedia';
@@ -152,7 +153,7 @@ function SectionHeader({ title, subtitle, color = "text-white", align = "left" }
     );
 }
 
-function SolutionCard({ title, description, icon: Icon, color, media, href }: any) {
+function SolutionCard({ title, description, icon: Icon, color, media, href }: { title: string; description: string; icon: LucideIcon; color: string; media?: ReactNode; href: string }) {
     const colorClasses: { [key: string]: string } = {
         teal: "from-blue-600 via-cyan-500 to-emerald-400", // Cyber-Cinematic: Deep Blue -> Cyan -> Emerald
         orange: "from-purple-600 via-pink-500 to-orange-400" // High-Energy: Purple -> Pink -> Orange
@@ -208,7 +209,7 @@ function SolutionCard({ title, description, icon: Icon, color, media, href }: an
     );
 }
 
-function AddOnCard({ title, content, icon: Icon }: any) {
+function AddOnCard({ title, content, icon: Icon }: { title: string; content: ReactNode; icon: LucideIcon }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}

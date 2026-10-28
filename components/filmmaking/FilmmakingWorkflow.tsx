@@ -1,8 +1,10 @@
 'use client';
 
-import { motion, useScroll, useTransform, useSpring, useInView } from 'framer-motion';
-import { useRef, useState, useEffect } from 'react';
-import { FileText, Video, Film, Music, Mic, Layers, CheckCircle2, MoreHorizontal, Play, Settings, RefreshCw, Smartphone, Monitor, ChevronRight, Hash, Eye, Zap, Command, Clock } from 'lucide-react';
+import { motion, useScroll, type MotionValue } from 'framer-motion';
+import { useRef, useState, useEffect, type ReactNode } from 'react';
+import Image from 'next/image';
+import { CheckCircle2, Monitor, Zap } from 'lucide-react';
+import InViewVideo from '@/components/media/InViewVideo';
 
 /* --- WORKFLOW DATA --- */
 const workflowSteps = [
@@ -153,7 +155,7 @@ export default function FilmmakingWorkflow() {
 }
 
 // --- Left Column Step ---
-function WorkflowStep({ step, index, progress }: { step: any, index: number, progress: any }) {
+function WorkflowStep({ step, index, progress }: { step: { number: string; title: string; desc: string }, index: number, progress: MotionValue<number> }) {
     const [isActive, setIsActive] = useState(false);
 
     // Dynamic trigger point based on index (starts earlier: 0, 0.15, 0.30...)
@@ -195,7 +197,7 @@ function WorkflowStep({ step, index, progress }: { step: any, index: number, pro
 }
 
 // --- Right Column Glass Module Container ---
-function GlassModule({ children, title, color, glow, connectorColor, delay }: any) {
+function GlassModule({ children, title, glow, connectorColor, delay }: { children: ReactNode; title: string; color?: string; glow?: string; connectorColor: string; delay: number }) {
     return (
         <div className="relative pl-8">
             {/* Connecting Workflow Line */}
@@ -337,10 +339,12 @@ function GenerativePipeline() {
                 {thumbnails.map((src, i) => (
                     <div key={i} className="relative aspect-square bg-[#0B0D12] rounded border border-white/10 overflow-hidden group">
                         {/* Real Image Content */}
-                        <img
+                        <Image
                             src={src}
-                            alt={`Gen ${i}`}
-                            className="absolute inset-0 w-full h-full object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500"
+                            alt={`Generated frame ${i + 1}`}
+                            fill
+                            sizes="160px"
+                            className="object-cover opacity-60 group-hover:opacity-100 transition-opacity duration-500"
                         />
 
                         <div className="absolute top-2 right-2 w-1 h-1 bg-cyan-500/50 rounded-full group-hover:bg-cyan-400 transition-colors z-10" />
@@ -403,13 +407,9 @@ function PostProduction() {
             <div className="flex gap-4 h-24"> {/* Reduced height: h-32 -> h-24 */}
                 <div className="flex-1 bg-black/40 rounded border border-white/5 relative overflow-hidden group">
                     {/* Animated Imagery (Video Viewer) - ACTUAL VIDEO ASSET */}
-                    <video
-                        src="/filmmaking/mv scene.mp4"
-                        autoPlay
-                        muted
-                        loop
-                        playsInline
-                        preload="auto"
+                    <InViewVideo
+                        src="/filmmaking/mv-scene.mp4"
+                        poster="/filmmaking/mv-scene.jpg"
                         className="absolute inset-0 w-full h-full object-cover opacity-80 contrast-110 saturate-100"
                     />
 
@@ -428,15 +428,8 @@ function PostProduction() {
                             times: [0, 0.25, 0.5, 0.75, 1]
                         }}
                     >
-                        <video
-                            src="/filmmaking/mv scene.mp4"
-                            autoPlay
-                            muted
-                            loop
-                            playsInline
-                            preload="auto"
-                            className="w-full h-full object-cover filter blur-[2px]"
-                        />
+                        {/* Soft chromatic haze; a second video decoder for a 96px panel was not worth it */}
+                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.35),transparent_70%)] blur-[2px]" />
                     </motion.div>
 
                     {/* Active Scanning Overlay */}
@@ -474,7 +467,7 @@ function PostProduction() {
                         className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 via-purple-500 to-indigo-500 opacity-50 blur-[1px]"
                     />
                     <div className="w-full h-6 flex gap-[1px] items-end justify-center opacity-50">
-                        {[1, 2, 3, 4, 5, 6].map(i => <div key={i} className="w-1 bg-white/40" style={{ height: `${Math.random() * 100}%` }} />)}
+                        {[62, 38, 85, 47, 70, 55].map((h, i) => <div key={i} className="w-1 bg-white/40" style={{ height: `${h}%` }} />)}
                     </div>
                 </div>
             </div>
@@ -497,7 +490,7 @@ function PostProduction() {
                     <div className="flex h-full ml-10 gap-[1px]">
                         {pipelineAssets.map((src, i) => (
                             <div key={i} className="h-full flex-1 bg-rose-500/10 border-r border-black/50 relative overflow-hidden">
-                                <img src={src} className="w-full h-full object-cover opacity-30" />
+                                <Image src={src} alt="" fill sizes="80px" className="object-cover opacity-30" />
                             </div>
                         ))}
                     </div>

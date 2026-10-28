@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
 import { ArrowUpRight, Check, Zap, Shield, Eye, Database, ChevronLeft, ChevronRight } from 'lucide-react';
 
 // --- DATA ---
@@ -204,7 +204,7 @@ function WhyChooseUsMobileCarousel() {
     const handlePrev = () => setActiveIndex((prev) => Math.max(0, prev - 1));
 
     // Simple swipe detection using Framer Motion drag end
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (info.offset.x < -50) handleNext();
         if (info.offset.x > 50) handlePrev();
     };

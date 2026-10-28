@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 export interface TheaterFilm {
     src: string;
+    poster?: string | null;
     title: string;
     subtitle?: string;
     category?: string;
@@ -23,6 +24,14 @@ function formatTime(seconds: number) {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+/** Neighbouring film staged behind the frame: its poster, never a second video decoder. */
+function GhostFrame({ poster }: { poster?: string | null }) {
+    // Posters are pre-sized JPEGs served straight from the media CDN; routing them
+    // through the image optimizer would only spend transformation quota.
+    // eslint-disable-next-line @next/next/no-img-element
+    return poster ? <img src={poster} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#0B0B0E]" />;
 }
 
 /** Horizontal sprocket row — the perforated edge of a 35mm strip */
@@ -56,6 +65,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
     const [buffering, setBuffering] = useState(true);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
     const [controlsVisible, setControlsVisible] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -150,16 +160,27 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
         return () => clearInterval(interval);
     }, [open]);
 
-    // Reset per film
+    // Reset per film: state is adjusted during render when the selected film changes
+    const [shownIndex, setShownIndex] = useState<number | null>(index);
+    if (index !== shownIndex) {
+        setShownIndex(index);
+        setBuffering(true);
+        setProgress(0);
+        setDuration(0);
+        setCurrentTime(0);
+        setPlaying(false);
+        setControlsVisible(true);
+    }
+
+    // Let the controls fade a few seconds after a film opens
     useEffect(() => {
-        if (open) {
-            setBuffering(true);
-            setProgress(0);
-            setDuration(0);
-            setPlaying(false);
-            wakeControls();
-        }
-    }, [open, index, wakeControls]);
+        if (!open) return;
+        const timer = setTimeout(() => {
+            const v = videoRef.current;
+            if (v && !v.paused) setControlsVisible(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [open, index]);
 
     const handleScrub = (e: React.PointerEvent<HTMLDivElement>) => {
         const bar = progressRef.current;
@@ -205,7 +226,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                 className="absolute top-1/2 -translate-y-1/2 left-[-14%] md:left-[-8%] w-[38vw] aspect-video rounded-lg overflow-hidden blur-[4px] opacity-20 scale-90 cursor-pointer hidden sm:block"
                                 onClick={(e) => { e.stopPropagation(); goTo(index! - 1); }}
                             >
-                                <video src={prevGhost.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                                <GhostFrame poster={prevGhost.poster} />
                                 <div className="absolute inset-0 bg-black/50" />
                             </div>
                         )}
@@ -214,7 +235,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                 className="absolute top-1/2 -translate-y-1/2 right-[-14%] md:right-[-8%] w-[38vw] aspect-video rounded-lg overflow-hidden blur-[4px] opacity-20 scale-90 cursor-pointer hidden sm:block"
                                 onClick={(e) => { e.stopPropagation(); goTo(index! + 1); }}
                             >
-                                <video src={nextGhost.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                                <GhostFrame poster={nextGhost.poster} />
                                 <div className="absolute inset-0 bg-black/50" />
                             </div>
                         )}
@@ -247,7 +268,8 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                         className="w-full h-full object-contain bg-black"
                                         autoPlay
                                         playsInline
-                                        preload="auto"
+                                        preload="metadata"
+                                        poster={current.poster ?? undefined}
                                         muted={muted}
                                         onClick={togglePlay}
                                         onPlay={() => { setPlaying(true); wakeControls(); }}
@@ -258,6 +280,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
                                         onTimeUpdate={(e) => {
                                             const v = e.currentTarget;
+                                            setCurrentTime(v.currentTime);
                                             if (v.duration) setProgress((v.currentTime / v.duration) * 100);
                                         }}
                                         onEnded={() => goTo(index! + 1)}
@@ -302,7 +325,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                                                 {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                                             </button>
                                             <span className="text-[11px] font-mono text-white/50 tabular-nums">
-                                                {formatTime(videoRef.current?.currentTime || 0)} / {formatTime(duration)}
+                                                {formatTime(currentTime)} / {formatTime(duration)}
                                             </span>
                                             <div className="flex-1" />
                                             <button onClick={toggleFullscreen} className="p-1.5 text-white/60 hover:text-white transition-colors" aria-label={isFullscreen ? 'Exit fullscreen' : 'Fullscreen'}>

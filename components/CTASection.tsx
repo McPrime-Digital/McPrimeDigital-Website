@@ -3,14 +3,14 @@
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import Button from './ui/Button';
 import { Send, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
-import { MouseEvent, useState } from 'react';
+import { type ChangeEvent, type MouseEvent, useState } from 'react';
 
 function SpotlightBox({ children, className = "" }: { children: React.ReactNode, className?: string }) {
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
 
     function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-        let { left, top } = currentTarget.getBoundingClientRect();
+        const { left, top } = currentTarget.getBoundingClientRect();
         mouseX.set(clientX - left);
         mouseY.set(clientY - top);
     }
@@ -38,7 +38,7 @@ function SpotlightBox({ children, className = "" }: { children: React.ReactNode,
 }
 
 export default function CTASection() {
-    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -60,11 +60,11 @@ export default function CTASection() {
             }
 
             setStatus('success');
-            setFormData({ name: '', company: '', email: '', message: '' });
+            setFormData({ name: '', company: '', email: '', message: '', website: '' });
             setTimeout(() => setStatus('idle'), 5000);
-        } catch (error: any) {
+        } catch (error) {
             setStatus('error');
-            setErrorMessage(error.message);
+            setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
         }
     };
 
@@ -117,6 +117,8 @@ export default function CTASection() {
                 {/* Right Side: Lead Gen Form with Reactive Spotlight */}
                 <SpotlightBox className="p-8 md:p-10 rounded-3xl shadow-2xl bg-black/40 backdrop-blur-xl border border-white/10 group-hover:border-white/20 transition-all">
                     <form className="flex flex-col gap-6 relative z-10" onSubmit={handleSubmit}>
+                        {/* Honeypot: hidden from people, filled by bots, checked server-side */}
+                        <input type="text" name="website" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                         {status === 'success' && (
                             <div className="p-4 bg-green-500/20 border border-green-500/50 rounded-xl flex items-center gap-3 text-green-400">
                                 <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
@@ -157,7 +159,7 @@ export default function CTASection() {
     );
 }
 
-function InputField({ label, type, placeholder, value, onChange, required }: { label: string, type: string, placeholder: string, value: string, onChange: (e: any) => void, required?: boolean }) {
+function InputField({ label, type, placeholder, value, onChange, required }: { label: string, type: string, placeholder: string, value: string, onChange: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, required?: boolean }) {
     return (
         <div className="flex flex-col gap-2 group">
             <label className="text-sm font-bold text-gray-400 group-focus-within:text-indigo-400 transition-colors uppercase tracking-wider ml-1">{label} {required && <span className="text-red-400">*</span>}</label>

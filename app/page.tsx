@@ -1,7 +1,15 @@
+import type { Metadata } from 'next';
 import dynamic from 'next/dynamic';
 import HeroSketch from '@/components/HeroSketch';
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE } from '@/lib/site';
 
-// test
+export const metadata: Metadata = {
+    title: { absolute: DEFAULT_TITLE },
+    description: DEFAULT_DESCRIPTION,
+    alternates: { canonical: '/' },
+    openGraph: { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION, url: '/' },
+    twitter: { title: DEFAULT_TITLE, description: DEFAULT_DESCRIPTION },
+};
 
 // Dynamically import below-the-fold components to reduce initial JS payload
 const ExploreSection = dynamic(() => import('@/components/ExploreSection'), { ssr: true });

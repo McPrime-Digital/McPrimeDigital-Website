@@ -35,12 +35,12 @@ export default function Navbar() {
                     <>
                         {/* Filmmaking Page: Show HOME and ABOUT on desktop, Burger Menu on mobile */}
                         <div className="hidden md:flex gap-4">
-                            <a href="/">
+                            <Link href="/">
                                 <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">HOME</Button>
-                            </a>
-                            <a href="/about">
+                            </Link>
+                            <Link href="/about">
                                 <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">ABOUT</Button>
-                            </a>
+                            </Link>
                         </div>
                         <div className="md:hidden">
                             <MobileNav />
@@ -50,21 +50,21 @@ export default function Navbar() {
                     <>
                         {/* Homepage: HeroSketch handles Desktop Nav entirely. Only show ABOUT on mobile. */}
                         <div className="md:hidden">
-                            <a href="/about">
+                            <Link href="/about">
                                 <Button variant="outline" className="text-xs px-4 py-2 border-white/20 hover:bg-white/10 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.1)]">ABOUT</Button>
-                            </a>
+                            </Link>
                         </div>
                     </>
                 ) : (
                     <>
                         {/* Other Pages: Standard Desktop Links + Mobile Nav */}
                         <div className="hidden md:flex gap-4">
-                            <a href="/">
+                            <Link href="/">
                                 <Button variant="glass" className="text-white hover:text-indigo-400">Home</Button>
-                            </a>
-                            <a href="/about">
+                            </Link>
+                            <Link href="/about">
                                 <Button variant="glass" className="text-white hover:text-indigo-400">About</Button>
-                            </a>
+                            </Link>
                         </div>
                         <div className="md:hidden">
                             <MobileNav />

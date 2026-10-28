@@ -80,7 +80,7 @@ export async function submitApplication(formData: FormData) {
             headers: {
                 Authorization: `Basic ${auth}`,
             },
-            body: adminFormData as any,
+            body: adminFormData,
         });
 
         if (!adminResponse.ok) {
@@ -100,7 +100,7 @@ export async function submitApplication(formData: FormData) {
             headers: {
                 Authorization: `Basic ${auth}`,
             },
-            body: userFormData as any,
+            body: userFormData,
         });
 
         if (!userResponse.ok) {

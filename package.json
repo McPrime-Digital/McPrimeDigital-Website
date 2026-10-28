@@ -5,39 +5,36 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
+    "prebuild": "npm run check",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint .",
+    "typecheck": "tsc --noEmit",
+    "check": "npm run typecheck && npm run lint",
+    "media:sync": "node scripts/media-sync.mjs"
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.1004.0",
     "@aws-sdk/s3-request-presigner": "^3.1004.0",
     "@react-three/drei": "^10.7.7",
     "@react-three/fiber": "^9.5.0",
-    "@remotion/player": "^4.0.410",
-    "@types/three": "^0.182.0",
-    "clsx": "^2.1.1",
-    "dotenv": "^17.3.1",
     "framer-motion": "^12.35.0",
     "gsap": "^3.14.2",
     "jose": "^6.2.0",
     "lru-cache": "^11.2.6",
     "lucide-react": "^0.563.0",
-    "next": "16.1.5",
-    "nodemailer": "^8.0.1",
+    "next": "^16.4.3",
     "react": "19.2.3",
     "react-dom": "19.2.3",
-    "remotion": "^4.0.410",
-    "tailwind-merge": "^3.5.0",
     "three": "^0.182.0"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
-    "@types/nodemailer": "^7.0.10",
     "@types/react": "^19",
     "@types/react-dom": "^19",
+    "@types/three": "^0.186.0",
     "eslint": "^9",
-    "eslint-config-next": "16.1.5",
+    "eslint-config-next": "^16.4.3",
     "tailwindcss": "^4",
     "typescript": "^5"
   }

@@ -2,12 +2,13 @@
 
 import { motion } from 'framer-motion';
 import { Play, Loader2 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import PortfolioTheater from './PortfolioTheater';
+import InViewVideo from '@/components/media/InViewVideo';
 import { prettifyFilename } from '@/lib/video-utils';
 
 // Metadata map matched to stored filenames (keyword-based).
-// previewStart/previewDuration control which window of the film the card thumbnail loops.
+// previewStart/previewDuration only matter when a film has no dedicated preview clip.
 const videoMeta: Record<string, {
     title: string;
     subtitle: string;
@@ -42,16 +43,24 @@ const placeholders = [
     { title: 'COMING SOON', subtitle: 'Another project dropping shortly.', category: 'In Production' }
 ];
 
-interface S3Video {
+interface ApiVideo {
     key: string;
     url: string;
+    previewUrl?: string | null;
+    posterUrl?: string | null;
+}
+
+interface PortfolioVideo {
+    key: string;
+    url: string;
+    previewUrl: string | null;
+    posterUrl: string | null;
     title: string;
     subtitle: string;
     category: string;
     loopFromEnd?: boolean;
     previewStart?: number;
     previewDuration?: number;
-    blobUrl?: string; // Memory downloaded blob for zero buffering
 }
 
 function getMetaForVideo(key: string) {
@@ -63,40 +72,23 @@ function getMetaForVideo(key: string) {
 }
 
 export default function FilmmakingPortfolio() {
-    const [videos, setVideos] = useState<S3Video[]>([]);
+    const [videos, setVideos] = useState<PortfolioVideo[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
         fetch('/api/videos?category=filmmaking-portfolio', { signal: controller.signal })
-            .then(res => res.json())
-            .then(data => {
-                const mapped: S3Video[] = (data.videos || []).map((v: { key: string; url: string }) => ({
-                    ...v,
+            .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+            .then((data: { videos?: ApiVideo[] }) => {
+                setVideos((data.videos ?? []).map(v => ({
+                    key: v.key,
+                    url: v.url,
+                    previewUrl: v.previewUrl ?? null,
+                    posterUrl: v.posterUrl ?? null,
                     ...getMetaForVideo(v.key),
-                }));
-                setVideos(mapped);
+                })));
                 setLoading(false);
-
-                // Aggressive background fetch into memory Blobs for instant playback
-                mapped.forEach((v) => {
-                    fetch(v.url, { signal: controller.signal })
-                        .then(response => response.blob())
-                        .then(blob => {
-                            const objectUrl = URL.createObjectURL(blob);
-                            setVideos(prev => 
-                                prev.map(video => 
-                                    video.key === v.key ? { ...video, blobUrl: objectUrl } : video
-                                )
-                            );
-                        })
-                        .catch(err => {
-                            if (err.name !== 'AbortError') {
-                                console.error('Failed to preload video into memory:', err);
-                            }
-                        });
-                });
             })
             .catch(() => setLoading(false));
 
@@ -134,7 +126,7 @@ export default function FilmmakingPortfolio() {
                                 slot.type === 'video' ? (
                                     <VideoCard
                                         key={slot.data.key}
-                                        video={slot.data as S3Video}
+                                        video={slot.data as PortfolioVideo}
                                         index={index}
                                         onOpen={() => setSelectedIndex(index)}
                                     />
@@ -147,10 +139,11 @@ export default function FilmmakingPortfolio() {
                 </div>
             </section>
 
-            {/* The Portfolio Theater: widescreen 35mm catalog player */}
+            {/* The Portfolio Theater: widescreen 35mm catalog player. Loads a film only when opened. */}
             <PortfolioTheater
                 films={videos.map(v => ({
-                    src: v.blobUrl || v.url,
+                    src: v.url,
+                    poster: v.posterUrl,
                     title: v.title,
                     subtitle: v.subtitle,
                     category: v.category,
@@ -163,34 +156,15 @@ export default function FilmmakingPortfolio() {
     );
 }
 
-function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; onOpen: () => void }) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-    const loopStartRef = useRef<number>(0);
-
-    // On metadata load: seek the thumbnail to its preview window
-    // (an explicit previewStart, or 30s before the end for loopFromEnd films)
-    const handleLoadedMetadata = () => {
-        if (!videoRef.current) return;
-        let start = 0;
-        if (video.previewStart !== undefined) {
-            start = Math.min(video.previewStart, Math.max(0, videoRef.current.duration - 5));
-        } else if (video.loopFromEnd) {
-            start = Math.max(0, videoRef.current.duration - 30);
-        }
-        if (start > 0) {
-            loopStartRef.current = start;
-            videoRef.current.currentTime = start;
-        }
-    };
-
-    // Loop within the preview window from loopStart
-    const handleTimeUpdate = () => {
-        const windowLength = video.previewDuration ?? 20;
-        if (videoRef.current && videoRef.current.currentTime >= loopStartRef.current + windowLength) {
-            videoRef.current.currentTime = loopStartRef.current;
-            videoRef.current.play();
-        }
-    };
+function VideoCard({ video, index, onOpen }: { video: PortfolioVideo; index: number; onOpen: () => void }) {
+    // With a dedicated preview clip the whole clip loops; otherwise loop a window of the full film.
+    const windowProps = video.previewUrl
+        ? {}
+        : {
+            windowStart: video.previewStart,
+            windowSeconds: video.previewDuration ?? 20,
+            fromEndSeconds: video.loopFromEnd ? 30 : undefined,
+        };
 
     return (
         <motion.div
@@ -201,17 +175,12 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
             className="group relative aspect-video overflow-hidden bg-[#0B0D12] rounded-xl cursor-pointer shadow-2xl"
             onClick={onOpen}
         >
-            {/* Looping Video Thumbnail */}
-            <video
-                ref={videoRef}
-                src={video.blobUrl || video.url}
+            {/* Looping thumbnail: poster first, preview clip only while on screen */}
+            <InViewVideo
+                src={video.previewUrl ?? video.url}
+                poster={video.posterUrl}
                 className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105 opacity-80 group-hover:opacity-100"
-                muted
-                autoPlay
-                playsInline
-                preload="auto"
-                onLoadedMetadata={handleLoadedMetadata}
-                onTimeUpdate={handleTimeUpdate}
+                {...windowProps}
             />
 
             {/* Dark Gradient Overlay */}
@@ -224,7 +193,7 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
                 </div>
             </div>
 
-            {/* Text Info — Always Visible at Bottom */}
+            {/* Text Info: always visible at bottom */}
             <div className="absolute bottom-0 inset-x-0 p-6">
                 <span className="text-[#2D6BFF] text-[10px] tracking-[0.2em] font-mono uppercase mb-2 block">
                     {video.category}

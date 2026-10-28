@@ -1,50 +1,57 @@
 import { NextResponse } from "next/server";
-import { signJWT } from "@/lib/auth";
+import { createHash, timingSafeEqual } from "node:crypto";
+import { ADMIN_COOKIE, SESSION_SECONDS, isAuthConfigured, signJWT } from "@/lib/auth";
+import rateLimit, { getClientIp } from "@/lib/rateLimit";
+
+// 5 attempts per 15 minutes per address.
+const limiter = rateLimit({ interval: 15 * 60_000, uniqueTokenPerInterval: 1000 });
+
+/** Constant-time string comparison over fixed-length digests. */
+function safeEqual(a: string, b: string): boolean {
+    const da = createHash("sha256").update(a).digest();
+    const db = createHash("sha256").update(b).digest();
+    return timingSafeEqual(da, db);
+}
 
 export async function POST(request: Request) {
+    const adminUser = process.env.ADMIN_USERNAME;
+    const adminPass = process.env.ADMIN_PASSWORD;
+
+    if (!adminUser || !adminPass || !isAuthConfigured()) {
+        console.error("ADMIN_USERNAME, ADMIN_PASSWORD or JWT_SECRET is not configured.");
+        return NextResponse.json({ error: "Admin login is not configured." }, { status: 503 });
+    }
+
     try {
-        const { username, password } = await request.json();
+        await limiter.check(5, getClientIp(request.headers));
+    } catch {
+        return NextResponse.json({ error: "Too many attempts. Try again in 15 minutes." }, { status: 429 });
+    }
 
-        const adminUser = process.env.ADMIN_USERNAME;
-        const adminPass = process.env.ADMIN_PASSWORD;
+    try {
+        const body = (await request.json()) as { username?: unknown; password?: unknown };
+        const username = typeof body.username === "string" ? body.username : "";
+        const password = typeof body.password === "string" ? body.password : "";
 
-        if (!adminUser || !adminPass) {
-            console.error("ADMIN_USERNAME or ADMIN_PASSWORD not configured.");
-            return NextResponse.json(
-                { error: "Auth misconfigured. Check environment variables." },
-                { status: 500 }
-            );
+        // Evaluate both comparisons so the response time does not reveal which field failed.
+        const userOk = safeEqual(username, adminUser);
+        const passOk = safeEqual(password, adminPass);
+        if (!(userOk && passOk)) {
+            return NextResponse.json({ error: "Invalid credentials" }, { status: 401 });
         }
 
-        if (username === adminUser && password === adminPass) {
-            const token = await signJWT({ user: adminUser, role: "admin" });
-
-            const response = NextResponse.json(
-                { message: "Login successful" },
-                { status: 200 }
-            );
-
-            // Set cookie - secure, http-only, and SameSite=Strict
-            response.cookies.set("admin_token", token, {
-                httpOnly: true,
-                secure: process.env.NODE_ENV === "production",
-                sameSite: "strict",
-                path: "/",
-                maxAge: 60 * 60 * 2, // 2 hours
-            });
-
-            return response;
-        }
-
-        return NextResponse.json(
-            { error: "Invalid credentials" },
-            { status: 401 }
-        );
+        const token = await signJWT({ user: adminUser, role: "admin" });
+        const response = NextResponse.json({ message: "Login successful" }, { status: 200 });
+        response.cookies.set(ADMIN_COOKIE, token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === "production",
+            sameSite: "strict",
+            path: "/",
+            maxAge: SESSION_SECONDS,
+        });
+        return response;
     } catch (error) {
         console.error("Login error:", error);
-        return NextResponse.json(
-            { error: "Internal Server Error" },
-            { status: 500 }
-        );
+        return NextResponse.json({ error: "Internal Server Error" }, { status: 500 });
     }
 }

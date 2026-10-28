@@ -4,7 +4,7 @@ import React, { useState } from 'react';
 import { ArrowRight, CheckCircle2, AlertCircle, Loader2 } from 'lucide-react';
 
 export default function CtaSection() {
-    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -26,11 +26,11 @@ export default function CtaSection() {
             }
 
             setStatus('success');
-            setFormData({ name: '', company: '', email: '', message: '' });
+            setFormData({ name: '', company: '', email: '', message: '', website: '' });
             setTimeout(() => setStatus('idle'), 5000);
-        } catch (error: any) {
+        } catch (error) {
             setStatus('error');
-            setErrorMessage(error.message);
+            setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
         }
     };
 
@@ -118,6 +118,8 @@ export default function CtaSection() {
                             </ul>
 
                             <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+                                {/* Honeypot: hidden from people, filled by bots, checked server-side */}
+                                <input type="text" name="website" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                                 {status === 'success' && (
                                     <div className="p-4 bg-emerald-500/20 border border-emerald-500/50 rounded-xl flex items-center gap-3 text-emerald-400">
                                         <CheckCircle2 className="w-5 h-5 flex-shrink-0" />

@@ -4,6 +4,10 @@ import React, { useState, useRef } from "react";
 import { Upload, Video, X, CheckCircle, AlertCircle, Loader2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
+const MB = 1024 * 1024;
+const MAX_BYTES = 300 * MB;
+const ALLOWED_TYPES = ["video/mp4", "video/webm", "video/quicktime"];
+
 interface VideoUploaderProps {
     onUploadComplete?: (url: string) => void;
 }
@@ -18,6 +22,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
     const fileInputRef = useRef<HTMLInputElement>(null);
 
     const categories = [
+        { id: "home-hero", label: "Homepage Film Reel" },
         { id: "homepage-core-services", label: "Homepage Core Services" },
         { id: "homepage-ambassadors", label: "Homepage Ambassadors" },
         { id: "addons-creations", label: "Addons Creations" },
@@ -27,8 +32,12 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
     const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const selectedFile = e.target.files?.[0];
         if (selectedFile) {
-            if (!selectedFile.type.startsWith("video/")) {
-                setError("Please select a valid video file.");
+            if (!ALLOWED_TYPES.includes(selectedFile.type)) {
+                setError("Please select an MP4, WebM or MOV video.");
+                return;
+            }
+            if (selectedFile.size > MAX_BYTES) {
+                setError(`That file is ${Math.round(selectedFile.size / MB)} MB. Upload the web encode (1080p H.264, under ${MAX_BYTES / MB} MB), not the master.`);
                 return;
             }
             setFile(selectedFile);
@@ -50,6 +59,8 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                 body: JSON.stringify({
                     fileName: file.name,
                     fileType: file.type,
+                    fileSize: file.size,
+                    kind: "video",
                     category: category,
                 }),
                 headers: {
@@ -58,7 +69,8 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
             });
 
             if (!response.ok) {
-                throw new Error("Failed to get upload URL");
+                const detail = await response.json().catch(() => ({})) as { error?: string };
+                throw new Error(detail.error || "Failed to get upload URL");
             }
 
             const { uploadUrl, fileKey, publicUrl } = await response.json();
@@ -133,7 +145,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                         type="file"
                         ref={fileInputRef}
                         onChange={handleFileChange}
-                        accept="video/*"
+                        accept="video/mp4,video/webm,video/quicktime"
                         className="hidden"
                     />
                     <motion.div
@@ -143,7 +155,7 @@ export const VideoUploader: React.FC<VideoUploaderProps> = ({ onUploadComplete }
                         <Upload className="w-8 h-8 text-white/50 group-hover:text-blue-400" />
                     </motion.div>
                     <p className="text-white/70 font-medium">Click to select or drag and drop</p>
-                    <p className="text-white/40 text-sm mt-2">MP4, MOV, WebM (Max 500MB suggested)</p>
+                    <p className="text-white/40 text-sm mt-2">MP4, WebM or MOV up to 300 MB. Upload the 1080p web encode; keep masters offline. Run `npm run media:sync` to generate preview clips and posters.</p>
                 </div>
             ) : (
                 <div className="space-y-6">

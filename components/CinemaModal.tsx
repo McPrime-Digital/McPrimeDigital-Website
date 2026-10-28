@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 export interface CinemaVideo {
     src: string;
+    poster?: string | null;
     title: string;
     subtitle?: string;
     category?: string;
@@ -40,6 +41,7 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
     const [buffering, setBuffering] = useState(true);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
     const [controlsVisible, setControlsVisible] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -140,17 +142,28 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
         return () => clearInterval(interval);
     }, [video]);
 
-    // Reset state each time a new film opens
+    // Reset state each time a new film opens: adjusted during render when the prop changes
+    const [shownVideo, setShownVideo] = useState<CinemaVideo | null>(video);
+    if (video !== shownVideo) {
+        setShownVideo(video);
+        setPlaying(false);
+        setBuffering(true);
+        setProgress(0);
+        setDuration(0);
+        setCurrentTime(0);
+        setMuted(false);
+        setControlsVisible(true);
+    }
+
+    // Let the controls fade a few seconds after a film opens
     useEffect(() => {
-        if (video) {
-            setPlaying(false);
-            setBuffering(true);
-            setProgress(0);
-            setDuration(0);
-            setMuted(false);
-            wakeControls();
-        }
-    }, [video, wakeControls]);
+        if (!video) return;
+        const timer = setTimeout(() => {
+            const v = videoRef.current;
+            if (v && !v.paused) setControlsVisible(false);
+        }, 3000);
+        return () => clearTimeout(timer);
+    }, [video]);
 
     const handleScrub = (e: React.PointerEvent<HTMLDivElement>) => {
         const bar = progressRef.current;
@@ -218,7 +231,8 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
                                     className="max-h-[78vh] max-w-full w-auto h-auto block"
                                     autoPlay
                                     playsInline
-                                    preload="auto"
+                                    preload="metadata"
+                                    poster={video.poster ?? undefined}
                                     onClick={togglePlay}
                                     onPlay={() => { setPlaying(true); wakeControls(); }}
                                     onPause={() => { setPlaying(false); setControlsVisible(true); }}
@@ -228,6 +242,7 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
                                     onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
                                     onTimeUpdate={(e) => {
                                         const v = e.currentTarget;
+                                        setCurrentTime(v.currentTime);
                                         if (v.duration) setProgress((v.currentTime / v.duration) * 100);
                                     }}
                                     onEnded={() => { setPlaying(false); setControlsVisible(true); }}
@@ -314,7 +329,7 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
                                         {muted ? <VolumeX className="w-5 h-5" /> : <Volume2 className="w-5 h-5" />}
                                     </button>
                                     <span className="text-xs font-mono text-white/50 tabular-nums">
-                                        {formatTime(videoRef.current?.currentTime || 0)} / {formatTime(duration)}
+                                        {formatTime(currentTime)} / {formatTime(duration)}
                                     </span>
                                     <div className="flex-1" />
                                     <button

@@ -3,9 +3,9 @@
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';
 import { useRef } from 'react';
 import Image from 'next/image';
+import Link from 'next/link';
 import Button from './ui/Button';
-import { Player } from '@remotion/player';
-import { HeroLoop } from '../remotion/HeroLoop';
+import InViewVideo from './media/InViewVideo';
 
 export default function HeroSketch() {
     const mouseX = useMotionValue(0);
@@ -48,18 +48,14 @@ export default function HeroSketch() {
         >
             {/* Background Video Layer - Full Width */}
             <div className="absolute inset-0 z-0 overflow-hidden bg-[#0A0D14]">
-                <video
-                    key="homepage-hero-final"
-                    autoPlay
-                    loop
-                    muted
-                    playsInline
-                    preload="auto"
+                {/* The blur is baked into this encode, so no GPU backdrop filter runs over a full-screen video */}
+                <InViewVideo
+                    src="/compressed_videos/homepage-hero-bg.mp4"
+                    poster="/compressed_videos/homepage-hero-bg.jpg"
+                    eager
                     className="absolute inset-0 w-full h-full object-cover opacity-20"
-                >
-                    <source src="/compressed_videos/homepage-hero-final.mp4" type="video/mp4" />
-                </video>
-                <div className="absolute inset-0 bg-black/60 backdrop-blur-[3px] z-10" />
+                />
+                <div className="absolute inset-0 bg-black/60 z-10" />
             </div>
 
             {/* Content Wrapper - Constrained Width */}
@@ -89,13 +85,10 @@ export default function HeroSketch() {
                             className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-[#0B0F19] backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                             style={{ isolation: 'isolate', WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
-                            <video
-                                src="/compressed_videos/Hero Robot.mp4"
-                                autoPlay
-                                loop
-                                muted
-                                playsInline
-                                preload="auto"
+                            <InViewVideo
+                                src="/compressed_videos/hero-robot.mp4"
+                                poster="/compressed_videos/hero-robot.jpg"
+                                eager
                                 className="w-full h-full object-cover opacity-80 mix-blend-screen rounded-full"
                             />
                         </div>
@@ -108,9 +101,9 @@ export default function HeroSketch() {
                         transition={{ duration: 0.8 }}
                         className="hidden md:block absolute right-0"
                     >
-                        <a href="/about">
+                        <Link href="/about">
                             <Button variant="outline" className="border-white/20 hover:bg-white/10 backdrop-blur-sm">ABOUT</Button>
-                        </a>
+                        </Link>
                     </motion.div>
                 </div>
 
@@ -283,8 +276,8 @@ export default function HeroSketch() {
     );
 }
 
-function ServiceBox({ title, delay, isCenter = false, href }: { title: string, delay: number, isCenter?: boolean, href?: string }) {
-    const Content = () => (
+function ServiceBoxContent({ title, isCenter }: { title: string; isCenter: boolean }) {
+    return (
         <>
             {/* Connector dot at top of box (where line connects) */}
             <motion.div
@@ -293,7 +286,7 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
                 className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"
             />
 
-            <div className={`absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg`} />
+            <div className="absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" />
             <div className={`
                 relative p-6 md:p-8 rounded-xl text-center border transition-all duration-300 transform group-hover:-translate-y-2 cursor-pointer
                 ${isCenter
@@ -305,7 +298,9 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
             </div>
         </>
     );
+}
 
+function ServiceBox({ title, delay, isCenter = false, href }: { title: string, delay: number, isCenter?: boolean, href?: string }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 20 }}
@@ -314,11 +309,11 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
             className="group relative"
         >
             {href ? (
-                <a href={href} className="block h-full">
-                    <Content />
-                </a>
+                <Link href={href} className="block h-full">
+                    <ServiceBoxContent title={title} isCenter={isCenter} />
+                </Link>
             ) : (
-                <Content />
+                <ServiceBoxContent title={title} isCenter={isCenter} />
             )}
         </motion.div>
     );

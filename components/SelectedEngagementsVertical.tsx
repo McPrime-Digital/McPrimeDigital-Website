@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { FlaskConical, UtensilsCrossed, MonitorPlay, Building2, Gem, Handshake, Map, BriefcaseBusiness } from 'lucide-react';
 
 const engagements = [

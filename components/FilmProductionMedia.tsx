@@ -2,30 +2,48 @@
 
 import { useEffect, useState } from 'react';
 import { Play } from 'lucide-react';
+import InViewVideo from '@/components/media/InViewVideo';
+
+interface Reel {
+    url: string;
+    previewUrl: string | null;
+    posterUrl: string | null;
+}
+
+interface ApiVideo {
+    key: string;
+    url: string;
+    previewUrl?: string | null;
+    posterUrl?: string | null;
+}
 
 /**
- * Media for the homepage AI Film Production card: plays the reel uploaded to
- * the home-hero / homepage-core-services category on loop; falls back to the
- * play glyph until a video is available.
+ * Media for the homepage AI Film Production card: loops the reel uploaded to the
+ * home-hero category (falling back to homepage-core-services) once it scrolls
+ * into view; shows the play glyph until a reel exists.
  */
 export default function FilmProductionMedia() {
-    const [src, setSrc] = useState<string | null>(null);
+    const [reel, setReel] = useState<Reel | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
-        fetch('/api/videos', { signal: controller.signal })
-            .then(res => res.json())
-            .then(data => {
-                const videos: { key: string; url: string; category: string }[] = data.videos || [];
-                const reel = videos.find(v => v.category === 'home-hero')
-                    || videos.find(v => v.category === 'homepage-core-services');
-                if (reel) setSrc(reel.url);
-            })
-            .catch(() => undefined);
+        const load = async () => {
+            for (const category of ['home-hero', 'homepage-core-services']) {
+                const res = await fetch(`/api/videos?category=${category}`, { signal: controller.signal });
+                if (!res.ok) continue;
+                const data = (await res.json()) as { videos?: ApiVideo[] };
+                const first = data.videos?.[0];
+                if (first) {
+                    setReel({ url: first.url, previewUrl: first.previewUrl ?? null, posterUrl: first.posterUrl ?? null });
+                    return;
+                }
+            }
+        };
+        load().catch(() => undefined);
         return () => controller.abort();
     }, []);
 
-    if (!src) {
+    if (!reel) {
         return (
             <div className="flex flex-col items-center gap-4 relative z-10">
                 <div className="w-20 h-20 rounded-full bg-white/10 flex items-center justify-center backdrop-blur-md border border-white/20 shadow-[0_0_30px_rgba(255,255,255,0.1)]">
@@ -36,14 +54,10 @@ export default function FilmProductionMedia() {
     }
 
     return (
-        <video
-            src={src}
+        <InViewVideo
+            src={reel.previewUrl ?? reel.url}
+            poster={reel.posterUrl}
             className="absolute inset-0 w-full h-full object-cover"
-            autoPlay
-            loop
-            muted
-            playsInline
-            preload="auto"
         />
     );
 }

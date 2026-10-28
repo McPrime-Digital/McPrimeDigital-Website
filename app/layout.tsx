@@ -1,7 +1,8 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Manrope, Libre_Baskerville, Cinzel_Decorative, Syne, Michroma } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, SITE_URL } from "@/lib/site";
 
 const manrope = Manrope({ subsets: ["latin"] });
 const libreBaskerville = Libre_Baskerville({
@@ -28,9 +29,20 @@ const michroma = Michroma({
   variable: '--font-michroma'
 });
 
+export const viewport: Viewport = {
+  themeColor: "#0A0D14",
+  width: "device-width",
+  initialScale: 1,
+};
+
 export const metadata: Metadata = {
-  title: "AI-Native Films, Commercials & Automation Systems | McPrime Digital",
-  description: "McPrime Digital delivers AI commercial filmmaking and AI automation systems engineered for mid-market and enterprise organizations. We design AI-native cinematic production and structured automation infrastructure built for speed, governance alignment, and scalable execution.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: DEFAULT_TITLE,
+    template: `%s | ${SITE_NAME}`,
+  },
+  description: DEFAULT_DESCRIPTION,
+  applicationName: SITE_NAME,
   keywords: [
     "AI commercial filmmaking",
     "AI commercial production",
@@ -55,7 +67,25 @@ export const metadata: Metadata = {
     "enterprise AI video production agency",
     "AI automation architecture for enterprises",
     "AI-native commercial production infrastructure"
-  ]
+  ],
+  openGraph: {
+    type: "website",
+    siteName: SITE_NAME,
+    locale: "en_US",
+    url: "/",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: DEFAULT_TITLE,
+    description: DEFAULT_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, "max-image-preview": "large", "max-video-preview": -1 },
+  },
 };
 
 export default function RootLayout({

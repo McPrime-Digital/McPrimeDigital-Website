@@ -2,7 +2,7 @@
 
 import { motion } from 'framer-motion';
 import { useEffect, useState } from 'react';
-import { Activity, Zap, Server, Globe, Signal, BarChart3 } from 'lucide-react';
+import { Server, Signal } from 'lucide-react';
 
 export default function LiveAdsDashboard() {
     return (
@@ -150,7 +150,7 @@ function LiveGraph() {
     );
 }
 
-function MetricRow({ label, value, trend, color }: any) {
+function MetricRow({ label, value, trend, color }: { label: string; value: string; trend?: 'up' | 'down' | 'flat'; color: string }) {
     return (
         <div className="flex justify-between items-center">
             <span className="text-gray-500">{label}</span>
@@ -163,7 +163,7 @@ function MetricRow({ label, value, trend, color }: any) {
     );
 }
 
-function TickerItem({ label, value, color }: any) {
+function TickerItem({ label, value, color }: { label: string; value: string; color: string }) {
     return (
         <div className="flex flex-col bg-white/5 px-2 py-1 rounded min-w-[80px]">
             <span className="text-[9px] text-gray-500">{label}</span>

@@ -1,9 +1,8 @@
 'use client';
 
 import React from 'react';
-import { Shield, Lock, Eye, FileText, CheckCircle2, ArrowRight } from 'lucide-react';
+import { Shield, FileText, ArrowRight } from 'lucide-react';
 import Link from 'next/link';
-import { motion } from 'framer-motion';
 
 export default function SecurityGovernanceSection() {
     return (

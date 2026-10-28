@@ -6,6 +6,7 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 
 export interface TheaterVideo {
     src: string;
+    poster?: string | null;
     title: string;
     context?: string;
 }
@@ -22,6 +23,14 @@ function formatTime(seconds: number) {
     const m = Math.floor(seconds / 60);
     const s = Math.floor(seconds % 60);
     return `${m}:${s.toString().padStart(2, '0')}`;
+}
+
+/** Neighbouring film staged behind the frame: its poster, never a second video decoder. */
+function GhostFrame({ poster }: { poster?: string | null }) {
+    // Posters are pre-sized JPEGs served straight from the media CDN; routing them
+    // through the image optimizer would only spend transformation quota.
+    // eslint-disable-next-line @next/next/no-img-element
+    return poster ? <img src={poster} alt="" className="w-full h-full object-cover" /> : <div className="w-full h-full bg-[#0B0B0E]" />;
 }
 
 /** Vertical sprocket strip — the film-stock edge of the frame */
@@ -51,6 +60,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
     const [buffering, setBuffering] = useState(true);
     const [progress, setProgress] = useState(0);
     const [duration, setDuration] = useState(0);
+    const [currentTime, setCurrentTime] = useState(0);
 
     const open = index !== null;
     const count = videos.length;
@@ -90,15 +100,16 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
         };
     }, [open, index, onClose, goTo, togglePlay]);
 
-    // Reset per film
-    useEffect(() => {
-        if (open) {
-            setBuffering(true);
-            setProgress(0);
-            setDuration(0);
-            setPlaying(false);
-        }
-    }, [open, index]);
+    // Reset per film: state is adjusted during render when the selected film changes
+    const [shownIndex, setShownIndex] = useState<number | null>(index);
+    if (index !== shownIndex) {
+        setShownIndex(index);
+        setBuffering(true);
+        setProgress(0);
+        setDuration(0);
+        setCurrentTime(0);
+        setPlaying(false);
+    }
 
     const handleScrub = (e: React.PointerEvent<HTMLDivElement>) => {
         const bar = progressRef.current;
@@ -138,7 +149,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                             className="absolute top-1/2 left-[18%] md:left-[26%] h-[54vh] aspect-[9/16] rounded-xl overflow-hidden blur-[3px] scale-90 cursor-pointer hidden sm:block"
                             onClick={(e) => { e.stopPropagation(); goTo(index! - 1); }}
                         >
-                            <video src={prevGhost.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                            <GhostFrame poster={prevGhost.poster} />
                             <div className="absolute inset-0 bg-black/50" />
                         </motion.div>
                     )}
@@ -150,7 +161,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                             className="absolute top-1/2 left-[82%] md:left-[74%] h-[54vh] aspect-[9/16] rounded-xl overflow-hidden blur-[3px] scale-90 cursor-pointer hidden sm:block"
                             onClick={(e) => { e.stopPropagation(); goTo(index! + 1); }}
                         >
-                            <video src={nextGhost.src} className="w-full h-full object-cover" muted playsInline preload="metadata" />
+                            <GhostFrame poster={nextGhost.poster} />
                             <div className="absolute inset-0 bg-black/50" />
                         </motion.div>
                     )}
@@ -184,7 +195,8 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                                         className="w-full h-full object-contain bg-black"
                                         autoPlay
                                         playsInline
-                                        preload="auto"
+                                        preload="metadata"
+                                        poster={current.poster ?? undefined}
                                         muted={muted}
                                         onClick={togglePlay}
                                         onPlay={() => setPlaying(true)}
@@ -195,6 +207,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                                         onLoadedMetadata={(e) => setDuration(e.currentTarget.duration)}
                                         onTimeUpdate={(e) => {
                                             const v = e.currentTarget;
+                                            setCurrentTime(v.currentTime);
                                             if (v.duration) setProgress((v.currentTime / v.duration) * 100);
                                         }}
                                         onEnded={() => goTo(index! + 1)}
@@ -234,7 +247,7 @@ export default function AmbassadorTheater({ videos, index, onClose, onNavigate }
                                                 {muted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
                                             </button>
                                             <span className="text-[10px] font-mono text-white/50 tabular-nums ml-auto">
-                                                {formatTime(videoRef.current?.currentTime || 0)} / {formatTime(duration)}
+                                                {formatTime(currentTime)} / {formatTime(duration)}
                                             </span>
                                         </div>
                                     </div>

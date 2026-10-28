@@ -56,7 +56,7 @@ export default function ArticleShare({ title, summary, url, imageUrl, contentRef
         const maxBodyLength = 600;
 
         // Sanitize: Replace all whitespace (newlines, tabs) with single space to save encoding space
-        let cleanBody = articleBody.replace(/\s+/g, ' ').trim();
+        const cleanBody = articleBody.replace(/\s+/g, ' ').trim();
 
         let truncatedBody = cleanBody;
         if (cleanBody.length > maxBodyLength) {

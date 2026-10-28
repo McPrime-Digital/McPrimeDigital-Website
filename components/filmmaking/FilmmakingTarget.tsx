@@ -1,8 +1,7 @@
 'use client';
 
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
-import { useState } from 'react';
-import { MouseEvent } from 'react';
+import { type ChangeEvent, type MouseEvent, useState } from 'react';
 import { CheckCircle2, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
 
 // Reusable Spotlight Component for Premium Cards
@@ -11,7 +10,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
     const mouseY = useMotionValue(0);
 
     function handleMouseMove({ currentTarget, clientX, clientY }: MouseEvent) {
-        let { left, top } = currentTarget.getBoundingClientRect();
+        const { left, top } = currentTarget.getBoundingClientRect();
         mouseX.set(clientX - left);
         mouseY.set(clientY - top);
     }
@@ -53,7 +52,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 }
 
 export default function FilmmakingTarget() {
-    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '' });
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
@@ -75,11 +74,11 @@ export default function FilmmakingTarget() {
             }
 
             setStatus('success');
-            setFormData({ name: '', company: '', email: '', message: '' });
+            setFormData({ name: '', company: '', email: '', message: '', website: '' });
             setTimeout(() => setStatus('idle'), 5000);
-        } catch (error: any) {
+        } catch (error) {
             setStatus('error');
-            setErrorMessage(error.message);
+            setErrorMessage(error instanceof Error ? error.message : 'Something went wrong');
         }
     };
 
@@ -201,6 +200,8 @@ export default function FilmmakingTarget() {
                             </ul>
 
                             <form className="space-y-6 relative z-10" onSubmit={handleSubmit}>
+                                {/* Honeypot: hidden from people, filled by bots, checked server-side */}
+                                <input type="text" name="website" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />
                                 {status === 'success' && (
                                     <div className="p-4 bg-green-500/20 border border-green-500/50 rounded-xl flex items-center gap-3 text-green-400">
                                         <CheckCircle2 className="w-5 h-5 flex-shrink-0" />
@@ -215,9 +216,9 @@ export default function FilmmakingTarget() {
                                 )}
 
                                 <div className="space-y-6">
-                                    <PremiumInput label="Name" placeholder="Enter your name" value={formData.name} onChange={(e: any) => setFormData({ ...formData, name: e.target.value })} required />
-                                    <PremiumInput label="Company" placeholder="Company name" value={formData.company} onChange={(e: any) => setFormData({ ...formData, company: e.target.value })} />
-                                    <PremiumInput label="Email" placeholder="work@email.com" type="email" value={formData.email} onChange={(e: any) => setFormData({ ...formData, email: e.target.value })} required />
+                                    <PremiumInput label="Name" placeholder="Enter your name" value={formData.name} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFormData({ ...formData, name: e.target.value })} required />
+                                    <PremiumInput label="Company" placeholder="Company name" value={formData.company} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFormData({ ...formData, company: e.target.value })} />
+                                    <PremiumInput label="Email" placeholder="work@email.com" type="email" value={formData.email} onChange={(e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setFormData({ ...formData, email: e.target.value })} required />
                                     <div className="group space-y-2">
                                         <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">Message <span className="text-red-400">*</span></label>
                                         <textarea
@@ -255,7 +256,7 @@ export default function FilmmakingTarget() {
     );
 }
 
-function PremiumInput({ label, placeholder, type = "text", value, onChange, required }: { label: string, placeholder: string, type?: string, value?: string, onChange?: any, required?: boolean }) {
+function PremiumInput({ label, placeholder, type = "text", value, onChange, required }: { label: string, placeholder: string, type?: string, value?: string, onChange?: (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => void, required?: boolean }) {
     return (
         <div className="group space-y-2">
             <label className="text-xs text-gray-500 uppercase tracking-widest font-bold ml-1 group-focus-within:text-[#2D6BFF] transition-colors">{label} {required && <span className="text-red-400">*</span>}</label>

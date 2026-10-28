@@ -3,11 +3,12 @@
 import { motion } from 'framer-motion';
 import PremiumCard from './PremiumCard';
 import { Volume2, Loader2 } from 'lucide-react';
-import { useState, useRef, useEffect } from 'react';
+import { useState, useEffect } from 'react';
 import AmbassadorTheater from './AmbassadorTheater';
+import InViewVideo from '@/components/media/InViewVideo';
 import { prettifyFilename } from '@/lib/video-utils';
 
-// Metadata matched to S3 filenames (case-insensitive partial match)
+// Metadata matched to stored filenames (case-insensitive partial match)
 const videoMeta: Record<string, { title: string; context: string; views: string }> = {
     'easyes': {
         title: 'Alice on Skincare',
@@ -26,13 +27,21 @@ const videoMeta: Record<string, { title: string; context: string; views: string 
     }
 };
 
-interface S3Video {
+interface ApiVideo {
     key: string;
     url: string;
+    previewUrl?: string | null;
+    posterUrl?: string | null;
+}
+
+interface AmbassadorVideo {
+    key: string;
+    url: string;
+    previewUrl: string | null;
+    posterUrl: string | null;
     title: string;
     context: string;
     views: string;
-    blobUrl?: string; // Fully downloaded local blob for instant playback
 }
 
 function getMetaForVideo(key: string) {
@@ -45,40 +54,23 @@ function getMetaForVideo(key: string) {
 }
 
 export default function UGCGrid() {
-    const [videos, setVideos] = useState<S3Video[]>([]);
+    const [videos, setVideos] = useState<AmbassadorVideo[]>([]);
     const [loading, setLoading] = useState(true);
     const [selectedIndex, setSelectedIndex] = useState<number | null>(null);
 
     useEffect(() => {
         const controller = new AbortController();
         fetch('/api/videos?category=addons-creations', { signal: controller.signal })
-            .then(res => res.json())
-            .then(data => {
-                const mapped: S3Video[] = (data.videos || []).map((v: { key: string; url: string }) => ({
-                    ...v,
+            .then(res => (res.ok ? res.json() : Promise.reject(new Error(`HTTP ${res.status}`))))
+            .then((data: { videos?: ApiVideo[] }) => {
+                setVideos((data.videos ?? []).map(v => ({
+                    key: v.key,
+                    url: v.url,
+                    previewUrl: v.previewUrl ?? null,
+                    posterUrl: v.posterUrl ?? null,
                     ...getMetaForVideo(v.key),
-                }));
-                setVideos(mapped);
+                })));
                 setLoading(false);
-
-                // Aggressive background preloading into memory Blobs to guarantee zero buffering
-                mapped.forEach((v) => {
-                    fetch(v.url, { signal: controller.signal })
-                        .then(response => response.blob())
-                        .then(blob => {
-                            const objectUrl = URL.createObjectURL(blob);
-                            setVideos(prev => 
-                                prev.map(video => 
-                                    video.key === v.key ? { ...video, blobUrl: objectUrl } : video
-                                )
-                            );
-                        })
-                        .catch(err => {
-                            if (err.name !== 'AbortError') {
-                                console.error('Failed to preload video into memory:', err);
-                            }
-                        });
-                });
             })
             .catch(() => setLoading(false));
 
@@ -102,9 +94,9 @@ export default function UGCGrid() {
                 ))}
             </div>
 
-            {/* The Ambassador Theater: film-frame catalog player */}
+            {/* The Ambassador Theater: film-frame catalog player. Loads a film only when opened. */}
             <AmbassadorTheater
-                videos={videos.map(v => ({ src: v.blobUrl || v.url, title: v.title, context: v.context }))}
+                videos={videos.map(v => ({ src: v.url, poster: v.posterUrl, title: v.title, context: v.context }))}
                 index={selectedIndex}
                 onClose={() => setSelectedIndex(null)}
                 onNavigate={(i) => setSelectedIndex(i)}
@@ -113,17 +105,7 @@ export default function UGCGrid() {
     );
 }
 
-function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; onOpen: () => void }) {
-    const videoRef = useRef<HTMLVideoElement>(null);
-
-    // 10 Second Loop Logic
-    const handleTimeUpdate = () => {
-        if (videoRef.current && videoRef.current.currentTime >= 10) {
-            videoRef.current.currentTime = 0;
-            videoRef.current.play();
-        }
-    };
-
+function VideoCard({ video, index, onOpen }: { video: AmbassadorVideo; index: number; onOpen: () => void }) {
     return (
         <motion.div
             initial={{ opacity: 0, y: 50 }}
@@ -134,17 +116,12 @@ function VideoCard({ video, index, onOpen }: { video: S3Video; index: number; on
             onClick={onOpen}
         >
             <PremiumCard className="aspect-[9/16] rounded-2xl overflow-hidden bg-[#0A0E14] border-white/5 transition-transform duration-500 group-hover:-translate-y-2">
-                {/* Background Video - Muted Loop 10s */}
-                <video
-                    ref={videoRef}
-                    src={video.blobUrl || video.url}
+                {/* Background loop: poster first, 10s preview only while on screen */}
+                <InViewVideo
+                    src={video.previewUrl ?? video.url}
+                    poster={video.posterUrl}
                     className="absolute inset-0 w-full h-full object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-500"
-                    muted
-                    autoPlay
-                    loop
-                    playsInline
-                    preload="auto"
-                    onTimeUpdate={handleTimeUpdate}
+                    {...(video.previewUrl ? {} : { windowStart: 0, windowSeconds: 10 })}
                 />
 
                 {/* Overlay Content */}

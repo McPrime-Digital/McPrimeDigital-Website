@@ -64,9 +64,26 @@ interface RunResult {
     audit: string;
 }
 
+/**
+ * Deterministic pseudo-random stream seeded by the run sequence (mulberry32), so
+ * the server-rendered readout matches the client's first render exactly instead
+ * of causing a hydration mismatch. Each run still differs because seq advances.
+ */
+function seeded(seq: number) {
+    let a = Math.imul(seq + 1, 0x9e3779b1) >>> 0;
+    return () => {
+        a = (a + 0x6d2b79f5) >>> 0;
+        let t = a;
+        t = Math.imul(t ^ (t >>> 15), t | 1);
+        t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+        return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+    };
+}
+
 function nextResult(seq: number): RunResult {
-    const roll = Math.random();
-    const score = roll < 0.72 ? Math.random() * 0.5 : roll < 0.88 ? 0.6 + Math.random() * 0.24 : 0.86 + Math.random() * 0.13;
+    const rand = seeded(seq);
+    const roll = rand();
+    const score = roll < 0.72 ? rand() * 0.5 : roll < 0.88 ? 0.6 + rand() * 0.24 : 0.86 + rand() * 0.13;
     const disposition = score >= 0.85 ? 'HIGH' : score >= 0.6 ? 'REVIEW' : 'CLEAR';
     const detail =
         disposition === 'CLEAR' ? `ledger L-${88300 + seq} · settled T+0`
@@ -77,8 +94,8 @@ function nextResult(seq: number): RunResult {
         score: score.toFixed(2),
         disposition,
         detail,
-        elapsed: (0.9 + Math.random() * 0.9).toFixed(2),
-        audit: Math.random().toString(16).slice(2, 8),
+        elapsed: (0.9 + rand() * 0.9).toFixed(2),
+        audit: rand().toString(16).slice(2, 8),
     };
 }
 
@@ -103,7 +120,7 @@ export default function AutomationFlow() {
     const [dragging, setDragging] = useState<string | null>(null);
     const [hintVisible, setHintVisible] = useState(true);
     const [runSeq, setRunSeq] = useState(128);
-    const [result, setResult] = useState<RunResult | null>(null);
+    const [result, setResult] = useState<RunResult>(() => nextResult(128));
     const dragRef = useRef<{ mode: 'node' | 'pan'; id?: string; startX: number; startY: number; origin: { x: number; y: number } } | null>(null);
     const pinchRef = useRef<Map<number, { x: number; y: number }>>(new Map());
     const pinchDistRef = useRef<number | null>(null);
@@ -141,7 +158,6 @@ export default function AutomationFlow() {
 
     // Execution loop: each cycle produces a verifiable run result
     useEffect(() => {
-        setResult(nextResult(128));
         const interval = setInterval(() => {
             setRunSeq(seq => {
                 const next = seq + 1;

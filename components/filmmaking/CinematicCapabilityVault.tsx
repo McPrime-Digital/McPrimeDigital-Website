@@ -2,11 +2,10 @@
 
 import Image from 'next/image';
 
-import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence, type PanInfo } from 'framer-motion';
 import { useRef, useState } from 'react';
 import {
-    FileText, Image as ImageIcon, Layers, Film, Globe,
-    Zap, TrendingDown, RefreshCw, Box, ShieldCheck, Target, ChevronLeft, ChevronRight
+    FileText, Image as ImageIcon, Layers, Film, Globe, ChevronLeft, ChevronRight
 } from 'lucide-react';
 
 // --- DATA ---
@@ -48,15 +47,6 @@ const capabilities = [
     }
 ];
 
-const impactPoints = [
-    { title: "Faster Turnaround", desc: "No physical logistics", icon: Zap, x: 10, y: 50 },
-    { title: "Reduced Overhead", desc: "Digital-first production", icon: TrendingDown, x: 25, y: 30 },
-    { title: "Iteration Speed", desc: "Real-time refinement", icon: RefreshCw, x: 40, y: 60 },
-    { title: "Scalable Output", desc: "Unlimited variations", icon: Box, x: 60, y: 40 },
-    { title: "Visual Control", desc: "Consistent branding", icon: ShieldCheck, x: 75, y: 70 },
-    { title: "Deployment Ready", desc: "Measurable impact", icon: Target, x: 90, y: 50 },
-];
-
 export default function CinematicCapabilityVault() {
     const containerRef = useRef<HTMLDivElement>(null);
     const { scrollYProgress } = useScroll({
@@ -64,10 +54,6 @@ export default function CinematicCapabilityVault() {
         offset: ["start start", "end end"]
     });
 
-    // Phase Transition: 0 -> 1 as we scroll
-    const phaseOpacity = useTransform(scrollYProgress, [0, 0.4, 0.6, 1], [1, 1, 0, 0]);
-    const timelineOpacity = useTransform(scrollYProgress, [0.4, 0.6, 1], [0, 1, 1]);
-    const timelineScale = useTransform(scrollYProgress, [0.4, 1], [0.8, 1]);
 
     return (
         <section ref={containerRef} className="relative h-screen bg-black overflow-hidden border-b border-white/10">
@@ -84,7 +70,7 @@ export default function CinematicCapabilityVault() {
                 </motion.div>
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
                 {/* Dust Particles */}
-                <div className="absolute inset-0 bg-[url('https://grainy-gradients.vercel.app/noise.svg')] opacity-[0.02]" />
+                <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.02]" />
             </div>
 
             {/* --- CORE CAPABILITIES --- */}
@@ -219,7 +205,7 @@ function BookPanelMobileCarousel() {
     const handlePrev = () => setActiveIndex((prev) => Math.max(0, prev - 1));
 
     // Simple swipe detection using Framer Motion drag end
-    const handleDragEnd = (event: any, info: any) => {
+    const handleDragEnd = (_event: MouseEvent | TouchEvent | PointerEvent, info: PanInfo) => {
         if (info.offset.x < -40) handleNext();
         if (info.offset.x > 40) handlePrev();
     };
