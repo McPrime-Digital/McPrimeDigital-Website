@@ -24,9 +24,9 @@ export default function Navbar() {
             transition={{ duration: 0.8 }}
             className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 pointer-events-none"
         >
-            <div className={`pointer-events-auto backdrop-blur-md px-6 py-2 rounded-full ${isHome ? 'md:hidden' : ''}`}>
+            <div className={`pointer-events-auto rounded-full px-4 md:px-6 py-2 bg-slate-950/70 backdrop-blur-md ring-1 ring-inset ring-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${isHome ? 'md:hidden' : ''}`}>
                 <Link href="/">
-                    <Image src="/logo.png" alt="McP DIGITAL" width={200} height={40} priority className="h-8 md:h-10 w-auto max-w-[200px]" />
+                    <Image src="/logo.png" alt="McP DIGITAL" width={200} height={40} priority className="h-7 md:h-10 w-auto max-w-[200px]" />
                 </Link>
             </div>
 
@@ -51,7 +51,7 @@ export default function Navbar() {
                         {/* Homepage: HeroSketch handles Desktop Nav entirely. Only show ABOUT on mobile. */}
                         <div className="md:hidden">
                             <Link href="/about">
-                                <Button variant="outline" className="text-xs px-4 py-2 border-white/20 hover:bg-white/10 backdrop-blur-sm shadow-[0_0_15px_rgba(255,255,255,0.1)]">ABOUT</Button>
+                                <Button variant="outline" className="text-xs px-4 py-2 border-white/15 bg-slate-950/70 hover:bg-white/10 backdrop-blur-md shadow-[0_8px_30px_rgba(0,0,0,0.35)]">ABOUT</Button>
                             </Link>
                         </div>
                     </>
