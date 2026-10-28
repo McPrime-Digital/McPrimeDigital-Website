@@ -24,6 +24,10 @@ export interface InViewVideoProps {
  * It renders its poster until then, pauses when scrolled away, and stays on the
  * poster entirely for visitors who prefer reduced motion. This replaces the
  * previous pattern of autoplaying every film with preload="auto".
+ *
+ * If the clip itself fails to load (for example the public bucket URL being
+ * rate limited), the element degrades to its poster image, or to a plain dark
+ * panel when there is no poster, instead of a broken black box.
  */
 export default function InViewVideo({
     src,
@@ -39,7 +43,9 @@ export default function InViewVideo({
     const ref = useRef<HTMLVideoElement>(null);
     const loopStart = useRef(0);
     const [inView, setInView] = useState(false);
+    const [failedSrc, setFailedSrc] = useState<string | null>(null);
     const reduced = usePrefersReducedMotion();
+    const failed = failedSrc === src;
 
     useEffect(() => {
         const el = ref.current;
@@ -50,7 +56,7 @@ export default function InViewVideo({
         );
         observer.observe(el);
         return () => observer.disconnect();
-    }, [rootMargin]);
+    }, [rootMargin, failed]);
 
     useEffect(() => {
         const el = ref.current;
@@ -60,7 +66,7 @@ export default function InViewVideo({
         } else {
             el.pause();
         }
-    }, [inView, reduced]);
+    }, [inView, reduced, failed]);
 
     const handleLoadedMetadata = () => {
         const el = ref.current;
@@ -84,6 +90,15 @@ export default function InViewVideo({
         }
     };
 
+    if (failed) {
+        return poster ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={poster} alt="" className={className} aria-hidden draggable={false} />
+        ) : (
+            <div className={className} aria-hidden style={{ background: "linear-gradient(160deg,#0f172a,#020617)" }} />
+        );
+    }
+
     return (
         <video
             ref={ref}
@@ -98,6 +113,7 @@ export default function InViewVideo({
             tabIndex={-1}
             onLoadedMetadata={handleLoadedMetadata}
             onTimeUpdate={windowSeconds ? handleTimeUpdate : undefined}
+            onError={() => setFailedSrc(src)}
         />
     );
 }
