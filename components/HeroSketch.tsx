@@ -44,10 +44,13 @@ export default function HeroSketch() {
             ref={containerRef}
             onMouseMove={handleMouseMove}
             onMouseLeave={handleMouseLeave}
-            className="relative min-h-[90vh] w-full flex flex-col items-center mb-32 overflow-hidden" // Full width container
+            className="relative min-h-[90vh] w-full flex flex-col items-center overflow-hidden" // Full width; spacing to the next section lives inside so the backdrop fades out seamlessly
         >
-            {/* Background Video Layer - Full Width */}
-            <div className="absolute inset-0 z-0 overflow-hidden bg-[#0A0D14]">
+            {/* Background Video Layer - Full Width.
+                The whole backdrop (base tone, video and tint) is masked so it dissolves into the page
+                background along the bottom half. Nothing is drawn over the copy, and there is no hard
+                edge where the hero ends: the next section starts on the same stage. */}
+            <div className="absolute inset-0 z-0 overflow-hidden bg-slate-950 [mask-image:linear-gradient(to_bottom,black_52%,transparent_100%)]">
                 {/* The blur is baked into this encode, so no GPU backdrop filter runs over a full-screen video */}
                 <InViewVideo
                     src="/compressed_videos/homepage-hero-bg.mp4"
@@ -55,11 +58,11 @@ export default function HeroSketch() {
                     eager
                     className="absolute inset-0 w-full h-full object-cover opacity-20"
                 />
-                <div className="absolute inset-0 bg-black/60 z-10" />
+                <div className="absolute inset-0 bg-black/55 z-10" />
             </div>
 
             {/* Content Wrapper - Constrained Width */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center pt-10">
+            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center pt-10 pb-14 md:pb-20">
                 {/* Top Row: Logo - AI - About */}
                 <div className="flex justify-center items-center w-full mb-8 md:mb-12 relative z-20">
                     {/* Logo Image - Absolute Left (Hidden on Mobile, handled by Navbar) */}
@@ -263,15 +266,12 @@ export default function HeroSketch() {
                         </span>
                     </h1>
 
-                    <p className="text-gray-300 text-base md:text-lg italic max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
+                    <p className="text-gray-200/90 text-base md:text-lg italic max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
                         From first treatment to final conform, every picture moves through a governed, AI-native pipeline built to broadcast standard — while automation systems carry scheduling, versioning, and delivery in the background. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
                     </p>
                 </motion.div>
             </div>
 
-
-            {/* Premium Gradient Transition to Next Section */}
-            <div className="absolute bottom-0 left-0 right-0 h-40 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent pointer-events-none z-20" />
         </section>
     );
 }

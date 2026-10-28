@@ -10,7 +10,24 @@ import FilmProductionMedia from './FilmProductionMedia';
 export default function ExploreSection() {
     return (
         <section>
-            <div className="text-center mb-20">
+            <div className="text-center mb-16 md:mb-20">
+                {/* Section slate: eyebrow and hairline anchor the start of the body of the page */}
+                <motion.p
+                    initial={{ opacity: 0, y: 10 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.6 }}
+                    className="font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-white/45 mb-5"
+                >
+                    What we build
+                </motion.p>
+                <motion.div
+                    initial={{ scaleX: 0, opacity: 0 }}
+                    whileInView={{ scaleX: 1, opacity: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.9, ease: 'easeOut' }}
+                    className="mx-auto mb-7 h-px w-28 bg-gradient-to-r from-transparent via-cyan-400/70 to-transparent"
+                />
                 <motion.h2
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}

@@ -37,9 +37,9 @@ export default function Home() {
         <HeroSketch />
 
         {/* Main Content Frame */}
-        <div className="mt-12 mx-2 md:mx-4 lg:mx-8 mb-8 relative">
-          {/* Cyber Grid Background */}
-          <div className="absolute inset-0 rounded-[40px] bg-slate-950 pointer-events-none z-0 overflow-hidden">
+        <div className="mt-2 md:mt-4 mx-2 md:mx-4 lg:mx-8 mb-8 relative">
+          {/* Cyber Grid Background: a hairline edge makes the frame read as a deliberate panel */}
+          <div className="absolute inset-0 rounded-[20px] md:rounded-[40px] bg-slate-950 ring-1 ring-inset ring-white/[0.06] pointer-events-none z-0 overflow-hidden">
             {/* Technical Grid Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px]" />
             {/* Top Gradient - Dark Premium Fade */}
@@ -51,7 +51,7 @@ export default function Home() {
           </div>
 
           {/* Content Container */}
-          <div className="relative z-10 py-16 px-4 md:px-12 flex flex-col gap-16 md:gap-24 overflow-hidden rounded-[20px] md:rounded-[40px]">
+          <div className="relative z-10 pt-10 md:pt-14 pb-16 px-4 md:px-12 flex flex-col gap-16 md:gap-24 overflow-hidden rounded-[20px] md:rounded-[40px]">
 
             {/* 1. Explore Section (Services) */}
             <div id="explore"><ExploreSection /></div>
