@@ -4,6 +4,9 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { ArrowUpRight, BadgeCheck, LayoutPanelLeft, LogIn, Workflow, type LucideIcon } from 'lucide-react';
 import { GENRELINE } from '@/lib/site';
+import { warmOrigins } from '@/lib/warmOrigins';
+
+const warmGenreline = () => warmOrigins(GENRELINE.url, GENRELINE.login);
 
 const GOLD = 'text-transparent bg-clip-text bg-gradient-to-r from-[#E6CB7C] via-[#CBA54D] to-[#A8832E]';
 
@@ -46,6 +49,7 @@ export default function PlatformSection() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: '-80px' }}
+                onViewportEnter={warmGenreline}
                 transition={{ duration: 0.7, ease: 'easeOut' }}
                 className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-[#1a1508]/60 via-black/40 to-black/60 backdrop-blur-md border border-[#CBA54D]/15 overflow-hidden"
             >
@@ -75,7 +79,7 @@ export default function PlatformSection() {
                             </span>
                         </h2>
                         <p className="text-gray-300 text-lg leading-relaxed">
-                            Genreline is the operating system for AI and hybrid film production. It is developed by our sister company, a separate software business with its own engineering team. Both companies share one founder.
+                            Genreline is the operating system for AI and hybrid film production. It is developed and operated by our sister software company, a separately managed business under common ownership with McPrime Digital.
                         </p>
                         <p className="text-gray-400 leading-relaxed">
                             Every McPrime engagement is governed inside Genreline, from first treatment to final delivery. Creative review, approvals, contracts and invoicing share a single system of record, giving your team one accountable view of the work.
@@ -86,6 +90,9 @@ export default function PlatformSection() {
                                 href={GENRELINE.url}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onPointerEnter={warmGenreline}
+                                onFocus={warmGenreline}
+                                onTouchStart={warmGenreline}
                                 className="group inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold tracking-wide text-black bg-gradient-to-r from-[#E6CB7C] to-[#CBA54D] hover:from-[#F0D98F] hover:to-[#D6B15C] transition-colors"
                             >
                                 Explore Genreline
@@ -95,6 +102,9 @@ export default function PlatformSection() {
                                 href={GENRELINE.login}
                                 target="_blank"
                                 rel="noopener noreferrer"
+                                onPointerEnter={warmGenreline}
+                                onFocus={warmGenreline}
+                                onTouchStart={warmGenreline}
                                 className="inline-flex items-center gap-2 rounded-full px-6 py-3 text-sm font-bold tracking-wide text-white/90 border border-white/15 bg-white/[0.03] hover:bg-white/[0.08] hover:border-white/30 transition-colors"
                             >
                                 <LogIn className="w-4 h-4" />

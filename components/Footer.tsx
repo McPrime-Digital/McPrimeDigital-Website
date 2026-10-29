@@ -5,6 +5,9 @@ import { Facebook, Instagram, Linkedin, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { GENRELINE, SOCIAL_URLS } from '@/lib/site';
+import { warmOrigins } from '@/lib/warmOrigins';
+
+const warmGenreline = () => warmOrigins(GENRELINE.url, GENRELINE.login);
 
 const companyLinks: { label: string; href: string; external?: boolean }[] = [
     { label: 'About', href: '/about' },
@@ -108,6 +111,9 @@ export default function Footer() {
                             href={GENRELINE.url}
                             target="_blank"
                             rel="noopener noreferrer"
+                            onPointerEnter={warmGenreline}
+                            onFocus={warmGenreline}
+                            onTouchStart={warmGenreline}
                             className="group inline-flex items-center gap-3 pt-2 w-fit"
                         >
                             <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-gray-500 group-hover:text-gray-300 transition-colors">Runs on</span>
@@ -144,6 +150,9 @@ export default function Footer() {
                                             href={item.href}
                                             target="_blank"
                                             rel="noopener noreferrer"
+                                            onPointerEnter={warmGenreline}
+                                            onFocus={warmGenreline}
+                                            onTouchStart={warmGenreline}
                                             className="text-gray-400 hover:text-white transition-all text-sm font-light hover:underline underline-offset-4 decoration-[#CBA54D] decoration-2"
                                         >
                                             {item.label}
@@ -183,7 +192,7 @@ export default function Footer() {
                 {/* --- BOTTOM STRIP --- */}
                 <div className="border-t border-white/10 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-gray-500 font-light">
                     <p>
-                        © 2025 McPrime Digital. All rights reserved.
+                        © <span suppressHydrationWarning>{new Date().getFullYear()}</span> McPrime Digital. All rights reserved.
                     </p>
                     <div className="flex gap-6">
                         {['Cookies', 'Privacy', 'Terms'].map((item) => (

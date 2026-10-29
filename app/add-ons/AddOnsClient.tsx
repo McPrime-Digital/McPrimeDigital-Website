@@ -6,6 +6,7 @@ import FlowingBackground from '@/components/add-ons/FlowingBackground';
 import PremiumCard from '@/components/add-ons/PremiumCard';
 import UGCGrid from '@/components/add-ons/UGCGrid';
 import LiveAdsDashboard from '@/components/add-ons/LiveAdsDashboard';
+import Footer from '@/components/Footer';
 
 // --- SHARED COMPONENTS ---
 
@@ -323,6 +324,7 @@ export default function GrowthAddOns() {
                 </Container>
             </Section>
 
+            <Footer />
         </main>
     );
 }

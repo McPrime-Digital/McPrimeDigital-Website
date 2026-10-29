@@ -3,7 +3,7 @@
 import { motion, useScroll, type MotionValue } from 'framer-motion';
 import { useRef, useState, useEffect, type ReactNode } from 'react';
 import Image from 'next/image';
-import { CheckCircle2, Monitor, Zap } from 'lucide-react';
+import { BadgeCheck, CheckCircle2, Layers, Lock } from 'lucide-react';
 import InViewVideo from '@/components/media/InViewVideo';
 
 /* --- WORKFLOW DATA --- */
@@ -25,11 +25,16 @@ const workflowSteps = [
     },
     {
         number: "04",
-        title: "Hollywood-Level Post-Production",
+        title: "Broadcast-Standard Post-Production",
         desc: "Professional editing, advanced color grading, cinematic sound design, and custom music production shape the final narrative."
     },
     {
         number: "05",
+        title: "Client Review & Approval",
+        desc: "Cuts are reviewed frame by frame in your McPrime client portal on Genreline. Every note, version and approval is recorded, and each sign-off closes with a certificate."
+    },
+    {
+        number: "06",
         title: "Deployment-Ready Asset Structuring",
         desc: "Final outputs are formatted for multiple platforms, campaign variations, and automated distribution pipelines."
     }
@@ -134,6 +139,17 @@ export default function FilmmakingWorkflow() {
                             delay={0.3}
                         >
                             <PostProduction />
+                        </GlassModule>
+
+                        {/* Module 4: Client review on Genreline */}
+                        <GlassModule
+                            title="CLIENT_REVIEW_PORTAL"
+                            color="border-amber-500/50"
+                            glow="shadow-amber-500/10"
+                            connectorColor="#CBA54D"
+                            delay={0.4}
+                        >
+                            <ReviewInterface />
                         </GlassModule>
 
                         <motion.div
@@ -273,9 +289,9 @@ function ScriptInterface() {
             {/* Main Editor */}
             <div className="flex-1 space-y-4 relative">
                 <div className="flex justify-between items-center pb-2 border-b border-white/5">
-                    <span className="text-gray-400">SCENE_02: DREAM_vs_REALITY ( CONFLICT )</span>
+                    <span className="text-gray-400">SCENE 02 · DREAM VS REALITY</span>
                     <span className="flex items-center gap-1 text-green-400 bg-green-500/10 px-2 py-0.5 rounded text-[9px]">
-                        <CheckCircle2 size={10} /> VALIDATED
+                        <Lock size={10} /> LOCKED
                     </span>
                 </div>
 
@@ -283,14 +299,14 @@ function ScriptInterface() {
                     <div className="flex gap-3">
                         <span className="text-indigo-400 font-mono pt-1">01</span>
                         <p className="text-gray-300 leading-relaxed bg-white/5 p-2 rounded w-full border border-white/5">
-                            Camera dollies forward through all the 4 flash moments. Father and son excited at Man utd game, astronaut asp flash, office meeting intro,  F1  drift as ....
+                            Camera dollies through four flash moments: a stadium crowd, an astronaut in a greenhouse, a boardroom pitch, a race-car drift.
                         </p>
                     </div>
                     <div className="flex gap-3">
                         <span className="text-indigo-400 font-mono pt-1">02</span>
                         <div className="relative w-full">
                             <p className="text-gray-300 leading-relaxed bg-white/5 p-2 rounded w-full border border-white/5">
-                                The subject turns, revealing the interface. <span className="bg-indigo-500/20 text-indigo-200 px-1">Macro focus</span> on the retina scan. Camera pans ....
+                                The subject turns, revealing the interface. <span className="bg-indigo-500/20 text-indigo-200 px-1">Macro focus</span> on the retina scan. Camera pulls back to the product.
                             </p>
                             {/* Cursor */}
                             <motion.div
@@ -302,11 +318,11 @@ function ScriptInterface() {
                     </div>
                 </div>
 
-                {/* Simulated Metadata */}
-                <div className="absolute bottom-0 w-full flex gap-4 text-[9px] text-gray-600 font-mono">
-                    <span>TOKENS: 4,210</span>
-                    <span>TEMP: 0.7</span>
-                    <span className="text-indigo-400">CONTEXT_WINDOW: ACTIVE</span>
+                {/* Production metadata */}
+                <div className="flex flex-wrap gap-x-4 gap-y-1 pt-3 border-t border-white/5 text-[9px] text-gray-600 font-mono">
+                    <span>DRAFT v1.3</span>
+                    <span>REVIEW: CREATIVE LEAD</span>
+                    <span className="text-indigo-400">STATUS: APPROVED</span>
                 </div>
             </div>
         </div>
@@ -329,9 +345,9 @@ function GenerativePipeline() {
             <div className="flex justify-between items-center text-[10px] font-mono">
                 <div className="flex items-center gap-2">
                     <div className="w-1.5 h-1.5 bg-cyan-500 animate-pulse rounded-full" />
-                    <span className="text-cyan-400">OPTIMIZING_TENSORS</span>
+                    <span className="text-cyan-400">GENERATING SHOTS 14–17</span>
                 </div>
-                <span className="text-gray-500">BATCH_ID: #9928-AX</span>
+                <span className="text-gray-500">SCENE 02</span>
             </div>
 
             {/* Sequence Thumbnails with Real Imagery - ASPECT SQUARE for REDUCED HEIGHT */}
@@ -368,13 +384,13 @@ function GenerativePipeline() {
             {/* Progress & Consistency */}
             <div className="mt-auto space-y-2">
                 <div className="flex justify-between text-[9px] text-gray-500 uppercase tracking-wider mb-1">
-                    <span>Coherence Score</span>
-                    <span className="text-white">98.4%</span>
+                    <span>Continuity check</span>
+                    <span className="text-white">3 of 4 shots approved</span>
                 </div>
                 <div className="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">
                     <motion.div
                         initial={{ width: "0%" }}
-                        whileInView={{ width: "85%" }}
+                        whileInView={{ width: "75%" }}
                         transition={{ duration: 2, ease: "easeOut" }}
                         className="h-full bg-cyan-500 relative"
                     >
@@ -385,8 +401,67 @@ function GenerativePipeline() {
 
             {/* GPU Stats */}
             <div className="flex gap-4 text-[9px] font-mono text-gray-600 pt-2 border-t border-white/5">
-                <span className="flex items-center gap-1"><Monitor size={10} /> H100_CLUSTER: ONLINE</span>
-                <span className="flex items-center gap-1"><Zap size={10} /> LATENCY: 42ms</span>
+                <span className="flex items-center gap-1"><Layers size={10} /> CHARACTER SHEET v2</span>
+                <span className="flex items-center gap-1"><Lock size={10} /> LOOK LOCKED</span>
+            </div>
+        </div>
+    );
+}
+
+// --- 4. Client Review Interface (Genreline portal) ---
+function ReviewInterface() {
+    const notes = [
+        { tc: '00:00:12:04', note: 'Title card lands two frames early.', by: 'Brand lead' },
+        { tc: '00:00:42:10', note: 'Hold the product shot half a second longer.', by: 'Marketing' },
+    ];
+    const chain = ['Creative review', 'Brand review', 'Legal review'];
+
+    return (
+        <div className="h-full flex flex-col gap-4 text-xs">
+            <div className="flex items-center justify-between font-mono text-[10px]">
+                <span className="text-gray-400">BRAND FILM · CUT v4</span>
+                <span className="flex items-center gap-1 text-[#E0C06A] bg-[#CBA54D]/10 border border-[#CBA54D]/25 px-2 py-0.5 rounded">
+                    <BadgeCheck size={10} /> APPROVED
+                </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-[1fr_auto] gap-4">
+                <div className="space-y-2">
+                    {notes.map((n) => (
+                        <div key={n.tc} className="flex gap-3 items-start bg-white/[0.03] border border-white/5 rounded p-2">
+                            <span className="font-mono text-[10px] text-[#E0C06A] pt-0.5 shrink-0">{n.tc}</span>
+                            <div className="flex-1 min-w-0">
+                                <p className="text-gray-300 leading-snug">{n.note}</p>
+                                <p className="text-[10px] text-gray-500 mt-1">{n.by} · <span className="text-emerald-400/80">Resolved</span></p>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+                <div className="sm:w-40 space-y-2 sm:border-l sm:border-white/5 sm:pl-4">
+                    <div className="text-[9px] uppercase tracking-wider text-gray-500">Chain of review</div>
+                    {chain.map((stage, i) => (
+                        <motion.div
+                            key={stage}
+                            initial={{ opacity: 0, x: -6 }}
+                            whileInView={{ opacity: 1, x: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ delay: 0.3 + i * 0.2, duration: 0.4 }}
+                            className="flex items-center gap-2"
+                        >
+                            <CheckCircle2 size={12} className="text-emerald-400/80 shrink-0" />
+                            <span className="text-gray-300">{stage}</span>
+                        </motion.div>
+                    ))}
+                </div>
+            </div>
+
+            <div className="mt-auto flex flex-wrap items-center justify-between gap-2 pt-3 border-t border-white/5 font-mono text-[9px] text-gray-500">
+                <span>CERTIFICATE ISSUED · RECORD KEPT</span>
+                <span className="flex items-center gap-1.5">
+                    MCPRIME CLIENT PORTAL ·
+                    <Image src="/platform/genreline-mark-gold.png" alt="" width={512} height={407} className="h-3 w-auto" />
+                    <span className="text-gray-300 font-sans text-[10px] tracking-normal">Genreline</span>
+                </span>
             </div>
         </div>
     );

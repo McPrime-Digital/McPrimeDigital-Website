@@ -37,11 +37,6 @@ const videoMeta: Record<string, {
     }
 };
 
-// 2 placeholder slots shown while remaining videos are pending
-const placeholders = [
-    { title: 'COMING SOON', subtitle: 'Next production in post. Stay tuned.', category: 'In Production' },
-    { title: 'COMING SOON', subtitle: 'Another project dropping shortly.', category: 'In Production' }
-];
 
 interface ApiVideo {
     key: string;
@@ -95,13 +90,6 @@ export default function FilmmakingPortfolio() {
         return () => controller.abort();
     }, []);
 
-    // Fill up to 4 total slots: real videos first, then placeholders
-    const totalSlots = 4;
-    const placeholdersNeeded = Math.max(0, totalSlots - videos.length);
-    const slots = [
-        ...videos.map(v => ({ type: 'video' as const, data: v })),
-        ...placeholders.slice(0, placeholdersNeeded).map(p => ({ type: 'placeholder' as const, data: p }))
-    ];
 
     return (
         <>
@@ -122,18 +110,15 @@ export default function FilmmakingPortfolio() {
                         </div>
                     ) : (
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                            {slots.map((slot, index) =>
-                                slot.type === 'video' ? (
-                                    <VideoCard
-                                        key={slot.data.key}
-                                        video={slot.data as PortfolioVideo}
-                                        index={index}
-                                        onOpen={() => setSelectedIndex(index)}
-                                    />
-                                ) : (
-                                    <PlaceholderCard key={`placeholder-${index}`} data={slot.data} index={index} />
-                                )
-                            )}
+                            {videos.map((video, index) => (
+                                // An odd last film sits centred at the same size instead of hanging on the left
+                                <div
+                                    key={video.key}
+                                    className={videos.length % 2 === 1 && index === videos.length - 1 ? 'md:col-span-2 md:mx-auto md:w-[calc(50%-1rem)]' : undefined}
+                                >
+                                    <VideoCard video={video} index={index} onOpen={() => setSelectedIndex(index)} />
+                                </div>
+                            ))}
                         </div>
                     )}
                 </div>
@@ -212,27 +197,3 @@ function VideoCard({ video, index, onOpen }: { video: PortfolioVideo; index: num
     );
 }
 
-function PlaceholderCard({ data, index }: { data: { title: string; subtitle: string; category: string }; index: number }) {
-    return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.7 }}
-            className="relative aspect-video overflow-hidden bg-[#0B0D12] rounded-xl border border-white/5"
-        >
-            {/* Animated Placeholder BG */}
-            <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px]" />
-            <div className="absolute inset-0 flex flex-col items-center justify-center p-8 text-center">
-                <div className="w-12 h-12 rounded-full border border-white/10 flex items-center justify-center mb-4">
-                    <div className="w-2 h-2 rounded-full bg-white/20 animate-pulse" />
-                </div>
-                <span className="text-[#2D6BFF] text-[10px] tracking-[0.2em] font-mono uppercase mb-3">
-                    {data.category}
-                </span>
-                <h3 className="text-xl font-black text-white/30 tracking-tight mb-2">{data.title}</h3>
-                <p className="text-sm text-white/20 leading-relaxed max-w-xs">{data.subtitle}</p>
-            </div>
-        </motion.div>
-    );
-}

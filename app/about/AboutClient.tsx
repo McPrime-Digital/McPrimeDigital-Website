@@ -3,7 +3,6 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
-import Navbar from '../../components/Navbar';
 import { Target, Zap, Clock, Eye, Sliders, Clapperboard, Code2, Layers, ArrowUpRight, type LucideIcon } from 'lucide-react';
 import { GENRELINE } from '@/lib/site';
 
@@ -19,7 +18,7 @@ const companies: { icon: LucideIcon; kicker: string; name: string; body: string;
         icon: Code2,
         kicker: 'The builder',
         name: 'Our software company',
-        body: 'Builds and operates Genreline with its own engineering team. A separate company that shares its founder with McPrime Digital.',
+        body: 'Develops and operates Genreline. A separately managed business under common ownership with McPrime Digital.',
         accent: '#A78BFA',
     },
     {
@@ -35,7 +34,6 @@ const companies: { icon: LucideIcon; kicker: string; name: string; body: string;
 export default function AboutPage() {
     return (
         <main className="min-h-screen bg-black text-white font-sans selection:bg-[#2D6BFF] selection:text-white relative overflow-hidden">
-            <Navbar />
 
             {/* RICH GLOBAL BACKGROUND - "Colored Beauty" */}
             <div className="fixed inset-0 bg-[#050608] z-[-2]" />
@@ -120,7 +118,7 @@ export default function AboutPage() {
                         </h2>
                         <h3 className="text-3xl md:text-5xl font-bold text-white leading-tight">Two companies. One founder. One platform.</h3>
                         <p className="text-gray-400 text-lg mt-5 max-w-2xl mx-auto font-light leading-relaxed">
-                            McPrime Digital and our software company are separate businesses with their own teams and one founder. One makes the work. The other builds Genreline, the platform the work runs on.
+                            McPrime Digital and our software company are separately managed businesses under common ownership. One makes the work. The other builds Genreline, the platform the work runs on.
                         </p>
                     </div>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -244,13 +242,9 @@ export default function AboutPage() {
                             We remove inefficiencies across production, automation, and performance deployment. Every workflow is designed for clarity, speed, and measurable output. Clients gain full visibility into spend, performance, and return — without opacity or disconnected reporting.
                         </p>
 
-                        <p className="text-gray-400 mb-10">
+                        <p className="text-gray-400">
                             We do not pursue volume for its own sake. We pursue controlled, scalable execution that compounds over time.
                         </p>
-
-                        <div className="inline-block px-10 py-5 border border-white/10 rounded-full bg-gradient-to-r from-white/[0.03] to-white/[0.01] backdrop-blur-md hover:border-emerald-500/30 transition-colors shadow-lg shadow-emerald-900/10">
-                            <span className="text-emerald-100 font-bold tracking-wide">Our role is simple: Build infrastructure that performs.</span>
-                        </div>
                     </motion.div>
                 </section>
 
@@ -304,7 +298,7 @@ export default function AboutPage() {
                                 Performance requires visibility.
                             </p>
                             <p>
-                                For filmmaking projects, delivery timelines, revisions, and outputs are clearly defined and structured.
+                                For filmmaking projects, reviews, approvals, contracts and invoices sit in your McPrime client portal on Genreline, with a record of who approved each version and when.
                             </p>
                             <p>
                                 For automation systems and paid deployment, clients have direct access to operational data, performance metrics, and measurable return tracking.
