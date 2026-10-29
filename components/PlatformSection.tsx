@@ -79,7 +79,7 @@ export default function PlatformSection() {
                             </span>
                         </h2>
                         <p className="text-gray-300 text-lg leading-relaxed">
-                            Genreline is the operating system for AI and hybrid film production. It is developed and operated by our sister software company, a separately managed business under common ownership with McPrime Digital.
+                            Genreline is the operating system for AI and hybrid film production. It is separately managed infrastructure, developed and operated by our sister software company under common ownership.
                         </p>
                         <p className="text-gray-400 leading-relaxed">
                             Every McPrime engagement is governed inside Genreline, from first treatment to final delivery. Creative review, approvals, contracts and invoicing share a single system of record, giving your team one accountable view of the work.
