@@ -26,7 +26,7 @@ const engagements = [
         ]
     },
     {
-        industry: "AI Software Company",
+        industry: "Sister Company · AI Software",
         title: "Capability-Focused Commercial Film",
         description: "Produced a short-form commercial explaining product capabilities, target users, practical application, and functional benefits.",
         outcomes: [

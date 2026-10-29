@@ -4,6 +4,16 @@ import type { SVGProps } from 'react';
 import { Facebook, Instagram, Linkedin, ArrowUp } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
+import { GENRELINE, SOCIAL_URLS } from '@/lib/site';
+
+const companyLinks: { label: string; href: string; external?: boolean }[] = [
+    { label: 'About', href: '/about' },
+    { label: 'Selected Engagements', href: '/selected-engagements' },
+    { label: 'Insights', href: '/insights' },
+    { label: 'Join Our Team', href: '/join-our-team' },
+    { label: 'Contact', href: '/#contact' },
+    { label: 'Client Login', href: GENRELINE.login, external: true },
+];
 
 export default function Footer() {
     const scrollToTop = () => {
@@ -75,23 +85,35 @@ export default function Footer() {
                         {/* Social Icons */}
                         <div className="flex gap-4 pt-4">
                             {[
-                                { Icon: Facebook, href: "https://www.facebook.com/share/14VRKiD58fL/?mibextid=wwXIfr" },
+                                { Icon: Facebook, href: SOCIAL_URLS.facebook },
                                 { 
                                   Icon: (props: SVGProps<SVGSVGElement>) => (
                                     <svg viewBox="0 0 24 24" fill="currentColor" {...props}>
                                       <path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z" />
                                     </svg>
                                   ), 
-                                  href: "https://x.com/mcprimedigital?s=11" 
+                                  href: SOCIAL_URLS.x 
                                 },
-                                { Icon: Instagram, href: "https://www.instagram.com/mcprimedigital?igsh=MWN6ZG44aGpyYTlsMQ%3D%3D&utm_source=qr" },
-                                { Icon: Linkedin, href: "https://www.linkedin.com/company/mcprimedigital/" }
+                                { Icon: Instagram, href: SOCIAL_URLS.instagram },
+                                { Icon: Linkedin, href: SOCIAL_URLS.linkedin }
                             ].map(({Icon, href}, i) => (
                                 <a key={i} href={href} target="_blank" rel="noopener noreferrer" className="text-gray-500 hover:text-white transition-colors duration-300">
                                     <Icon className="w-5 h-5" />
                                 </a>
                             ))}
                         </div>
+
+                        {/* Platform lockup */}
+                        <a
+                            href={GENRELINE.url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="group inline-flex items-center gap-3 pt-2 w-fit"
+                        >
+                            <span className="text-[10px] font-mono tracking-[0.3em] uppercase text-gray-500 group-hover:text-gray-300 transition-colors">Runs on</span>
+                            <Image src="/platform/genreline-mark-gold.png" alt="" width={512} height={407} className="h-4 w-auto opacity-80 group-hover:opacity-100 transition-opacity" />
+                            <span className="text-sm font-semibold text-gray-300 group-hover:text-white transition-colors tracking-tight">Genreline</span>
+                        </a>
                     </div>
 
                     {/* COLUMN 2 — Services */}
@@ -115,14 +137,25 @@ export default function Footer() {
                     <div className="flex flex-col space-y-6">
                         <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-2 opacity-50">Company</h4>
                         <ul className="space-y-3">
-                            {['About', 'Selected Engagements', 'Insights', 'Join Our Team', 'Contact'].map((item) => (
-                                <li key={item}>
-                                    <Link
-                                        href={item === 'Insights' ? '/insights' : item === 'Selected Engagements' ? '/selected-engagements' : item === 'Join Our Team' ? '/join-our-team' : item === 'About' ? '/about' : item === 'Contact' ? '/#contact' : '#'}
-                                        className="text-gray-400 hover:text-white transition-all text-sm font-light hover:underline underline-offset-4 decoration-indigo-500 decoration-2"
-                                    >
-                                        {item}
-                                    </Link>
+                            {companyLinks.map((item) => (
+                                <li key={item.label}>
+                                    {item.external ? (
+                                        <a
+                                            href={item.href}
+                                            target="_blank"
+                                            rel="noopener noreferrer"
+                                            className="text-gray-400 hover:text-white transition-all text-sm font-light hover:underline underline-offset-4 decoration-[#CBA54D] decoration-2"
+                                        >
+                                            {item.label}
+                                        </a>
+                                    ) : (
+                                        <Link
+                                            href={item.href}
+                                            className="text-gray-400 hover:text-white transition-all text-sm font-light hover:underline underline-offset-4 decoration-indigo-500 decoration-2"
+                                        >
+                                            {item.label}
+                                        </Link>
+                                    )}
                                 </li>
                             ))}
                         </ul>

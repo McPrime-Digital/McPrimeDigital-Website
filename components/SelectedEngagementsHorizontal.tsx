@@ -24,7 +24,7 @@ const engagements = [
         iconColor: "text-emerald-400"
     },
     {
-        client: "AI Software Company",
+        client: "Sister Company · AI Software",
         title: "Capability-Focused Commercial Film",
         description: "Produced a short-form commercial explaining product capabilities, target users, practical application, and functional benefits.",
         points: ["Structured product narrative", "Clear use-case communication", "Benefit-driven positioning", "Platform-ready output"],

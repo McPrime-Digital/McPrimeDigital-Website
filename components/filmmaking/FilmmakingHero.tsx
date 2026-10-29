@@ -1,6 +1,8 @@
 'use client';
 
 import { motion } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
 import InViewVideo from '@/components/media/InViewVideo';
 
 export default function FilmmakingHero() {
@@ -26,9 +28,13 @@ export default function FilmmakingHero() {
                 transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
                 className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10"
             >
-                <div className="px-5 py-1.5 rounded-full border border-white/15 bg-black/30 text-white/70 text-xs md:text-sm tracking-[0.3em] uppercase backdrop-blur-sm whitespace-nowrap">
-                    Genreline as Infrastructure
-                </div>
+                <Link
+                    href="/#platform"
+                    className="group inline-flex items-center gap-2.5 pl-4 pr-5 py-1.5 rounded-full border border-white/15 bg-black/30 text-white/70 hover:text-white hover:border-[#CBA54D]/50 text-xs md:text-sm tracking-[0.3em] uppercase backdrop-blur-sm whitespace-nowrap transition-colors"
+                >
+                    <Image src="/platform/genreline-mark-gold.png" alt="" width={512} height={407} className="h-3.5 md:h-4 w-auto" />
+                    Runs on Genreline
+                </Link>
             </motion.div>
 
             {/* Content Anchored Bottom Left - No Grid / Immersion */}

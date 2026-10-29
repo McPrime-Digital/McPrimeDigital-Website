@@ -4,7 +4,33 @@ import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
 import Navbar from '../../components/Navbar';
-import { Target, Zap, Clock, Eye, Sliders, type LucideIcon } from 'lucide-react';
+import { Target, Zap, Clock, Eye, Sliders, Clapperboard, Code2, Layers, ArrowUpRight, type LucideIcon } from 'lucide-react';
+import { GENRELINE } from '@/lib/site';
+
+const companies: { icon: LucideIcon; kicker: string; name: string; body: string; accent: string; href?: string }[] = [
+    {
+        icon: Clapperboard,
+        kicker: 'The studio',
+        name: 'McPrime Digital',
+        body: 'AI-native film, commercials and automation systems for mid-market and enterprise teams. Founded in 2023. Every engagement runs on Genreline.',
+        accent: '#2D6BFF',
+    },
+    {
+        icon: Code2,
+        kicker: 'The builder',
+        name: 'Our software company',
+        body: 'Builds and operates Genreline with its own engineering team. A separate company that shares its founder with McPrime Digital.',
+        accent: '#A78BFA',
+    },
+    {
+        icon: Layers,
+        kicker: 'The platform',
+        name: 'Genreline',
+        body: 'Developed by our sister software company. The operating system for AI and hybrid film production: the Crew space, the Client space and portal, and the Suite where the work is made, with contracts, rights and money on one record.',
+        accent: '#CBA54D',
+        href: GENRELINE.url,
+    },
+];
 
 export default function AboutPage() {
     return (
@@ -82,6 +108,52 @@ export default function AboutPage() {
                         <p className="text-gray-400 text-sm pt-4">
                             Our focus is not volume for its own sake, but controlled, scalable execution aligned with measurable performance.
                         </p>
+                    </div>
+                </section>
+
+
+                {/* 2b. THE COMPANIES - studio, builder, platform */}
+                <section className="mb-20 md:mb-40 relative">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-sm font-mono text-[#CBA54D] uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
+                            <span className="w-8 h-px bg-[#CBA54D]" /> Who builds what <span className="w-8 h-px bg-[#CBA54D]" />
+                        </h2>
+                        <h3 className="text-3xl md:text-5xl font-bold text-white leading-tight">Two companies. One founder. One platform.</h3>
+                        <p className="text-gray-400 text-lg mt-5 max-w-2xl mx-auto font-light leading-relaxed">
+                            McPrime Digital and our software company are separate businesses with their own teams and one founder. One makes the work. The other builds Genreline, the platform the work runs on.
+                        </p>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        {companies.map((c, i) => {
+                            const Wrapper = c.href ? 'a' : 'div';
+                            return (
+                                <motion.div
+                                    key={c.name}
+                                    initial={{ opacity: 0, y: 24 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.1, duration: 0.6 }}
+                                    className="h-full"
+                                >
+                                    <Wrapper
+                                        {...(c.href ? { href: c.href, target: '_blank', rel: 'noopener noreferrer' } : {})}
+                                        className="group relative flex h-full flex-col rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-sm transition-colors duration-500 hover:border-white/20"
+                                    >
+                                        <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
+                                        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-[80px] pointer-events-none opacity-30" style={{ background: c.accent }} />
+                                        <div className="flex items-center justify-between mb-6">
+                                            <div className="w-12 h-12 rounded-xl border flex items-center justify-center" style={{ borderColor: c.accent + '55', background: c.accent + '1a' }}>
+                                                <c.icon className="w-6 h-6" style={{ color: c.accent }} />
+                                            </div>
+                                            {c.href && <ArrowUpRight className="w-5 h-5 text-white/30 group-hover:text-white transition-colors" />}
+                                        </div>
+                                        <p className="font-mono text-[11px] tracking-[0.3em] uppercase mb-2" style={{ color: c.accent }}>{c.kicker}</p>
+                                        <h4 className="text-2xl font-bold text-white mb-4">{c.name}</h4>
+                                        <p className="text-gray-400 leading-relaxed text-[15px]">{c.body}</p>
+                                    </Wrapper>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </section>
 

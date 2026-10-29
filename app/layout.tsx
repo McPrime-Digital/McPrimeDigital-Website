@@ -2,7 +2,20 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Libre_Baskerville, Cinzel_Decorative, Syne, Michroma } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, SITE_NAME, SITE_URL } from "@/lib/site";
+import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, GENRELINE, SITE_NAME, SITE_URL, SOCIAL_URLS } from "@/lib/site";
+
+/** Organization structured data: who we are, where else we are, and the platform we run on. */
+const organizationJsonLd = {
+  "@context": "https://schema.org",
+  "@type": "Organization",
+  name: SITE_NAME,
+  url: SITE_URL,
+  logo: `${SITE_URL}/logo.png`,
+  description: DEFAULT_DESCRIPTION,
+  foundingDate: "2023",
+  sameAs: Object.values(SOCIAL_URLS),
+  knowsAbout: ["AI commercial filmmaking", "AI automation systems", "Hybrid film production", GENRELINE.url],
+};
 
 const manrope = Manrope({ subsets: ["latin"] });
 const libreBaskerville = Libre_Baskerville({
@@ -96,6 +109,10 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${manrope.className} ${libreBaskerville.variable} ${cinzel.variable} ${syne.variable} ${michroma.variable} overflow-x-hidden relative min-h-screen`}>
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
+        />
         <Navbar />
         <main className="w-full relative overflow-x-hidden">
           {children}
