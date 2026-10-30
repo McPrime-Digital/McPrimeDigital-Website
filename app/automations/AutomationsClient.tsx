@@ -132,7 +132,7 @@ export default function AutomationsPage() {
                                 whileInView={{ opacity: 1, y: 0 }}
                                 whileHover={{ y: -10, scale: 1.02 }}
                                 transition={{ delay: i * 0.1 }}
-                                className="group p-8 rounded-3xl bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all relative overflow-hidden backdrop-blur-xl shadow-2xl"
+                                className="group p-8 rounded-3xl bg-[#0d0f14]/85 md:bg-white/5 border border-white/10 hover:border-white/30 hover:bg-white/10 transition-all relative overflow-hidden md:backdrop-blur-xl shadow-2xl"
                             >
                                 {/* Liquid Glass Shine Effect */}
                                 <div className="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
