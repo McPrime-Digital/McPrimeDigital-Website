@@ -1,17 +1,17 @@
-'use client';
-
-import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
 import InViewVideo from '@/components/media/InViewVideo';
 
+// The headline animates in with CSS, so it is visible as soon as the page paints instead of
+// waiting for JavaScript. svh keeps the copy clear of Safari's toolbar on phones.
 export default function FilmmakingHero() {
     return (
-        <section className="relative h-screen w-full overflow-hidden bg-[#0B0D12]">
-            {/* Background Video */}
+        <section className="relative h-svh w-full overflow-hidden bg-[#0B0D12]">
+            {/* Background Video: phones get a portrait crop of the same framing (about a third of the bytes) */}
             <div className="absolute inset-0 z-0 select-none bg-[#0a0a0d]">
                 <InViewVideo
                     src="/compressed_videos/filmmaking-hero.mp4"
+                    mobileSrc="/compressed_videos/filmmaking-hero-portrait.mp4"
                     poster="/compressed_videos/filmmaking-hero.jpg"
                     eager
                     className="absolute inset-0 w-full h-full object-cover opacity-60"
@@ -22,12 +22,7 @@ export default function FilmmakingHero() {
             </div>
 
             {/* Positioning badge - top center */}
-            <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.4, duration: 1, ease: 'easeOut' }}
-                className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10"
-            >
+            <div className="absolute top-24 md:top-28 left-1/2 -translate-x-1/2 z-10 animate-rise [animation-delay:400ms]">
                 <Link
                     href="/#platform"
                     className="group inline-flex items-center gap-2.5 pl-4 pr-5 py-1.5 rounded-full border border-white/15 bg-black/30 text-white/70 hover:text-white hover:border-[#CBA54D]/50 text-xs md:text-sm tracking-[0.3em] uppercase backdrop-blur-sm whitespace-nowrap transition-colors"
@@ -35,40 +30,25 @@ export default function FilmmakingHero() {
                     <Image src="/platform/genreline-mark-gold.png" alt="" width={512} height={407} className="h-3.5 md:h-4 w-auto" />
                     Runs on Genreline
                 </Link>
-            </motion.div>
+            </div>
 
             {/* Content Anchored Bottom Left - No Grid / Immersion */}
             <div className="absolute bottom-20 left-6 md:bottom-32 md:left-20 z-10 max-w-2xl">
-                <motion.h1
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 1, ease: 'easeOut' }}
-                    className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6"
-                >
+                <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6 animate-rise">
                     AI-NATIVE<br />
                     FILM, TV,<br />
                     COMMERCIAL,<br />
                     MUSIC VIDEO
-                </motion.h1>
+                </h1>
 
-                <motion.p
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 0.15, duration: 1, ease: 'easeOut' }}
-                    className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-[#2D6BFF] mb-8"
-                >
+                <p className="text-xl md:text-2xl lg:text-3xl font-semibold tracking-tight text-[#2D6BFF] mb-8 animate-rise [animation-delay:150ms]">
                     BUILT FOR SCALE, SPEED, & CONTROL
-                </motion.p>
+                </p>
 
                 <div className="flex flex-col gap-6">
-                    <motion.p
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: 0.3, duration: 1, ease: 'easeOut' }}
-                        className="text-lg md:text-xl text-gray-300 font-light italic leading-relaxed max-w-lg"
-                    >
+                    <p className="text-lg md:text-xl text-gray-300 font-light italic leading-relaxed max-w-lg animate-rise [animation-delay:300ms]">
                         An AI-native production system delivering broadcast-grade film without physical shoot constraints — compressed timelines, full creative control.
-                    </motion.p>
+                    </p>
                 </div>
             </div>
         </section>

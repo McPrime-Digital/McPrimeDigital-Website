@@ -23,7 +23,7 @@ export const metadata: Metadata = {
 
 export default function FilmmakingPage() {
     return (
-        <main className="min-h-screen bg-[#0B0D12] text-white overflow-x-hidden font-sans selection:bg-[#2D6BFF]/30">
+        <div className="min-h-screen bg-[#0B0D12] text-white overflow-x-clip font-sans selection:bg-[#2D6BFF]/30">
             <FilmmakingHero />
             <FilmmakingWorkflow />
             <CinematicCapabilityVault />
@@ -31,6 +31,6 @@ export default function FilmmakingPage() {
             <FilmmakingTarget />
             <SelectedEngagementsHorizontal />
             <Footer />
-        </main>
+        </div>
     );
 }

@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Manrope, Libre_Baskerville, Cinzel_Decorative, Syne, Michroma } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import MotionProvider from "@/components/MotionProvider";
 import { DEFAULT_DESCRIPTION, DEFAULT_TITLE, GENRELINE, SITE_NAME, SITE_URL, SOCIAL_URLS } from "@/lib/site";
 
 /** Organization structured data: who we are, where else we are, and the platform we run on. */
@@ -113,10 +114,13 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(organizationJsonLd).replace(/</g, "\\u003c") }}
         />
-        <Navbar />
-        <main className="w-full relative overflow-x-hidden">
-          {children}
-        </main>
+        <MotionProvider>
+          <Navbar />
+          {/* clip (not hidden) trims sideways overflow without turning main into a scroll box, which would break position: sticky */}
+          <main className="w-full relative overflow-x-clip">
+            {children}
+          </main>
+        </MotionProvider>
       </body>
     </html>
   );

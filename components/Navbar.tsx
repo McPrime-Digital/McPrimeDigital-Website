@@ -4,7 +4,6 @@ import { usePathname } from 'next/navigation';
 import Image from 'next/image';
 import Link from 'next/link';
 
-import { motion } from 'framer-motion';
 import Button from './ui/Button';
 import MobileNav from './MobileNav';
 
@@ -18,12 +17,7 @@ export default function Navbar() {
     // if (isHome) return null;
 
     return (
-        <motion.nav
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 pointer-events-none"
-        >
+        <nav className="fixed top-0 left-0 right-0 z-50 flex justify-between items-center px-6 md:px-12 py-6 pointer-events-none animate-[fade-in_0.8s_ease-out_both]">
             <div className={`pointer-events-auto rounded-full px-4 md:px-6 py-2 bg-slate-950/70 backdrop-blur-md ring-1 ring-inset ring-white/10 shadow-[0_8px_30px_rgba(0,0,0,0.35)] ${isHome ? 'md:hidden' : ''}`}>
                 <Link href="/">
                     <Image src="/logo.png" alt="McP DIGITAL" width={200} height={40} priority className="h-7 md:h-10 w-auto max-w-[200px]" />
@@ -72,6 +66,6 @@ export default function Navbar() {
                     </>
                 )}
             </div>
-        </motion.nav>
+        </nav>
     );
 }

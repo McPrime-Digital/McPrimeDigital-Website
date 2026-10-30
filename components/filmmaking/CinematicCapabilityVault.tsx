@@ -2,8 +2,8 @@
 
 import Image from 'next/image';
 
-import { motion, useScroll, useTransform, AnimatePresence, type PanInfo } from 'framer-motion';
-import { useRef, useState } from 'react';
+import { motion, AnimatePresence, type PanInfo } from 'framer-motion';
+import { useState } from 'react';
 import {
     FileText, Image as ImageIcon, Layers, Film, Globe, ChevronLeft, ChevronRight
 } from 'lucide-react';
@@ -48,35 +48,28 @@ const capabilities = [
 ];
 
 export default function CinematicCapabilityVault() {
-    const containerRef = useRef<HTMLDivElement>(null);
-    const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
-    });
-
-
     return (
-        <section ref={containerRef} className="relative h-screen bg-black overflow-hidden border-b border-white/10">
-            {/* --- GLOBAL BACKGROUND: Liquid Water --- */}
+        <section className="relative h-screen bg-black overflow-hidden border-b border-white/10">
+            {/* --- GLOBAL BACKGROUND: Liquid Water ---
+                Phones request a tiny rendition that the browser stretches to full size: it reads as the
+                same frosted softness desktop gets from backdrop-blur, without the GPU re-blurring the screen. */}
             <div className="absolute inset-0 z-0 pointer-events-none">
-                <motion.div style={{ y: useTransform(scrollYProgress, [0, 1], ["0%", "5%"]) }} className="absolute inset-0">
-                    <Image
-                        src="/filmmaking/watersplash.jpeg"
-                        alt="Liquid Background"
-                        fill
-                        className="object-cover opacity-60"
-                        priority
-                    />
-                </motion.div>
+                <Image
+                    src="/filmmaking/watersplash.jpeg"
+                    alt=""
+                    fill
+                    sizes="(max-width: 767px) 48px, 1920px"
+                    className="object-cover opacity-60"
+                />
                 <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
                 {/* Dust Particles */}
-                <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.02]" />
+                <div className="hidden md:block absolute inset-0 bg-[url('/noise.svg')] opacity-[0.02]" />
             </div>
 
             {/* --- CORE CAPABILITIES --- */}
             <div className="relative w-full h-full flex flex-col items-center justify-end md:justify-end pb-10 md:pb-20 z-10 pt-32 md:pt-0">
                 {/* Full Screen Blurred Background for Readability - Reduced opacity */}
-                <div className="absolute inset-0 bg-black/30 backdrop-blur-md -z-10" />
+                <div className="absolute inset-0 bg-black/30 md:backdrop-blur-md -z-10" />
 
                 {/* Header - Adjusted for mobile overlap */}
                 <div className="absolute top-8 md:top-12 left-0 right-0 text-center z-20 pointer-events-none px-4">
@@ -160,6 +153,7 @@ function BookPanelSystem() {
                                             src={cap.img}
                                             alt={cap.title}
                                             fill
+                                            sizes="45vw"
                                             className="object-cover object-center"
                                         />
                                         <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent" />
@@ -239,8 +233,8 @@ function BookPanelMobileCarousel() {
                                 dragElastic={0.2}
                                 onDragEnd={handleDragEnd}
                             >
-                                {/* Transparent Liquid Glass Material */}
-                                <div className="absolute inset-0 bg-white/[0.03] backdrop-blur-md border border-white/[0.1] rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
+                                {/* Glass material: near-solid tint over the softened backdrop (no live blur on phones) */}
+                                <div className="absolute inset-0 bg-[#0a0c11]/85 border border-white/[0.1] rounded-2xl shadow-[0_8px_32px_0_rgba(0,0,0,0.36)]">
                                     <div className="absolute inset-0 bg-gradient-to-br from-white/[0.1] via-transparent to-transparent opacity-50 pointer-events-none rounded-2xl" />
                                 </div>
 
@@ -254,6 +248,7 @@ function BookPanelMobileCarousel() {
                                                     src={cap.img}
                                                     alt={cap.title}
                                                     fill
+                                                    sizes="300px"
                                                     className="object-cover object-center"
                                                 />
                                                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent" />

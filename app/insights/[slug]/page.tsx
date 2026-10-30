@@ -83,7 +83,7 @@ export default async function ArticlePage({ params }: Props) {
     const imageUrl = `${domain}${article.image}`;
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-[#050505] text-white">
 
             {/* HERO SECTION */}
             <div className="relative pt-32 pb-20 px-4 md:px-8 border-b border-white/10 overflow-hidden">
@@ -167,6 +167,6 @@ export default async function ArticlePage({ params }: Props) {
             </section>
 
             <Footer />
-        </main>
+        </div>
     );
 }

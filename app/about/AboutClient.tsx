@@ -33,7 +33,7 @@ const companies: { icon: LucideIcon; kicker: string; name: string; body: string;
 
 export default function AboutPage() {
     return (
-        <main className="min-h-screen bg-black text-white font-sans selection:bg-[#2D6BFF] selection:text-white relative overflow-hidden">
+        <div className="min-h-screen bg-black text-white font-sans selection:bg-[#2D6BFF] selection:text-white relative overflow-x-clip">
 
             {/* RICH GLOBAL BACKGROUND - "Colored Beauty" */}
             <div className="fixed inset-0 bg-[#050608] z-[-2]" />
@@ -374,7 +374,7 @@ export default function AboutPage() {
             </div>
 
             <Footer />
-        </main>
+        </div>
     );
 }
 

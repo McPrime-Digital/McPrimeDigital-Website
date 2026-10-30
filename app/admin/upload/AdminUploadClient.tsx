@@ -115,7 +115,7 @@ export default function UploadPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white py-20 px-4 selection:bg-blue-500/30">
+        <div className="min-h-screen bg-[#050505] text-white py-20 px-4 selection:bg-blue-500/30">
             <div className="max-w-4xl mx-auto space-y-12">
                 {/* Header */}
                 <header className="flex flex-col md:flex-row md:items-center justify-between gap-6 border-b border-white/5 pb-12">
@@ -383,6 +383,6 @@ export default function UploadPage() {
                     </motion.div>
                 )}
             </AnimatePresence>
-        </main>
+        </div>
     );
 }

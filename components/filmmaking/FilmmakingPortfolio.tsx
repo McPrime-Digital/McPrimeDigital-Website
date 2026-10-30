@@ -153,10 +153,10 @@ function VideoCard({ video, index, onOpen }: { video: PortfolioVideo; index: num
 
     return (
         <motion.div
-            initial={{ opacity: 0, y: 20 }}
+            initial={{ opacity: 0, y: 16 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ delay: index * 0.1, duration: 0.7 }}
+            transition={{ delay: (index % 2) * 0.08, duration: 0.45 }}
             className="group relative aspect-video overflow-hidden bg-[#0B0D12] rounded-xl cursor-pointer shadow-2xl"
             onClick={onOpen}
         >
@@ -173,7 +173,7 @@ function VideoCard({ video, index, onOpen }: { video: PortfolioVideo; index: num
 
             {/* Play Button */}
             <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300">
-                <div className="w-16 h-16 rounded-full bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-[#2D6BFF] group-hover:border-[#2D6BFF] transition-all duration-300 scale-90 group-hover:scale-100">
+                <div className="w-16 h-16 rounded-full bg-white/10 md:backdrop-blur-md border border-white/20 flex items-center justify-center group-hover:bg-[#2D6BFF] group-hover:border-[#2D6BFF] transition-all duration-300 scale-90 group-hover:scale-100">
                     <Play className="w-6 h-6 text-white ml-1" />
                 </div>
             </div>

@@ -23,7 +23,7 @@ const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
 
 export default function Home() {
   return (
-    <main className="min-h-screen relative overflow-x-hidden">
+    <div className="min-h-screen relative overflow-x-clip">
       {/* Background Mesh/Glow Effects - Fixed Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-slate-950">
         <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-900 to-transparent opacity-60" />
@@ -78,6 +78,6 @@ export default function Home() {
         </div>
       </div>
 
-    </main >
+    </div>
   );
 }

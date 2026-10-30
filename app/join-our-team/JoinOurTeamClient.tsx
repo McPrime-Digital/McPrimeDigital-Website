@@ -6,7 +6,7 @@ import { ArrowLeft, ArrowRight } from 'lucide-react';
 
 export default function JoinOurTeamPage() {
     return (
-        <main className="min-h-screen bg-[#121212] text-white font-sans selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-indigo-500/30">
             {/* HERO SECTION */}
             <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20 border-b border-white/5 bg-gradient-to-b from-[#1a1a1a] to-[#121212]">
                 <div className="max-w-4xl mx-auto text-center md:text-left">
@@ -138,6 +138,6 @@ export default function JoinOurTeamPage() {
                 </section>
 
             </div>
-        </main>
+        </div>
     );
 }

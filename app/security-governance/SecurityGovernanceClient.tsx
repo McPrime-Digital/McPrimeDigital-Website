@@ -6,7 +6,7 @@ import { ArrowLeft, Shield, Lock, FileText, Activity, Cookie } from 'lucide-reac
 
 export default function SecurityGovernancePage() {
     return (
-        <main className="min-h-screen bg-[#121212] text-white font-sans selection:bg-indigo-500/30">
+        <div className="min-h-screen bg-[#121212] text-white font-sans selection:bg-indigo-500/30">
             {/* HERO SECTION */}
             <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20 border-b border-white/5 bg-[#141414]">
                 <div className="max-w-4xl mx-auto text-center md:text-left">
@@ -181,6 +181,6 @@ export default function SecurityGovernancePage() {
                 </section>
 
             </div>
-        </main>
+        </div>
     );
 }

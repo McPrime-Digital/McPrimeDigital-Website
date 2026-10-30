@@ -33,7 +33,7 @@ export default function GrowthAddOns() {
     const heroOpacity = useTransform(scrollYProgress, [0, 0.4], [1, 0]);
 
     return (
-        <main className="bg-[#050608] min-h-screen text-white selection:bg-[#2D6BFF] selection:text-white relative overflow-x-hidden font-sans">
+        <div className="bg-[#050608] min-h-screen text-white selection:bg-[#2D6BFF] selection:text-white relative overflow-x-clip font-sans">
 
             {/* GLOBAL AMBIANCE */}
             <div className="fixed inset-0 bg-[url('/noise.svg')] opacity-[0.04] pointer-events-none z-[50] mix-blend-overlay" />
@@ -148,7 +148,7 @@ export default function GrowthAddOns() {
                 <Container>
                     <div className="flex flex-col lg:flex-row gap-16 items-start">
                         {/* LEFT: Context */}
-                        <div className="w-full lg:w-1/3 space-y-8 sticky top-32">
+                        <div className="w-full lg:w-1/3 space-y-8 lg:sticky lg:top-32">
                             <motion.h2
                                 initial={{ opacity: 0, y: 20 }}
                                 whileInView={{ opacity: 1, y: 0 }}
@@ -325,6 +325,6 @@ export default function GrowthAddOns() {
             </Section>
 
             <Footer />
-        </main>
+        </div>
     );
 }

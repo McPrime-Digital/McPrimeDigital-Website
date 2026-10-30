@@ -38,7 +38,7 @@ export default function AutomationsPage() {
     const [isHoveringHeroText, setIsHoveringHeroText] = useState(false);
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white selection:bg-cyan-500/30 overflow-x-hidden font-sans relative">
+        <div className="min-h-screen bg-[#050505] text-white selection:bg-cyan-500/30 overflow-x-clip font-sans relative">
 
             {/* --- HERO SECTION --- */}
             <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
@@ -195,6 +195,6 @@ export default function AutomationsPage() {
             <SecurityGovernanceSection />
 
             <Footer />
-        </main >
+        </div>
     );
 }

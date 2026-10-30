@@ -5,6 +5,8 @@ import { usePrefersReducedMotion } from "@/lib/useReducedMotion";
 
 export interface InViewVideoProps {
     src: string;
+    /** Lighter encode for phones (up to 767px wide), chosen by the browser through <source media>. */
+    mobileSrc?: string;
     poster?: string | null;
     className?: string;
     /** Begin fetching metadata as soon as the element mounts (hero backgrounds). */
@@ -31,6 +33,7 @@ export interface InViewVideoProps {
  */
 export default function InViewVideo({
     src,
+    mobileSrc,
     poster,
     className,
     eager = false,
@@ -99,10 +102,12 @@ export default function InViewVideo({
         );
     }
 
+    // With a phone encode the browser takes the first <source> whose media matches; if that
+    // file fails it falls through to the full encode, and only the last failure shows the poster.
     return (
         <video
             ref={ref}
-            src={src}
+            src={mobileSrc ? undefined : src}
             poster={poster ?? undefined}
             className={className}
             muted
@@ -114,6 +119,13 @@ export default function InViewVideo({
             onLoadedMetadata={handleLoadedMetadata}
             onTimeUpdate={windowSeconds ? handleTimeUpdate : undefined}
             onError={() => setFailedSrc(src)}
-        />
+        >
+            {mobileSrc && (
+                <>
+                    <source src={mobileSrc} type="video/mp4" media="(max-width: 767px)" />
+                    <source src={src} type="video/mp4" onError={() => setFailedSrc(src)} />
+                </>
+            )}
+        </video>
     );
 }

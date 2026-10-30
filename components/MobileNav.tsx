@@ -56,7 +56,7 @@ export default function MobileNav() {
                         animate="open"
                         exit="closed"
                         variants={menuVariants}
-                        className="fixed inset-0 z-50 bg-black/95 backdrop-blur-xl flex flex-col justify-center items-center p-8"
+                        className="fixed inset-0 z-50 bg-black/95 flex flex-col justify-center items-center p-8"
                     >
                         <button onClick={toggleMenu} className="absolute top-6 right-6 p-2 text-white/70 hover:text-white">
                             <X className="w-8 h-8" />

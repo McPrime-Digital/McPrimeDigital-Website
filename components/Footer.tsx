@@ -32,10 +32,11 @@ export default function Footer() {
                     alt=""
                     fill
                     sizes="100vw"
-                    className="object-cover opacity-40 mix-blend-luminosity"
+                    className="object-cover opacity-40 grayscale md:grayscale-0 md:mix-blend-luminosity"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent" />
-                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+                {/* Phones: a plain greyscale image and tint read the same as the blend and blur, at a fraction of the GPU cost */}
+                <div className="absolute inset-0 bg-black/20 md:backdrop-blur-[2px]" />
             </div>
 
             <div className="max-w-7xl mx-auto px-6 md:px-12 py-20 relative z-10">

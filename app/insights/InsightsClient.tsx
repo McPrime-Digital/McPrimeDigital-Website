@@ -11,7 +11,7 @@ export default function InsightsPage() {
     const articles = getAllArticles();
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white">
+        <div className="min-h-screen bg-[#050505] text-white">
             <style jsx global>{`
                 ::selection {
                     background: #6366f1; /* Indigo 500 */
@@ -136,6 +136,6 @@ export default function InsightsPage() {
             </section>
 
             <Footer />
-        </main>
+        </div>
     );
 }

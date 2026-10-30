@@ -3,6 +3,7 @@
 import { motion, useMotionTemplate, useMotionValue } from 'framer-motion';
 import { type ChangeEvent, type MouseEvent, useState } from 'react';
 import { CheckCircle2, ArrowRight, AlertCircle, Loader2 } from 'lucide-react';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 // Reusable Spotlight Component for Premium Cards
 function SpotlightCard({ children, className = "" }: { children: React.ReactNode, className?: string }) {
@@ -52,6 +53,7 @@ function SpotlightCard({ children, className = "" }: { children: React.ReactNode
 }
 
 export default function FilmmakingTarget() {
+    const sectionRef = usePauseOffscreen<HTMLElement>();
     const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '' });
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
@@ -83,10 +85,10 @@ export default function FilmmakingTarget() {
     };
 
     return (
-        <section className="relative bg-[#0B0D12] py-32 overflow-hidden border-t border-white/5">
-            {/* Ambient Background Glows */}
-            <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-[#2D6BFF]/10 blur-[120px] rounded-full pointer-events-none" />
-            <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-900/10 blur-[120px] rounded-full pointer-events-none" />
+        <section ref={sectionRef} className="relative bg-[#0B0D12] py-32 overflow-hidden border-t border-white/5">
+            {/* Ambient Background Glows (gradients: same softness, no GPU blur) */}
+            <div className="absolute -top-[120px] -right-[120px] w-[740px] h-[740px] bg-radial from-[#2D6BFF]/10 to-transparent to-70% pointer-events-none" />
+            <div className="absolute -bottom-[120px] -left-[120px] w-[740px] h-[740px] bg-radial from-purple-900/10 to-transparent to-70% pointer-events-none" />
 
             <div className="container mx-auto px-4 md:px-12 relative z-10">
                 <div className="flex flex-col lg:flex-row gap-20 lg:items-start">
@@ -158,7 +160,7 @@ export default function FilmmakingTarget() {
                                     { title: "Innovation Leaders", desc: "Tech and AI companies driving the future.", color: "bg-purple-500" },
                                     { title: "Performance Brands", desc: "High-volume commercial output with measurable ROI.", color: "bg-emerald-500" }
                                 ].map((card, i) => (
-                                    <SpotlightCard key={i} className="rounded-2xl p-6 md:p-8 backdrop-blur-md">
+                                    <SpotlightCard key={i} className="rounded-2xl p-6 md:p-8 md:backdrop-blur-md">
                                         <div className={`w-10 h-10 ${card.color}/20 rounded-lg flex items-center justify-center mb-4`}>
                                             <div className={`w-2 h-2 ${card.color} rounded-full animate-pulse`} />
                                         </div>
@@ -178,7 +180,7 @@ export default function FilmmakingTarget() {
                         viewport={{ once: true }}
                         className="lg:w-2/5"
                     >
-                        <SpotlightCard className="rounded-[2.5rem] p-8 md:p-12 shadow-2xl bg-[#0B0D12]/80 backdrop-blur-xl">
+                        <SpotlightCard className="rounded-[2.5rem] p-8 md:p-12 shadow-2xl bg-[#0B0D12]/80 md:backdrop-blur-xl">
                             <h3 className="text-3xl font-bold text-white mb-6">
                                 Advance Your Commercial Production Architecture
                             </h3>

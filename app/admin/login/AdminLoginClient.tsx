@@ -41,7 +41,7 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 selection:bg-blue-500/30 font-sans overflow-hidden">
+        <div className="min-h-screen bg-[#050505] text-white flex items-center justify-center p-6 selection:bg-blue-500/30 font-sans overflow-x-clip">
             {/* Background Ambience */}
             <div className="fixed inset-0 overflow-hidden pointer-events-none">
                 <div className="absolute top-[-20%] right-[-10%] w-[60%] h-[60%] bg-blue-500/10 blur-[150px] rounded-full" />
@@ -153,6 +153,6 @@ export default function LoginPage() {
                     Authorized Personnel Only
                 </p>
             </motion.div>
-        </main>
+        </div>
     );
 }

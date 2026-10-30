@@ -1,10 +1,11 @@
 'use client';
 
-import { motion, useScroll, type MotionValue } from 'framer-motion';
-import { useRef, useState, useEffect, type ReactNode } from 'react';
+import { motion, useMotionValueEvent, useScroll } from 'framer-motion';
+import { useCallback, useRef, useState, useEffect, type ReactNode } from 'react';
 import Image from 'next/image';
 import { BadgeCheck, CheckCircle2, Layers, Lock } from 'lucide-react';
 import InViewVideo from '@/components/media/InViewVideo';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 /* --- WORKFLOW DATA --- */
 const workflowSteps = [
@@ -40,18 +41,45 @@ const workflowSteps = [
     }
 ];
 
+// Steps light up as the blue line reaches them. The line's tip sits on a fixed reading line
+// 60% of the way down the screen, so this tracks the steps themselves rather than the whole
+// section (on phones the glass panels stack underneath and would otherwise stall it at 02).
+const READING_LINE = '60%';
+// Centre of a step's dot, measured from the top of the step
+const DOT_CENTER = 16;
+
 export default function FilmmakingWorkflow() {
-    const containerRef = useRef<HTMLDivElement>(null);
+    const sectionRef = usePauseOffscreen<HTMLElement>();
+    const timelineRef = useRef<HTMLDivElement>(null);
+    const thresholds = useRef<number[]>([]);
+    const [litCount, setLitCount] = useState(0);
     const { scrollYProgress } = useScroll({
-        target: containerRef,
-        offset: ["start start", "end end"]
+        target: timelineRef,
+        offset: [`start ${READING_LINE}`, `end ${READING_LINE}`]
     });
 
-    // Removing useSpring physics to make the line track the vertical scroll instantaneously with zero lag/delay.
-    const scaleY = scrollYProgress;
+    const updateLit = useCallback((progress: number) => {
+        setLitCount(thresholds.current.filter(t => progress >= t).length);
+    }, []);
+
+    // Where each dot sits along the line, as a fraction of its length; re-measured on resize
+    useEffect(() => {
+        const timeline = timelineRef.current;
+        if (!timeline) return;
+        const observer = new ResizeObserver(() => {
+            const height = timeline.offsetHeight || 1;
+            thresholds.current = Array.from(timeline.querySelectorAll<HTMLElement>('[data-step]'))
+                .map(step => (step.offsetTop + DOT_CENTER) / height);
+            updateLit(scrollYProgress.get());
+        });
+        observer.observe(timeline);
+        return () => observer.disconnect();
+    }, [scrollYProgress, updateLit]);
+
+    useMotionValueEvent(scrollYProgress, 'change', updateLit);
 
     return (
-        <section ref={containerRef} className="relative py-12 md:py-24 min-h-screen bg-[#0B0D12] overflow-hidden perspective-1000">
+        <section ref={sectionRef} className="relative py-12 md:py-24 min-h-screen bg-[#0B0D12] overflow-hidden">
             {/* --- Layer 1 & 2: Base & Depth Gradient --- */}
             <div className="absolute inset-0 bg-gradient-to-br from-[#0F1115] via-[#0B0D12] to-[#050608]" />
 
@@ -64,9 +92,9 @@ export default function FilmmakingWorkflow() {
                 }}
             />
 
-            {/* --- Layer 4: Ambient Reactive Lighting --- */}
-            <div className="absolute top-1/3 right-0 w-[600px] h-[600px] bg-[#2D6BFF]/5 blur-[100px] rounded-full pointer-events-none mix-blend-screen animate-pulse-slow" />
-            <div className="absolute bottom-1/3 left-[-200px] w-[500px] h-[500px] bg-cyan-500/5 blur-[120px] rounded-full pointer-events-none mix-blend-screen" />
+            {/* --- Layer 4: Ambient lighting, drawn as gradients (a blurred circle looks the same but costs the GPU far more) --- */}
+            <div className="absolute top-1/3 -right-[100px] w-[800px] h-[800px] bg-radial from-[#2D6BFF]/5 to-transparent to-70% pointer-events-none" />
+            <div className="absolute bottom-1/3 -left-[320px] w-[740px] h-[740px] bg-radial from-cyan-500/5 to-transparent to-70% pointer-events-none" />
 
 
             <div className="container mx-auto px-6 md:px-12 relative z-10">
@@ -74,33 +102,32 @@ export default function FilmmakingWorkflow() {
 
                     {/* --- LEFT COLUMN: Interactive Timeline (40%) --- */}
                     <div className="lg:w-[40%] relative">
-                        <div className="sticky top-32">
+                        <motion.div
+                            initial={{ opacity: 0, y: 16 }}
+                            whileInView={{ opacity: 1, y: 0 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.4 }}
+                            className="mb-16"
+                        >
+                            <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight leading-[0.9]">
+                                PRODUCTION<br />REBUILT AS A<br /><span className="text-[#2D6BFF]">DIGITAL SYSTEM</span>
+                            </h2>
+                            <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
+                                Traditional production depends on physical locations, large crews, and manual coordination. Our model replaces that structure with an AI-native production architecture that accelerates development, reduces friction, and maintains high creative standards.
+                            </p>
+                        </motion.div>
+
+                        <div ref={timelineRef} className="relative pl-10 border-l border-white/5">
+                            {/* Filling Connector Line */}
                             <motion.div
-                                initial={{ opacity: 0, y: 20 }}
-                                whileInView={{ opacity: 1, y: 0 }}
-                                viewport={{ once: true }}
-                                className="mb-16"
-                            >
-                                <h2 className="text-4xl md:text-5xl font-bold text-white mb-4 tracking-tight leading-[0.9]">
-                                    PRODUCTION<br />REBUILT AS A<br /><span className="text-[#2D6BFF]">DIGITAL SYSTEM</span>
-                                </h2>
-                                <p className="text-gray-400 text-sm leading-relaxed max-w-sm">
-                                    Traditional production depends on physical locations, large crews, and manual coordination. Our model replaces that structure with an AI-native production architecture that accelerates development, reduces friction, and maintains high creative standards.
-                                </p>
-                            </motion.div>
+                                style={{ scaleY: scrollYProgress, transformOrigin: "top" }}
+                                className="absolute left-[-1px] top-0 bottom-0 w-[2px] bg-[#2D6BFF] shadow-[0_0_15px_rgba(45,107,255,0.5)]"
+                            />
 
-                            <div className="relative pl-10 border-l border-white/5">
-                                {/* Filling Connector Line */}
-                                <motion.div
-                                    style={{ scaleY, transformOrigin: "top" }}
-                                    className="absolute left-[-1px] top-0 bottom-0 w-[2px] bg-[#2D6BFF] shadow-[0_0_15px_rgba(45,107,255,0.5)]"
-                                />
-
-                                <div className="space-y-16">
-                                    {workflowSteps.map((step, i) => (
-                                        <WorkflowStep key={i} step={step} index={i} progress={scaleY} />
-                                    ))}
-                                </div>
+                            <div className="space-y-16">
+                                {workflowSteps.map((step, i) => (
+                                    <WorkflowStep key={step.number} step={step} active={i < litCount} />
+                                ))}
                             </div>
                         </div>
                     </div>
@@ -111,10 +138,8 @@ export default function FilmmakingWorkflow() {
                         {/* Module 1: Script Logic */}
                         <GlassModule
                             title="SCRIPT_LOGIC_CORE"
-                            color="border-indigo-500/50"
                             glow="shadow-indigo-500/10"
                             connectorColor="#6366f1"
-                            delay={0.1}
                         >
                             <ScriptInterface />
                         </GlassModule>
@@ -122,10 +147,8 @@ export default function FilmmakingWorkflow() {
                         {/* Module 2: Generative Pipeline */}
                         <GlassModule
                             title="GENERATIVE_PIPELINE_V4"
-                            color="border-cyan-500/50"
                             glow="shadow-cyan-500/10"
                             connectorColor="#06b6d4"
-                            delay={0.2}
                         >
                             <GenerativePipeline />
                         </GlassModule>
@@ -133,10 +156,8 @@ export default function FilmmakingWorkflow() {
                         {/* Module 3: Post-Processing */}
                         <GlassModule
                             title="POST_PROCESSING_MASTER"
-                            color="border-rose-500/50"
                             glow="shadow-rose-500/10"
                             connectorColor="#f43f5e"
-                            delay={0.3}
                         >
                             <PostProduction />
                         </GlassModule>
@@ -144,10 +165,8 @@ export default function FilmmakingWorkflow() {
                         {/* Module 4: Client review on Genreline */}
                         <GlassModule
                             title="CLIENT_REVIEW_PORTAL"
-                            color="border-amber-500/50"
                             glow="shadow-amber-500/10"
                             connectorColor="#CBA54D"
-                            delay={0.4}
                         >
                             <ReviewInterface />
                         </GlassModule>
@@ -155,7 +174,8 @@ export default function FilmmakingWorkflow() {
                         <motion.div
                             initial={{ opacity: 0 }}
                             whileInView={{ opacity: 1 }}
-                            transition={{ delay: 0.5, duration: 1 }}
+                            viewport={{ once: true }}
+                            transition={{ duration: 0.5 }}
                             className="pl-8 pt-4"
                         >
                             <p className="text-gray-400 text-sm leading-relaxed max-w-lg border-l border-white/10 pl-4 italic">
@@ -171,58 +191,43 @@ export default function FilmmakingWorkflow() {
 }
 
 // --- Left Column Step ---
-function WorkflowStep({ step, index, progress }: { step: { number: string; title: string; desc: string }, index: number, progress: MotionValue<number> }) {
-    const [isActive, setIsActive] = useState(false);
-
-    // Dynamic trigger point based on index (starts earlier: 0, 0.15, 0.30...)
-    const triggerPoint = index * 0.15;
-
-    useEffect(() => {
-        return progress.on("change", (latest: number) => {
-            setIsActive(latest >= triggerPoint);
-        });
-    }, [progress, triggerPoint]);
-
+// Every step keeps its full height whether lit or not, so lighting one never moves the page.
+function WorkflowStep({ step, active }: { step: { number: string; title: string; desc: string }, active: boolean }) {
     return (
-        <motion.div
-            animate={{
-                opacity: isActive ? 1 : 0.3,
-                x: isActive ? 10 : 0,
-                scale: isActive ? 1.05 : 1
-            }}
-            transition={{ duration: 0.5 }}
-            className="group relative"
+        <div
+            data-step
+            className={`group relative transition-[opacity,translate] duration-500 ${active ? 'opacity-100 translate-x-2.5' : 'opacity-35'}`}
         >
-            <div className={`absolute -left-[45px] top-1 flex items-center justify-center w-6 h-6 rounded-full border transition-colors duration-500 ${isActive ? 'bg-[#0B0D12] border-[#2D6BFF] shadow-[0_0_10px_#2D6BFF]' : 'bg-[#0B0D12] border-white/10'}`}>
-                <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${isActive ? 'bg-[#2D6BFF]' : 'bg-white/20'}`} />
+            <div className={`absolute -left-[45px] top-1 flex items-center justify-center w-6 h-6 rounded-full border transition-colors duration-500 ${active ? 'bg-[#0B0D12] border-[#2D6BFF] shadow-[0_0_10px_#2D6BFF]' : 'bg-[#0B0D12] border-white/10'}`}>
+                <div className={`w-1.5 h-1.5 rounded-full transition-colors duration-500 ${active ? 'bg-[#2D6BFF]' : 'bg-white/20'}`} />
             </div>
 
-            <span className={`block text-4xl font-light mb-2 font-mono transition-colors duration-500 ${isActive ? 'text-[#2D6BFF]' : 'text-white/20'}`}>
+            <span className={`block text-4xl font-light mb-2 font-mono transition-colors duration-500 ${active ? 'text-[#2D6BFF]' : 'text-white/20'}`}>
                 {step.number}
             </span>
-            <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${isActive ? 'text-white' : 'text-gray-500'}`}>
+            <h3 className={`text-xl font-bold mb-2 transition-colors duration-500 ${active ? 'text-white' : 'text-gray-500'}`}>
                 {step.title}
             </h3>
-            <div className={`overflow-hidden transition-all duration-700 ${isActive ? 'max-h-40 opacity-100' : 'max-h-0 opacity-0'}`}>
-                <p className="text-sm text-gray-400 font-light leading-relaxed max-w-sm">
-                    {step.desc}
-                </p>
-            </div>
-        </motion.div>
+            <p className="text-sm text-gray-400 font-light leading-relaxed max-w-sm">
+                {step.desc}
+            </p>
+        </div>
     );
 }
 
 // --- Right Column Glass Module Container ---
-function GlassModule({ children, title, glow, connectorColor, delay }: { children: ReactNode; title: string; color?: string; glow?: string; connectorColor: string; delay: number }) {
+// Phones get a near-solid panel; the live frosted blur is desktop-only.
+function GlassModule({ children, title, glow, connectorColor }: { children: ReactNode; title: string; glow?: string; connectorColor: string }) {
     return (
         <div className="relative pl-8">
             {/* Connecting Workflow Line */}
             <div className="absolute left-0 top-[-60px] bottom-[-60px] w-[1px] bg-white/5 mx-auto">
                 <motion.div
-                    initial={{ height: "0%" }}
-                    whileInView={{ height: "100%" }}
-                    transition={{ duration: 1.5, delay: delay }}
-                    className="w-full bg-gradient-to-b from-transparent via-current to-transparent opacity-50"
+                    initial={{ scaleY: 0 }}
+                    whileInView={{ scaleY: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 1.2 }}
+                    className="h-full w-full origin-top bg-gradient-to-b from-transparent via-current to-transparent opacity-50"
                     style={{ color: connectorColor }}
                 />
             </div>
@@ -230,12 +235,12 @@ function GlassModule({ children, title, glow, connectorColor, delay }: { childre
 
 
             <motion.div
-                initial={{ opacity: 0, y: 40, rotateX: 10 }}
-                whileInView={{ opacity: 1, y: 0, rotateX: 0 }}
-                viewport={{ once: true, margin: "-10%" }}
-                transition={{ duration: 0.8, delay: delay, ease: [0.23, 1, 0.32, 1] }}
-                whileHover={{ y: -5, rotateX: 2, scale: 1.01 }}
-                className={`relative group bg-[#0F1115]/80 backdrop-blur-2xl border border-white/5 rounded-xl overflow-hidden shadow-2xl ${glow}`}
+                initial={{ opacity: 0, y: 16 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.45, ease: [0.23, 1, 0.32, 1] }}
+                whileHover={{ y: -5 }}
+                className={`relative group bg-[#0F1115]/95 md:bg-[#0F1115]/80 md:backdrop-blur-2xl border border-white/5 rounded-xl overflow-hidden shadow-2xl ${glow}`}
             >
                 {/* 3D Inner Depth Bevel */}
                 <div className="absolute inset-0 shadow-[inset_0_1px_0_0_rgba(255,255,255,0.05)] rounded-xl pointer-events-none z-20" />
@@ -309,11 +314,7 @@ function ScriptInterface() {
                                 The subject turns, revealing the interface. <span className="bg-indigo-500/20 text-indigo-200 px-1">Macro focus</span> on the retina scan. Camera pulls back to the product.
                             </p>
                             {/* Cursor */}
-                            <motion.div
-                                animate={{ opacity: [1, 0, 1] }}
-                                transition={{ duration: 0.8, repeat: Infinity }}
-                                className="absolute inline-block w-0.5 h-4 bg-indigo-500 ml-1 top-3"
-                            />
+                            <div className="absolute inline-block w-0.5 h-4 bg-indigo-500 ml-1 top-3 animate-[blink_0.8s_ease-in-out_infinite]" />
                         </div>
                     </div>
                 </div>
@@ -366,10 +367,9 @@ function GenerativePipeline() {
                         <div className="absolute top-2 right-2 w-1 h-1 bg-cyan-500/50 rounded-full group-hover:bg-cyan-400 transition-colors z-10" />
 
                         {/* Focusing Effect */}
-                        <motion.div
-                            animate={{ opacity: [0.3, 0] }}
-                            transition={{ duration: 1.5, repeat: Infinity, delay: i * 0.4 }}
-                            className="absolute inset-0 bg-white mix-blend-overlay"
+                        <div
+                            className="absolute inset-0 bg-white/40 md:bg-white opacity-0 md:mix-blend-overlay animate-[flash_1.5s_ease-out_infinite]"
+                            style={{ animationDelay: `${i * 0.4}s` }}
                         />
 
                         {/* Alignment Marker */}
@@ -391,6 +391,7 @@ function GenerativePipeline() {
                     <motion.div
                         initial={{ width: "0%" }}
                         whileInView={{ width: "75%" }}
+                        viewport={{ once: true }}
                         transition={{ duration: 2, ease: "easeOut" }}
                         className="h-full bg-cyan-500 relative"
                     >
@@ -467,6 +468,9 @@ function ReviewInterface() {
     );
 }
 
+// Bar heights for the still audio waveform
+const WAVEFORM = [0.35, 0.8, 0.5, 1, 0.6, 0.9, 0.4, 0.7, 0.55, 0.85];
+
 // --- 3. Post-Production Interface ---
 function PostProduction() {
     const pipelineAssets = [
@@ -489,23 +493,10 @@ function PostProduction() {
                     />
 
                     {/* Secondary Layer for "Depth" / Chromatic Shake (Simulates 3D Edge) - KEEPING FOR DEPTH BUT REDUCED OPACITY */}
-                    <motion.div
-                        className="absolute inset-0 w-full h-full mix-blend-overlay opacity-20 pointer-events-none"
-                        initial={{ scale: 1.05 }}
-                        animate={{
-                            x: [0, 2, -1, 1, 0],
-                            y: [0, -1, 1, -1, 0]
-                        }}
-                        transition={{
-                            duration: 8,
-                            repeat: Infinity,
-                            ease: "easeInOut",
-                            times: [0, 0.25, 0.5, 0.75, 1]
-                        }}
-                    >
+                    <div className="absolute inset-0 w-full h-full scale-105 md:mix-blend-overlay opacity-20 pointer-events-none animate-[drift_8s_ease-in-out_infinite]">
                         {/* Soft chromatic haze; a second video decoder for a 96px panel was not worth it */}
-                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.35),transparent_70%)] blur-[2px]" />
-                    </motion.div>
+                        <div className="w-full h-full bg-[radial-gradient(ellipse_at_center,rgba(99,102,241,0.35),transparent_70%)]" />
+                    </div>
 
                     {/* Active Scanning Overlay */}
                     <div className="absolute inset-0 z-20 overflow-hidden pointer-events-none">
@@ -518,17 +509,9 @@ function PostProduction() {
                         </div>
 
                         {/* Dynamic Focus Bracket */}
-                        <motion.div
-                            animate={{
-                                x: ["20%", "60%", "40%"],
-                                y: ["30%", "40%", "20%"],
-                                opacity: [0.5, 0.8, 0.5]
-                            }}
-                            transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                            className="absolute w-16 h-16 border border-white/20 rounded-lg flex items-center justify-center"
-                        >
+                        <div className="absolute w-16 h-16 border border-white/20 rounded-lg flex items-center justify-center animate-[focus-sweep_5s_ease-in-out_infinite_alternate]">
                             <div className="w-1 h-1 bg-red-500 rounded-full shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
-                        </motion.div>
+                        </div>
                     </div>
 
                     {/* Grid Overlay */}
@@ -536,11 +519,7 @@ function PostProduction() {
                 </div>
                 <div className="w-20 bg-black/40 rounded border border-white/5 p-2 flex flex-col gap-2 justify-center items-center">
                     {/* Color Wheel Simulation */}
-                    <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
-                        className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 via-purple-500 to-indigo-500 opacity-50 blur-[1px]"
-                    />
+                    <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-rose-500 via-purple-500 to-indigo-500 opacity-50 blur-[1px] animate-[spin_20s_linear_infinite]" />
                     <div className="w-full h-6 flex gap-[1px] items-end justify-center opacity-50">
                         {[62, 38, 85, 47, 70, 55].map((h, i) => <div key={i} className="w-1 bg-white/40" style={{ height: `${h}%` }} />)}
                     </div>
@@ -549,14 +528,14 @@ function PostProduction() {
 
             {/* Timeline Tracks */}
             <div className="flex-1 space-y-1 relative"> {/* Tighter spacing */}
-                {/* Playhead */}
-                <motion.div
-                    animate={{ left: ["10%", "90%"] }}
-                    transition={{ duration: 5, repeat: Infinity, ease: "linear" }}
-                    className="absolute top-[-4px] bottom-0 w-[1px] bg-rose-500 z-20"
-                >
-                    <div className="w-2 h-2 bg-rose-500 absolute top-0 -left-[3.5px] transform rotate-45" />
-                </motion.div>
+                {/* Playhead: travels the middle 80% of the tracks by translating, so no layout runs per frame */}
+                <div className="absolute top-[-4px] bottom-0 left-[10%] w-[80%] z-20 pointer-events-none">
+                    <div className="h-full w-full animate-[sweep-x_5s_linear_infinite]">
+                        <div className="relative h-full w-[1px] bg-rose-500">
+                            <div className="w-2 h-2 bg-rose-500 absolute top-0 -left-[3.5px] transform rotate-45" />
+                        </div>
+                    </div>
+                </div>
 
                 {/* Video Track */}
                 <div className="h-6 bg-white/5 rounded border border-white/5 relative overflow-hidden">
@@ -575,12 +554,12 @@ function PostProduction() {
                 <div className="h-6 bg-white/5 rounded border border-white/5 relative overflow-hidden flex items-center">
                     <span className="absolute left-2 text-[8px] text-gray-500 font-mono">A1_SFX</span>
                     <div className="ml-10 flex h-3 items-center gap-[2px] w-full px-2 opacity-50">
+                        {/* A still waveform on phones (forty moving bars kept the main thread busy); it bounces on desktop */}
                         {[...Array(40)].map((_, i) => (
-                            <motion.div
+                            <div
                                 key={i}
-                                animate={{ height: [4, 12, 6, 14, 4] }}
-                                transition={{ duration: 0.5, delay: i * 0.02, repeat: Infinity }}
-                                className="w-[3px] bg-rose-400/50 rounded-full"
+                                className="w-[3px] h-3.5 bg-rose-400/50 rounded-full md:animate-[eq_0.5s_linear_infinite]"
+                                style={{ transform: `scaleY(${WAVEFORM[i % WAVEFORM.length]})`, animationDelay: `-${i * 0.02}s` }}
                             />
                         ))}
                     </div>
@@ -596,11 +575,7 @@ function PostProduction() {
                 <div className="flex items-center gap-2">
                     <span className="text-[9px] text-rose-500 animate-pulse">RENDERING</span>
                     <div className="w-16 h-1 bg-white/10 rounded-full overflow-hidden">
-                        <motion.div
-                            animate={{ width: ["0%", "100%"] }}
-                            transition={{ duration: 8, ease: "linear", repeat: Infinity }}
-                            className="h-full bg-rose-500"
-                        />
+                        <div className="h-full w-full origin-left bg-rose-500 animate-[fill-x_8s_linear_infinite]" />
                     </div>
                 </div>
             </div>
