@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { CheckCircle } from 'lucide-react';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,9 +45,14 @@ const auditSteps = [
 export default function AuditHorizontal() {
     const containerRef = useRef<HTMLDivElement>(null);
     const trackRef = useRef<HTMLDivElement>(null);
+    usePauseOffscreen(containerRef);
 
+    // Desktop pins the section and scrubs the track sideways. Phones get a native swipe row
+    // instead: a pinned scrub moving frosted cards every frame is heavy, and Safari's toolbar
+    // resizing the viewport makes pinned sections jump.
     useLayoutEffect(() => {
-        const ctx = gsap.context(() => {
+        const mm = gsap.matchMedia();
+        mm.add('(min-width: 768px)', () => {
             if (!containerRef.current || !trackRef.current) return;
 
             // Function to get scroll distance
@@ -69,23 +75,22 @@ export default function AuditHorizontal() {
                     invalidateOnRefresh: true, // Recalculate on resize
                 }
             });
+        });
 
-        }, containerRef);
-
-        return () => ctx.revert();
+        return () => mm.revert();
     }, []);
 
     return (
-        <section ref={containerRef} className="relative h-screen w-full overflow-hidden bg-[#020609] text-white">
+        <section ref={containerRef} className="relative md:h-screen w-full overflow-hidden bg-[#020609] text-white py-16 md:py-0">
 
             {/* --- Background Image (User Provided) --- */}
             <div className="absolute inset-0 z-0">
                 <Image
                     src="/images/automations/audit_horizontal_bg.jpg"
-                    alt="Background"
+                    alt=""
                     fill
+                    sizes="100vw"
                     className="object-cover opacity-35"
-                    priority
                 />
                 <div className="absolute inset-0 bg-gradient-to-r from-[#020609] via-transparent to-[#020609] opacity-80" />
             </div>
@@ -93,10 +98,10 @@ export default function AuditHorizontal() {
             {/* Removed absolute section title to let it scroll smoothly */}
 
             {/* --- Horizontal Track --- */}
-            <div ref={trackRef} className="flex h-full items-center pl-[5vw] pr-[20vw] gap-[5vw] relative z-10 w-max">
+            <div ref={trackRef} className="flex md:h-full items-center pl-[5vw] pr-[5vw] md:pr-[20vw] gap-[5vw] relative z-10 overflow-x-auto snap-x snap-mandatory [scrollbar-width:none] [&::-webkit-scrollbar]:hidden md:overflow-visible md:snap-none md:w-max">
 
                 {/* --- Section Title Box (Scrolls with track) --- */}
-                <div className="relative w-[80vw] md:w-[35vw] flex-shrink-0 flex flex-col justify-center px-4 md:px-0 md:pl-12 z-20">
+                <div className="relative w-[80vw] md:w-[35vw] flex-shrink-0 flex flex-col justify-center px-4 md:px-0 md:pl-12 z-20 snap-start">
                     <span className="text-cyan-400 font-bold tracking-[0.2em] uppercase mb-3 block drop-shadow-[0_2px_10px_rgba(34,211,238,0.5)] text-sm md:text-base">Process Breakdown</span>
                     <h2 className="text-4xl md:text-5xl lg:text-6xl font-black uppercase drop-shadow-2xl text-white leading-[1.1]">
                         Our Custom<br />Audit-First<br />Approach
@@ -105,7 +110,7 @@ export default function AuditHorizontal() {
                         We don't just deploy solutions blindly; we diagnose. Discover how our meticulous 5-step blueprint transforms operational chaos into streamlined automation ecosystems.
                     </p>
                     <div className="mt-10 flex items-center gap-4 text-white/50 animate-pulse">
-                        <span className="text-xs font-bold uppercase tracking-[0.2em]">Scroll to Explore</span>
+                        <span className="text-xs font-bold uppercase tracking-[0.2em]"><span className="md:hidden">Swipe</span><span className="hidden md:inline">Scroll</span> to Explore</span>
                         <div className="w-16 h-[2px] bg-cyan-500/50" />
                     </div>
                 </div>
@@ -113,18 +118,18 @@ export default function AuditHorizontal() {
                 {auditSteps.map((step, index) => (
                     <div
                         key={index}
-                        className={`relative w-[85vw] md:w-[35vw] lg:w-[28vw] flex-shrink-0 flex items-center justify-center ${index % 2 === 0 ? 'self-start mt-[10vh]' : 'self-end mb-[10vh]'}`}
+                        className={`relative w-[85vw] md:w-[35vw] lg:w-[28vw] flex-shrink-0 flex items-center justify-center snap-center ${index % 2 === 0 ? 'md:self-start md:mt-[10vh]' : 'md:self-end md:mb-[10vh]'}`}
                     >
-                        {/* --- Ambient Color Glow Blob (Behind Glass) --- */}
-                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] h-[90%] rounded-full blur-[80px] opacity-30 animate-pulse 
-                            ${index % 2 === 0 ? 'bg-cyan-600' : 'bg-purple-600'}`}
+                        {/* --- Ambient Color Glow (Behind Glass), a gradient rather than a blurred circle --- */}
+                        <div className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[140%] h-[140%] bg-radial to-transparent to-70% opacity-30 md:animate-pulse
+                            ${index % 2 === 0 ? 'from-cyan-600' : 'from-purple-600'}`}
                         />
 
                         {/* --- Compact Premium Vertical Card --- */}
                         <div className="relative w-full rounded-[2rem] overflow-hidden border border-white/20 group shadow-2xl transition-all duration-500 hover:shadow-[0_0_40px_rgba(255,255,255,0.1)]">
 
                             {/* Deep Glass Background */}
-                            <div className="absolute inset-0 bg-gray-900/20 backdrop-blur-2xl" />
+                            <div className="absolute inset-0 bg-gray-900/70 md:bg-gray-900/20 md:backdrop-blur-2xl" />
 
                             {/* Gradient Sheen */}
                             <div className={`absolute inset-0 bg-gradient-to-br opacity-40 ${index % 2 === 0 ? 'from-cyan-500/10 to-blue-600/5' : 'from-purple-500/10 to-pink-600/5'}`} />
@@ -141,6 +146,7 @@ export default function AuditHorizontal() {
                                         src={step.img}
                                         alt={step.title}
                                         fill
+                                        sizes="(min-width: 1024px) 28vw, (min-width: 768px) 35vw, 85vw"
                                         className="object-cover"
                                     />
                                     <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-90" />
@@ -161,7 +167,7 @@ export default function AuditHorizontal() {
                                         {step.desc}
                                     </p>
 
-                                    <div className="inline-flex items-center gap-2.5 text-cyan-200 text-xs md:text-sm font-medium bg-black/30 px-4 py-2 rounded-lg border border-white/10 backdrop-blur-md shadow-lg w-fit">
+                                    <div className="inline-flex items-center gap-2.5 text-cyan-200 text-xs md:text-sm font-medium bg-black/30 px-4 py-2 rounded-lg border border-white/10 md:backdrop-blur-md shadow-lg w-fit">
                                         <CheckCircle className="w-4 h-4 flex-shrink-0 text-cyan-400" />
                                         <span>{step.note}</span>
                                     </div>
@@ -170,7 +176,7 @@ export default function AuditHorizontal() {
 
                             {/* Border Shine Animation */}
                             <div className="absolute inset-0 border border-white/20 rounded-[3rem] pointer-events-none overflow-hidden">
-                                <div className="absolute top-0 left-[-100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 animate-[shimmer_3s_infinite]" />
+                                <div className="absolute top-0 left-[-100%] w-[50%] h-full bg-gradient-to-r from-transparent via-white/40 to-transparent skew-x-12 md:animate-[shimmer_3s_infinite]" />
                             </div>
                         </div>
 

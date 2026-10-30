@@ -5,7 +5,8 @@ import { useFrame } from '@react-three/fiber';
 import { Sparkles, Stars, Float } from '@react-three/drei';
 import * as THREE from 'three';
 
-export function Environment() {
+/** compact: phone budget, about a third of the particles */
+export function Environment({ compact = false }: { compact?: boolean }) {
     const meshRef = useRef<THREE.Mesh>(null);
 
     useFrame((state, delta) => {
@@ -22,9 +23,9 @@ export function Environment() {
             <fog attach="fog" args={['#02040a', 5, 20]} />
 
             {/* Ambient particles */}
-            <Stars radius={100} depth={50} count={5000} factor={4} saturation={0} fade speed={1} />
-            <Sparkles count={100} scale={12} size={4} speed={0.4} opacity={0.5} color="#00ffff" />
-            <Sparkles count={50} scale={10} size={6} speed={0.2} opacity={0.3} color="#0088ff" />
+            <Stars radius={100} depth={50} count={compact ? 1500 : 5000} factor={4} saturation={0} fade speed={1} />
+            <Sparkles count={compact ? 40 : 100} scale={12} size={4} speed={0.4} opacity={0.5} color="#00ffff" />
+            <Sparkles count={compact ? 20 : 50} scale={10} size={6} speed={0.2} opacity={0.3} color="#0088ff" />
 
             {/* Abstract Flowing Wireframe Structure */}
             <Float speed={2} rotationIntensity={0.5} floatIntensity={0.5}>

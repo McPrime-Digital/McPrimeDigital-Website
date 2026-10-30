@@ -127,7 +127,7 @@ function VideoCard({ video, index, onOpen }: { video: AmbassadorVideo; index: nu
                 {/* Overlay Content */}
                 <div className="absolute inset-0 flex flex-col justify-end p-6 bg-gradient-to-t from-black/90 via-black/40 to-transparent">
                     {/* Play Icon */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-white/10 backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100 group-hover:bg-[#2D6BFF]">
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-16 h-16 rounded-full bg-white/10 md:backdrop-blur-md flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100 group-hover:bg-[#2D6BFF]">
                         <Volume2 className="w-6 h-6 text-white" />
                     </div>
 

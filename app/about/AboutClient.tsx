@@ -37,24 +37,14 @@ export default function AboutPage() {
 
             {/* RICH GLOBAL BACKGROUND - "Colored Beauty" */}
             <div className="fixed inset-0 bg-[#050608] z-[-2]" />
-            <div className="fixed inset-0 bg-[url('/noise.svg')] opacity-[0.04] pointer-events-none z-[-1] mix-blend-overlay" />
+            {/* Grain overlay (desktop: a full-screen fixed blend layer is recomposited on every scroll frame on phones) */}
+            <div className="hidden md:block fixed inset-0 bg-[url('/noise.svg')] opacity-[0.04] pointer-events-none z-[-1] mix-blend-overlay" />
 
-            {/* Ambient Orbs - Animated & Colorful */}
-            <motion.div
-                animate={{ scale: [1, 1.2, 1], opacity: [0.3, 0.5, 0.3], rotate: [0, 45, 0] }}
-                transition={{ duration: 15, repeat: Infinity, ease: "easeInOut" }}
-                className="fixed top-[-20%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-blue-600/20 blur-[120px] pointer-events-none z-0"
-            />
-            <motion.div
-                animate={{ scale: [1, 1.3, 1], opacity: [0.2, 0.4, 0.2], x: [0, 50, 0] }}
-                transition={{ duration: 20, repeat: Infinity, ease: "easeInOut", delay: 2 }}
-                className="fixed bottom-[-10%] right-[-10%] w-[60vw] h-[60vw] rounded-full bg-purple-600/15 blur-[150px] pointer-events-none z-0"
-            />
-            <motion.div
-                animate={{ scale: [0.8, 1, 0.8], opacity: [0.1, 0.3, 0.1] }}
-                transition={{ duration: 12, repeat: Infinity, ease: "easeInOut", delay: 1 }}
-                className="fixed top-[40%] left-[20%] w-[30vw] h-[30vw] rounded-full bg-cyan-500/10 blur-[100px] pointer-events-none z-0"
-            />
+            {/* Ambient Orbs: gradient glows (no GPU blur). They drift slowly on desktop and hold still on
+                phones, where three animated full-screen blurs were the page's biggest drain. */}
+            <div className="fixed top-[calc(-20%_-_10vw)] left-[-20vw] w-[70vw] h-[70vw] bg-radial from-blue-600/20 to-transparent to-70% opacity-40 pointer-events-none z-0 md:animate-[orb-drift_15s_ease-in-out_infinite]" />
+            <div className="fixed bottom-[calc(-10%_-_12vw)] right-[-22vw] w-[84vw] h-[84vw] bg-radial from-purple-600/15 to-transparent to-70% opacity-30 pointer-events-none z-0 md:animate-[orb-drift_20s_ease-in-out_2s_infinite_reverse]" />
+            <div className="fixed top-[calc(40%_-_7vw)] left-[13vw] w-[44vw] h-[44vw] bg-radial from-cyan-500/10 to-transparent to-70% opacity-20 pointer-events-none z-0 md:animate-[orb-drift_12s_ease-in-out_1s_infinite]" />
 
 
             <div className="pt-24 md:pt-40 pb-12 md:pb-20 px-6 md:px-12 max-w-[1400px] mx-auto relative z-10">
@@ -67,12 +57,12 @@ export default function AboutPage() {
                     className="mb-16 md:mb-32 text-center relative"
                 >
                     {/* Hero Gradient Text Glow */}
-                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-3/4 h-32 bg-blue-500/20 blur-[80px] pointer-events-none rounded-full" />
+                    <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-80 bg-radial from-blue-500/20 to-transparent to-70% pointer-events-none" />
 
                     <h1 className="relative z-10 text-5xl md:text-7xl lg:text-8xl font-bold mb-8 uppercase tracking-tighter leading-[0.9] text-transparent bg-clip-text bg-gradient-to-b from-white via-white to-gray-400 drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                         Alignment Over<br />Transactions
                     </h1>
-                    <p className="relative z-10 text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto font-light leading-relaxed mix-blend-plus-lighter">
+                    <p className="relative z-10 text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto font-light leading-relaxed md:mix-blend-plus-lighter">
                         We do not operate as a traditional agency. We build structured AI-native production and automation systems designed to scale creative output and operational efficiency. Every engagement is engineered for alignment, not short-term execution.
                     </p>
                 </motion.div>
@@ -80,7 +70,7 @@ export default function AboutPage() {
 
                 {/* 2. ABOUT McPRIME DIGITAL - With Glass Background */}
                 <section className="mb-20 md:mb-40 grid grid-cols-1 md:grid-cols-12 gap-12 pt-12 md:pt-20 relative">
-                    <div className="absolute inset-0 bg-white/[0.01] border border-white/5 rounded-3xl backdrop-blur-sm -z-10" />
+                    <div className="absolute inset-0 bg-white/[0.01] border border-white/5 rounded-3xl md:backdrop-blur-sm -z-10" />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-transparent opacity-30 rounded-3xl -z-10" />
 
                     <div className="md:col-span-4 p-8 md:p-12">
@@ -135,10 +125,10 @@ export default function AboutPage() {
                                 >
                                     <Wrapper
                                         {...(c.href ? { href: c.href, target: '_blank', rel: 'noopener noreferrer' } : {})}
-                                        className="group relative flex h-full flex-col rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 backdrop-blur-sm transition-colors duration-500 hover:border-white/20"
+                                        className="group relative flex h-full flex-col rounded-3xl border border-white/[0.08] bg-white/[0.02] p-8 md:backdrop-blur-sm transition-colors duration-500 hover:border-white/20"
                                     >
                                         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/15 to-transparent pointer-events-none" />
-                                        <div className="absolute -top-16 -right-16 w-48 h-48 rounded-full blur-[80px] pointer-events-none opacity-30" style={{ background: c.accent }} />
+                                        <div className="absolute -top-32 -right-32 w-80 h-80 pointer-events-none opacity-30" style={{ background: `radial-gradient(closest-side, ${c.accent}, transparent)` }} />
                                         <div className="flex items-center justify-between mb-6">
                                             <div className="w-12 h-12 rounded-xl border flex items-center justify-center" style={{ borderColor: c.accent + '55', background: c.accent + '1a' }}>
                                                 <c.icon className="w-6 h-6" style={{ color: c.accent }} />
@@ -159,7 +149,7 @@ export default function AboutPage() {
                 {/* 3. OUR PHILOSOPHY - Vibrant Split Layout */}
                 <section className="mb-20 md:mb-40 grid grid-cols-1 lg:grid-cols-2 gap-12 md:gap-20 items-center relative">
                     {/* Background glow for section */}
-                    <div className="absolute right-0 top-1/2 -translate-y-1/2 w-[500px] h-[500px] bg-purple-900/10 blur-[100px] pointer-events-none rounded-full" />
+                    <div className="absolute -right-[100px] top-1/2 -translate-y-1/2 w-[700px] h-[700px] bg-radial from-purple-900/10 to-transparent to-70% pointer-events-none" />
 
                     <motion.div
                         initial={{ opacity: 0, x: -30 }}
@@ -206,13 +196,13 @@ export default function AboutPage() {
                             />
                         </div>
 
-                        <div className="absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 opacity-60 mix-blend-overlay pointer-events-none" />
-                        <div className="absolute -top-20 -right-20 w-64 h-64 bg-cyan-500/20 blur-[80px] rounded-full pointer-events-none" />
-                        <div className="absolute -bottom-20 -left-20 w-64 h-64 bg-purple-500/20 blur-[80px] rounded-full pointer-events-none" />
-                        <div className="absolute inset-0 bg-[url('/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
+                        <div className="hidden md:block absolute inset-0 bg-gradient-to-br from-purple-500/10 via-transparent to-blue-500/10 opacity-60 mix-blend-overlay pointer-events-none" />
+                        <div className="absolute -top-[160px] -right-[160px] w-[416px] h-[416px] bg-radial from-cyan-500/20 to-transparent to-70% pointer-events-none" />
+                        <div className="absolute -bottom-[160px] -left-[160px] w-[416px] h-[416px] bg-radial from-purple-500/20 to-transparent to-70% pointer-events-none" />
+                        <div className="hidden md:block absolute inset-0 bg-[url('/noise.svg')] opacity-[0.15] mix-blend-overlay pointer-events-none" />
 
                         <div className="relative z-10 text-center transform group-hover:scale-105 transition-transform duration-700 pointer-events-none">
-                            <div className="w-32 h-32 border border-white/20 rounded-full flex items-center justify-center mx-auto mb-6 backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.05)] bg-white/5">
+                            <div className="w-32 h-32 border border-white/20 rounded-full flex items-center justify-center mx-auto mb-6 md:backdrop-blur-md shadow-[0_0_30px_rgba(255,255,255,0.05)] bg-white/5">
                                 <div className="w-3 h-3 bg-white rounded-full animate-ping" />
                             </div>
                             <span className="text-xs font-mono text-gray-400 uppercase tracking-widest bg-black/30 px-3 py-1 rounded-full border border-white/5 backdrop-blur-sm">Philosophy Module</span>
@@ -326,7 +316,7 @@ export default function AboutPage() {
                 <section className="mb-12 md:mb-20">
                     <div className="text-center mb-16 relative">
                         {/* Glow behind title */}
-                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-40 h-40 bg-blue-500/20 blur-[60px] rounded-full" />
+                        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-radial from-blue-500/20 to-transparent to-70%" />
                         <h2 className="relative z-10 text-sm font-mono text-cyan-400 uppercase tracking-widest mb-4">Our DNA</h2>
                         <h3 className="relative z-10 text-4xl font-bold">Core Principles</h3>
                     </div>
@@ -390,6 +380,15 @@ function PrincipleCard({ title, desc, icon: Icon, delay, color = "blue", classNa
         pink: "group-hover:shadow-[0_0_40px_rgba(236,72,153,0.3)] bg-gradient-to-b from-pink-900/10 to-transparent",
     };
 
+    // Spelled out so Tailwind generates each class (a template-built name like bg-pink-500/20 never rendered)
+    const orbColor: Record<PrincipleColor, string> = {
+        blue: "from-blue-500/20",
+        cyan: "from-cyan-500/20",
+        purple: "from-purple-500/20",
+        emerald: "from-emerald-500/20",
+        pink: "from-pink-500/20",
+    };
+
     const iconColor: Record<PrincipleColor, string> = {
         blue: "text-blue-400 drop-shadow-[0_0_10px_rgba(59,130,246,0.5)]",
         cyan: "text-cyan-400 drop-shadow-[0_0_10px_rgba(34,211,238,0.5)]",
@@ -405,7 +404,7 @@ function PrincipleCard({ title, desc, icon: Icon, delay, color = "blue", classNa
             viewport={{ once: true }}
             transition={{ delay, duration: 0.6, ease: "backOut" }}
             whileHover={{ y: -10, scale: 1.02 }}
-            className={`relative flex flex-col items-center text-center p-8 rounded-2xl h-full border border-white/10 backdrop-blur-2xl overflow-hidden transition-all duration-500 group ${className} ${colorClasses[color]}`}
+            className={`relative flex flex-col items-center text-center p-8 rounded-2xl h-full border border-white/10 md:backdrop-blur-2xl overflow-hidden transition-all duration-500 group ${className} ${colorClasses[color]}`}
             style={{
                 boxShadow: "inset 0 0 20px rgba(255,255,255,0.02), 0 10px 30px rgba(0,0,0,0.5)" // Deep glass internal shadow
             }}
@@ -415,7 +414,7 @@ function PrincipleCard({ title, desc, icon: Icon, delay, color = "blue", classNa
             <div className="absolute top-0 left-0 right-0 h-px bg-gradient-to-r from-transparent via-white/40 to-transparent opacity-50" />
 
             {/* Gradient Orb Behind Icon */}
-            <div className={`absolute top-0 w-full h-32 bg-${color}-500/20 blur-[50px] rounded-full pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
+            <div className={`absolute -top-12 w-full h-56 bg-radial ${orbColor[color]} to-transparent to-70% pointer-events-none opacity-50 group-hover:opacity-100 transition-opacity duration-500`} />
 
             {/* LARGER ICON */}
             <div className={`w-20 h-20 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center mb-6 transition-all duration-300 relative z-10 group-hover:bg-white/10 ${colorClasses[color].split(" ")[0]} shadow-inner`}>

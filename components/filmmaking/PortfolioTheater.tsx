@@ -139,9 +139,10 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
         return () => document.removeEventListener('fullscreenchange', onFsChange);
     }, []);
 
-    // Ambilight: light-spill sampled from the film
+    // Ambilight: light-spill sampled from the film. Phones skip it: the film fills the screen
+    // there, and a full-screen 120px blur is costly.
     useEffect(() => {
-        if (!open) return;
+        if (!open || !window.matchMedia('(min-width: 768px)').matches) return;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
@@ -216,7 +217,7 @@ export default function PortfolioTheater({ films, index, onClose, onNavigate }: 
                         <canvas
                             ref={canvasRef}
                             aria-hidden
-                            className="absolute inset-0 w-full h-full scale-125 blur-[120px] saturate-150 brightness-[0.4] opacity-70 pointer-events-none"
+                            className="hidden md:block absolute inset-0 w-full h-full scale-125 blur-[120px] saturate-150 brightness-[0.4] opacity-70 pointer-events-none"
                         />
                         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_28%,rgba(0,0,0,0.88)_100%)]" />
 

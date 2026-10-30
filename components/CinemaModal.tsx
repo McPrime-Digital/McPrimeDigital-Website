@@ -122,8 +122,9 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
     }, []);
 
     // --- Ambilight: sample the film into a tiny canvas, blur it huge behind the screen ---
+    // Phones skip it: the film fills the screen there, and a full-screen 120px blur is costly
     useEffect(() => {
-        if (!video) return;
+        if (!video || !window.matchMedia('(min-width: 768px)').matches) return;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
@@ -208,7 +209,7 @@ export default function CinemaModal({ video, onClose }: CinemaModalProps) {
                         <canvas
                             ref={canvasRef}
                             aria-hidden
-                            className="absolute inset-0 w-full h-full scale-125 blur-[120px] saturate-150 brightness-[0.45] opacity-70 pointer-events-none"
+                            className="hidden md:block absolute inset-0 w-full h-full scale-125 blur-[120px] saturate-150 brightness-[0.45] opacity-70 pointer-events-none"
                         />
                         {/* Vignette keeps the hall's edges pitch black */}
                         <div className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.85)_100%)]" />

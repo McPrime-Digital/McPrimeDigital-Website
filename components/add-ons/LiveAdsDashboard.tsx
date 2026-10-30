@@ -1,12 +1,16 @@
 'use client';
 
 import { motion } from 'framer-motion';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Server, Signal } from 'lucide-react';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
+// The graph's loops are CSS, so they pause with the dashboard when it is off-screen
 export default function LiveAdsDashboard() {
+    const rootRef = usePauseOffscreen<HTMLDivElement>();
+
     return (
-        <div className="w-full h-full bg-[#080a0f] border border-white/10 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col font-mono text-xs">
+        <div ref={rootRef} className="w-full h-full bg-[#080a0f] border border-white/10 rounded-2xl overflow-hidden relative shadow-2xl flex flex-col font-mono text-xs">
             {/* Background Grid */}
             <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:20px_20px] pointer-events-none" />
 
@@ -58,7 +62,8 @@ export default function LiveAdsDashboard() {
                     </div>
 
                     {/* Bot Ticker */}
-                    <div className="mt-4 flex gap-4 overflow-hidden">
+                    {/* 2x2 on phones, where four boxes in a row ran past the panel's edge */}
+                    <div className="mt-4 grid grid-cols-2 gap-2 sm:flex sm:gap-4 overflow-hidden">
                         <TickerItem label="BID ADJ" value="+15%" color="text-cyan-400" />
                         <TickerItem label="AUDIENCE" value="EXPANDED" color="text-purple-400" />
                         <TickerItem label="A/B TEST" value="WINNER FOUND" color="text-emerald-400" />
@@ -98,6 +103,7 @@ function LiveGraph() {
 
     return (
         <svg className="w-full h-full" viewBox="0 0 280 100" preserveAspectRatio="none">
+            <style>{`@keyframes graph-draw { from { stroke-dashoffset: 1; } to { stroke-dashoffset: 0; } } @keyframes graph-scan { to { transform: translateX(280px); } }`}</style>
             <defs>
                 <linearGradient id="gradBlue" x1="0" y1="0" x2="0" y2="1">
                     <stop offset="0%" stopColor="#3b82f6" stopOpacity="0.3" />
@@ -116,15 +122,15 @@ function LiveGraph() {
                 fill="url(#gradBlue)"
             />
 
-            {/* Path 1 Line - Animated */}
-            <motion.path
+            {/* Path 1 Line - draws and retracts on desktop; drawn in full on phones, where repainting the SVG every frame costs too much */}
+            <path
                 d={path1}
                 fill="none"
                 stroke="#3b82f6"
                 strokeWidth="2"
-                initial={{ pathLength: 0 }}
-                animate={{ pathLength: 1 }}
-                transition={{ duration: 2, ease: "linear", repeat: Infinity, repeatType: "reverse" }} // Simple loop for visual activity
+                pathLength={1}
+                strokeDasharray="1"
+                className="md:animate-[graph-draw_2s_linear_infinite_alternate]"
             />
 
             {/* Path 2 Line */}
@@ -138,13 +144,12 @@ function LiveGraph() {
             />
 
             {/* Scanning Line */}
-            <motion.line
+            <line
                 x1="0" y1="0" x2="0" y2="100"
                 stroke="white"
                 strokeWidth="1"
                 strokeOpacity="0.5"
-                animate={{ x1: [0, 280], x2: [0, 280] }}
-                transition={{ duration: 3, ease: "linear", repeat: Infinity }}
+                className="animate-[graph-scan_3s_linear_infinite]"
             />
         </svg>
     );
@@ -184,22 +189,31 @@ function LiveLogs() {
     ];
 
     const [visibleLogs, setVisibleLogs] = useState(logs);
+    const listRef = useRef<HTMLDivElement>(null);
 
+    // Rotate logs, only while the feed is on screen
     useEffect(() => {
-        const interval = setInterval(() => {
-            // Rotate logs
-            setVisibleLogs(prev => {
-                const newLogs = [...prev];
-                const first = newLogs.shift();
-                if (first) newLogs.push(first);
-                return newLogs;
-            });
-        }, 1500);
-        return () => clearInterval(interval);
+        const el = listRef.current;
+        if (!el) return;
+        let interval: ReturnType<typeof setInterval> | undefined;
+        const observer = new IntersectionObserver(([entry]) => {
+            clearInterval(interval);
+            if (!entry.isIntersecting) return;
+            interval = setInterval(() => {
+                setVisibleLogs(prev => {
+                    const newLogs = [...prev];
+                    const first = newLogs.shift();
+                    if (first) newLogs.push(first);
+                    return newLogs;
+                });
+            }, 1500);
+        });
+        observer.observe(el);
+        return () => { observer.disconnect(); clearInterval(interval); };
     }, []);
 
     return (
-        <div className="flex flex-col gap-1.5">
+        <div ref={listRef} className="flex flex-col gap-1.5">
             {visibleLogs.slice(0, 5).map((log, i) => (
                 <motion.div
                     key={log + i} // key change forces animation

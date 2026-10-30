@@ -38,8 +38,8 @@ export default function CtaSection() {
         <section id="contact-automations" className="py-24 md:py-32 relative bg-[#020202] text-white overflow-hidden">
             {/* Dynamic Background */}
             <div className="absolute top-0 right-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-1/2 right-[-10%] w-[60%] h-[60%] bg-indigo-900/10 rounded-full blur-[120px] -translate-y-1/2" />
-                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-cyan-900/10 rounded-full blur-[100px]" />
+                <div className="absolute top-1/2 right-[-10%] w-[60%] h-[60%] bg-radial from-indigo-900/10 to-transparent to-70% scale-[1.6] -translate-y-1/2" />
+                <div className="absolute bottom-[-10%] left-[-10%] w-[40%] h-[40%] bg-radial from-cyan-900/10 to-transparent to-70% scale-[1.6]" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
@@ -88,11 +88,11 @@ export default function CtaSection() {
 
                     {/* --- RIGHT: FORM --- */}
                     <div className="lg:w-1/2">
-                        <div className="relative rounded-3xl border border-white/10 bg-[#0a0a0a]/80 backdrop-blur-2xl p-8 md:p-12 hover:border-emerald-500/30 hover:shadow-[0_0_80px_rgba(16,185,129,0.15)] transition-all duration-700 group/form overflow-hidden">
+                        <div className="relative rounded-3xl border border-white/10 bg-[#0a0a0a]/90 md:bg-[#0a0a0a]/80 md:backdrop-blur-2xl p-8 md:p-12 hover:border-emerald-500/30 hover:shadow-[0_0_80px_rgba(16,185,129,0.15)] transition-all duration-700 group/form overflow-hidden">
 
                             {/* Premium Glow Effects */}
-                            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-emerald-500/10 rounded-full blur-[100px] pointer-events-none" />
-                            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-cyan-500/10 rounded-full blur-[100px] pointer-events-none" />
+                            <div className="absolute top-0 right-0 w-[300px] h-[300px] bg-radial from-emerald-500/10 to-transparent to-70% scale-[1.6] pointer-events-none" />
+                            <div className="absolute bottom-0 left-0 w-[300px] h-[300px] bg-radial from-cyan-500/10 to-transparent to-70% scale-[1.6] pointer-events-none" />
 
                             {/* Form Inner Glow */}
                             <div className="absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-0 group-hover/form:opacity-100 transition-opacity duration-700 pointer-events-none" />

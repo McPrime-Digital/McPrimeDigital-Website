@@ -35,8 +35,8 @@ export default function GrowthAddOns() {
     return (
         <div className="bg-[#050608] min-h-screen text-white selection:bg-[#2D6BFF] selection:text-white relative overflow-x-clip font-sans">
 
-            {/* GLOBAL AMBIANCE */}
-            <div className="fixed inset-0 bg-[url('/noise.svg')] opacity-[0.04] pointer-events-none z-[50] mix-blend-overlay" />
+            {/* GLOBAL AMBIANCE (desktop: a full-screen fixed blend layer is recomposited on every scroll frame on phones) */}
+            <div className="hidden md:block fixed inset-0 bg-[url('/noise.svg')] opacity-[0.04] pointer-events-none z-[50] mix-blend-overlay" />
 
             {/* 1. HERO SECTION - REFINED */}
             <Section className="min-h-screen flex items-center justify-center relative">
@@ -68,7 +68,7 @@ export default function GrowthAddOns() {
                         </h1>
 
                         {/* Refined Exclusive Undertext */}
-                        <p className="text-xl md:text-2xl text-gray-300 font-light mb-12 max-w-3xl mx-auto leading-relaxed mix-blend-plus-lighter">
+                        <p className="text-xl md:text-2xl text-gray-300 font-light mb-12 max-w-3xl mx-auto leading-relaxed md:mix-blend-plus-lighter">
                             Reserved strictly for our existing partners. A unified extension of your production ecosystem ensuring creative, distribution, and performance remain integrated under one infrastructure.
                         </p>
                     </motion.div>
@@ -79,8 +79,8 @@ export default function GrowthAddOns() {
             {/* 2. WHY ADD-ONS EXIST - VIBRANT UPGRADE */}
             <Section className="bg-[#080a0f] border-t border-white/5 relative overflow-hidden">
                 {/* Dynamic Background Glows */}
-                <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[120px] pointer-events-none mix-blend-screen" />
-                <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-purple-600/10 rounded-full blur-[100px] pointer-events-none mix-blend-screen" />
+                <div className="absolute top-0 right-0 -mr-[120px] -mt-[120px] w-[840px] h-[840px] bg-radial from-blue-600/10 to-transparent to-70% pointer-events-none" />
+                <div className="absolute bottom-0 left-0 -ml-[100px] -mb-[100px] w-[700px] h-[700px] bg-radial from-purple-600/10 to-transparent to-70% pointer-events-none" />
 
                 <div className="absolute inset-0 bg-[linear-gradient(to_right,rgba(255,255,255,0.01)_1px,transparent_1px)] bg-[size:4rem_100%] opacity-20" />
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-blue-500/50 to-transparent" />
@@ -143,7 +143,6 @@ export default function GrowthAddOns() {
 
             {/* 3. AI BRAND AMBASSADOR SECTION */}
             <Section className="bg-[#050608] border-t border-white/5 relative overflow-visible">
-                <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1200px] h-[800px] bg-gradient-radial from-blue-900/10 to-transparent blur-[100px] pointer-events-none" />
 
                 <Container>
                     <div className="flex flex-col lg:flex-row gap-16 items-start">
@@ -276,22 +275,11 @@ export default function GrowthAddOns() {
 
             {/* 6. FINAL CTA - "Expand Within the System" */}
             <Section id="cta" className="bg-black py-40 relative">
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                    <motion.div
-                        animate={{ opacity: [0.2, 0.4, 0.2] }}
-                        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
-                        className="w-[80vw] h-[80vw] max-w-[1200px] max-h-[1200px] bg-gradient-radial from-[#2D6BFF]/10 via-purple-900/5 to-transparent blur-[150px] rounded-full pointer-events-none"
-                    />
-                </div>
-
                 <Container className="max-w-6xl relative z-10">
-                    <PremiumCard className="rounded-[4rem] p-12 md:p-32 text-center bg-black/40 backdrop-blur-3xl border border-white/10 shadow-2xl relative overflow-hidden group/card">
+                    <PremiumCard className="rounded-[4rem] p-12 md:p-32 text-center bg-black/40 md:backdrop-blur-3xl border border-white/10 shadow-2xl relative overflow-hidden group/card">
 
-                        <motion.div
-                            animate={{ rotate: 360 }}
-                            transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
-                            className="absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0deg,rgba(45,107,255,0.1)_180deg,transparent_360deg)] opacity-30 pointer-events-none blur-3xl"
-                        />
+                        {/* Slow rotating sheen (desktop: a blurred layer twice the card's size, turning every frame) */}
+                        <div className="hidden md:block absolute top-[-50%] left-[-50%] w-[200%] h-[200%] bg-[conic-gradient(from_0deg,transparent_0deg,rgba(45,107,255,0.1)_180deg,transparent_360deg)] opacity-30 pointer-events-none blur-3xl animate-[spin_30s_linear_infinite]" />
                         <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-transparent to-purple-500/5 pointer-events-none" />
 
                         <div className="relative z-10">
@@ -299,7 +287,7 @@ export default function GrowthAddOns() {
                                 Expand Within<br />the System
                             </h2>
 
-                            <p className="text-xl md:text-2xl text-gray-300 mb-16 max-w-3xl mx-auto font-light leading-relaxed mix-blend-plus-lighter">
+                            <p className="text-xl md:text-2xl text-gray-300 mb-16 max-w-3xl mx-auto font-light leading-relaxed md:mix-blend-plus-lighter">
                                 If you are an active client and want to extend your production into UGC or paid advertising, request integration below.
                             </p>
 

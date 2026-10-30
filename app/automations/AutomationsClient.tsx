@@ -7,10 +7,12 @@ import { ArrowRight, FileText, TrendingUp, MessageSquare, Settings, Users, Datab
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
-import Hero3D from '@/components/automations/Hero3D';
+
 import TextType from '@/components/TextType';
 
 // Dynamically import below-the-fold heavy components
+// three.js is about half of this page's JavaScript; loading it after first paint keeps the headline from waiting on it
+const Hero3D = dynamic(() => import('@/components/automations/Hero3D'), { ssr: false });
 const AuditHorizontal = dynamic(() => import('@/components/automations/AuditHorizontal'), { ssr: true });
 const RoiSection = dynamic(() => import('@/components/automations/RoiSection'), { ssr: true });
 const SecurityGovernanceSection = dynamic(() => import('@/components/automations/SecurityGovernanceSection'), { ssr: true });
@@ -19,21 +21,7 @@ const SelectedEngagementsVertical = dynamic(() => import('@/components/SelectedE
 
 
 
-// --- Animation Variants ---
-const fadeInUp = {
-    initial: { opacity: 0, y: 30 },
-    animate: { opacity: 1, y: 0 },
-    transition: { duration: 0.8, ease: "easeOut" }
-};
-
-const staggerContainer = {
-    animate: {
-        transition: {
-            staggerChildren: 0.15
-        }
-    }
-};
-
+// Hero entrances are CSS (animate-rise), so the headline paints with the page instead of after JavaScript
 export default function AutomationsPage() {
     const [isHoveringHeroText, setIsHoveringHeroText] = useState(false);
 
@@ -44,24 +32,16 @@ export default function AutomationsPage() {
             <section className="relative min-h-[95vh] flex items-center justify-center overflow-hidden">
                 <Hero3D />
                 <div className="container mx-auto px-4 relative z-10 pt-20">
-                    <motion.div
-                        initial="initial"
-                        animate="animate"
-                        variants={staggerContainer}
-                        className="max-w-6xl mx-auto text-center"
-                    >
-                        <motion.div variants={fadeInUp} className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-cyan-900/10 border border-cyan-500/20 text-cyan-400 mb-8 backdrop-blur-md hover:bg-cyan-900/20 transition-colors cursor-default">
+                    <div className="max-w-6xl mx-auto text-center">
+                        <div className="inline-flex items-center gap-2 px-6 py-2 rounded-full bg-cyan-900/10 border border-cyan-500/20 text-cyan-400 mb-8 backdrop-blur-md hover:bg-cyan-900/20 transition-colors cursor-default animate-rise">
                             <span className="relative flex h-2 w-2">
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                             </span>
                             <span className="text-sm font-bold tracking-widest uppercase">Next Gen Ecosystems</span>
-                        </motion.div>
+                        </div>
 
-                        <motion.h1
-                            variants={fadeInUp}
-                            className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-none uppercase"
-                        >
+                        <h1 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-none uppercase animate-rise [animation-delay:150ms]">
                             <span className="liquid-glass-text block mb-6 text-center !font-[family-name:var(--font-libre)] font-bold tracking-tighter whitespace-normal md:whitespace-nowrap text-2xl md:text-4xl lg:text-5xl">
                                 BUILDING SMARTER SYSTEMS WITH
                             </span>
@@ -88,20 +68,20 @@ export default function AutomationsPage() {
                                     className="liquid-glass-text block text-center text-4xl md:text-7xl leading-tight max-w-6xl mx-auto !font-[family-name:var(--font-libre)] font-bold tracking-tighter"
                                 />
                             </motion.span>
-                        </motion.h1>
+                        </h1>
 
-                        <motion.p variants={fadeInUp} className="text-xl md:text-2xl text-gray-400 mb-12 max-w-4xl mx-auto leading-relaxed font-light drop-shadow-md">
+                        <p className="text-xl md:text-2xl text-gray-400 mb-12 max-w-4xl mx-auto leading-relaxed font-light drop-shadow-md animate-rise [animation-delay:300ms]">
                             We deploy custom AI automation across six core pillars of your business. This integration eliminates manual tasks, accelerates execution, reduces errors, and enables scalable operational efficiency.
-                        </motion.p>
+                        </p>
 
-                        <motion.div variants={fadeInUp} className="flex justify-center">
+                        <div className="flex justify-center animate-rise [animation-delay:450ms]">
                             <Link href="#contact-automations" className="glass-button-3d px-12 py-6 text-white text-xl tracking-widest rounded-lg flex items-center gap-3">
                                 <span className="relative z-10 flex items-center gap-3">
                                     REQUEST FOR PARTNERSHIP <ArrowRight className="w-6 h-6" />
                                 </span>
                             </Link>
-                        </motion.div>
-                    </motion.div>
+                        </div>
+                    </div>
                 </div>
             </section>
 
@@ -111,15 +91,15 @@ export default function AutomationsPage() {
                 <div className="absolute inset-0 z-0">
                     <Image
                         src="/images/ai-robot.jpg"
-                        alt="AI Background"
+                        alt=""
                         fill
+                        sizes="100vw"
                         className="object-cover object-center opacity-30"
-                        priority
                     />
                     {/* Gradient Overlays for Smooth Transition */}
                     <div className="absolute inset-0 bg-gradient-to-b from-[#050505] via-transparent to-[#050505]" />
                     <div className="absolute inset-0 bg-gradient-to-r from-[#050505]/80 via-transparent to-[#050505]/80" />
-                    <div className="absolute inset-0 bg-[#050505]/40 backdrop-blur-[2px]" />
+                    <div className="absolute inset-0 bg-[#050505]/40 md:backdrop-blur-[2px]" />
                 </div>
 
                 <div className="container mx-auto px-4 relative z-10">
@@ -129,7 +109,7 @@ export default function AutomationsPage() {
                         viewport={{ once: true }}
                         className="max-w-6xl mx-auto mb-20 text-center"
                     >
-                        <h2 className="text-2xl md:text-4xl font-bold mb-6 tracking-tight uppercase drop-shadow-lg text-white/90 whitespace-nowrap">
+                        <h2 className="text-2xl md:text-4xl font-bold mb-6 tracking-tight uppercase drop-shadow-lg text-white/90 text-balance xl:whitespace-nowrap">
                             CUSTOM AI SYSTEMS FOR SIX CORE PILLARS IN EVERY INDUSTRY
                         </h2>
                         <h3 className="text-lg md:text-xl text-cyan-300/90 font-medium leading-relaxed max-w-3xl mx-auto drop-shadow-md">

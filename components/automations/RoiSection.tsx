@@ -25,8 +25,8 @@ export default function RoiSection() {
         <section className="py-24 sm:py-32 relative bg-[#050505] text-white overflow-hidden">
             {/* Background Gradients */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
-                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-purple-900/10 rounded-full blur-[120px]" />
-                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-blue-900/10 rounded-full blur-[120px]" />
+                <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-radial from-purple-900/10 to-transparent to-70% scale-[1.6]" />
+                <div className="absolute bottom-[-10%] right-[-10%] w-[40%] h-[40%] bg-radial from-blue-900/10 to-transparent to-70% scale-[1.6]" />
             </div>
 
             <div className="container mx-auto px-4 relative z-10">
@@ -55,10 +55,10 @@ export default function RoiSection() {
                         onMouseEnter={() => setIsCard1Active(true)}
                         onMouseLeave={() => setIsCard1Active(false)}
                         onClick={() => setIsCard1Active(!isCard1Active)}
-                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard1Active ? 'bg-[#0b0b10] border-indigo-500/40 shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-indigo-500/40 hover:shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]'}`}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/85 md:bg-[#0a0a0a]/60 md:backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard1Active ? 'bg-[#0b0b10] border-indigo-500/40 shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-indigo-500/40 hover:shadow-[0_24px_60px_-24px_rgba(129,140,248,0.35)]'}`}
                     >
                         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-indigo-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isCard1Active ? 'opacity-100' : 'opacity-40'}`} />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-radial from-indigo-500/10 to-transparent to-70% scale-[1.6] transition-opacity duration-700 pointer-events-none ${isCard1Active ? 'opacity-100' : 'opacity-40'}`} />
 
                         {/* Module strip */}
                         <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">
@@ -124,10 +124,10 @@ export default function RoiSection() {
                         onMouseEnter={() => setIsCard2Active(true)}
                         onMouseLeave={() => setIsCard2Active(false)}
                         onClick={() => setIsCard2Active(!isCard2Active)}
-                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard2Active ? 'bg-[#0b0b10] border-purple-500/40 shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-purple-500/40 hover:shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]'}`}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/85 md:bg-[#0a0a0a]/60 md:backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isCard2Active ? 'bg-[#0b0b10] border-purple-500/40 shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-purple-500/40 hover:shadow-[0_24px_60px_-24px_rgba(192,132,252,0.35)]'}`}
                     >
                         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-purple-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isCard2Active ? 'opacity-100' : 'opacity-40'}`} />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-radial from-purple-500/10 to-transparent to-70% scale-[1.6] transition-opacity duration-700 pointer-events-none ${isCard2Active ? 'opacity-100' : 'opacity-40'}`} />
 
                         {/* Module strip */}
                         <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">
@@ -190,10 +190,10 @@ export default function RoiSection() {
                         onMouseEnter={() => setIsConnecting(true)}
                         onMouseLeave={() => setIsConnecting(false)}
                         onClick={() => setIsConnecting(!isConnecting)}
-                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/60 backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isConnecting ? 'bg-[#0b0b10] border-cyan-500/40 shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-cyan-500/40 hover:shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]'}`}
+                        className={`group relative flex flex-col rounded-3xl border bg-[#0a0a0a]/85 md:bg-[#0a0a0a]/60 md:backdrop-blur-xl transition-[border-color,box-shadow,background-color] duration-500 overflow-hidden cursor-pointer ${isConnecting ? 'bg-[#0b0b10] border-cyan-500/40 shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]' : 'border-white/10 hover:bg-[#0b0b10] hover:border-cyan-500/40 hover:shadow-[0_24px_60px_-24px_rgba(34,211,238,0.35)]'}`}
                     >
                         <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent pointer-events-none" />
-                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-cyan-500/10 rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${isConnecting ? 'opacity-100' : 'opacity-40'}`} />
+                        <div className={`absolute -top-24 -right-24 w-64 h-64 bg-radial from-cyan-500/10 to-transparent to-70% scale-[1.6] transition-opacity duration-700 pointer-events-none ${isConnecting ? 'opacity-100' : 'opacity-40'}`} />
 
                         {/* Module strip */}
                         <div className="flex items-center justify-between px-6 py-2.5 border-b border-white/5 bg-black/30">

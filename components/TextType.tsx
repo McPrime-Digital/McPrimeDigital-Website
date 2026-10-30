@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface TextTypeProps {
     text?: string[]; // Fallback/Legacy prop
@@ -35,12 +35,23 @@ const TextType: React.FC<TextTypeProps> = ({
     const [isDeleting, setIsDeleting] = useState(false);
     const [loopNum, setLoopNum] = useState(0);
     const [typingSpeedState, setTypingSpeedState] = useState(typingSpeed);
+    // Typing re-lays out the text every keystroke, so it waits while the line is off-screen
+    const rootRef = useRef<HTMLSpanElement>(null);
+    const [onScreen, setOnScreen] = useState(true);
+
+    useEffect(() => {
+        const el = rootRef.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(([entry]) => setOnScreen(entry.isIntersecting));
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, []);
 
     // Use 'texts' if available, otherwise fallback to 'text', otherwise empty
     const textArray = texts && texts.length > 0 ? texts : text;
 
     useEffect(() => {
-        if (!textArray.length) return;
+        if (!textArray.length || !onScreen) return;
 
         let timer: NodeJS.Timeout;
 
@@ -90,11 +101,12 @@ const TextType: React.FC<TextTypeProps> = ({
         variableSpeedEnabled,
         variableSpeedMin,
         variableSpeedMax,
-        typingSpeedState // Included to prevent stale closures, though handled by logic
+        typingSpeedState, // Included to prevent stale closures, though handled by logic
+        onScreen
     ]);
 
     return (
-        <span className={className}>
+        <span ref={rootRef} className={className}>
             {displayedText}
             {showCursor && (
                 <span

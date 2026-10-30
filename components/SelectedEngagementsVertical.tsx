@@ -3,6 +3,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { FlaskConical, UtensilsCrossed, MonitorPlay, Building2, Gem, Handshake, Map, BriefcaseBusiness } from 'lucide-react';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 const engagements = [
     {
@@ -11,7 +12,7 @@ const engagements = [
         description: "Developed and delivered an AI-native commercial film explaining a pharmaceutical product, its intended use, and the problem it addresses. Scriptwriting was structured to align with approval requirements, and full production was completed in under six days.",
         points: ["Structured script development", "Compliance-aware messaging", "Accelerated production timeline", "Deployment-ready commercial asset"],
         icon: FlaskConical,
-        color: "from-blue-500/20 to-cyan-500/20",
+        glow: "from-blue-500/20",
         iconColor: "text-cyan-400"
     },
     {
@@ -20,7 +21,7 @@ const engagements = [
         description: "Produced a commercial film highlighting brand positioning and product appeal within a competitive consumer market.",
         points: ["Concept development", "AI-native production", "Multi-format commercial delivery"],
         icon: UtensilsCrossed,
-        color: "from-emerald-500/20 to-teal-500/20",
+        glow: "from-emerald-500/20",
         iconColor: "text-emerald-400"
     },
     {
@@ -29,7 +30,7 @@ const engagements = [
         description: "Produced a short-form commercial explaining product capabilities, target users, practical application, and functional benefits.",
         points: ["Structured product narrative", "Clear use-case communication", "Benefit-driven positioning", "Platform-ready output"],
         icon: MonitorPlay,
-        color: "from-purple-500/20 to-indigo-500/20",
+        glow: "from-purple-500/20",
         iconColor: "text-indigo-400"
     },
     {
@@ -38,7 +39,7 @@ const engagements = [
         description: "Designed and implemented an automation workflow supporting payroll operations within a financial environment.",
         points: ["Workflow mapping", "Process automation design", "Operational efficiency improvement", "Structured deployment"],
         icon: Building2,
-        color: "from-amber-500/20 to-orange-500/20",
+        glow: "from-amber-500/20",
         iconColor: "text-amber-400"
     },
     {
@@ -47,7 +48,7 @@ const engagements = [
         description: "Produced a high-end commercial showcasing five products within a unified narrative framework.",
         points: ["Coordinated visual architecture", "Controlled brand tone", "Premium visual delivery"],
         icon: Gem,
-        color: "from-rose-500/20 to-pink-500/20",
+        glow: "from-rose-500/20",
         iconColor: "text-rose-400"
     },
     {
@@ -56,7 +57,7 @@ const engagements = [
         description: "Developed a recurring AI-powered brand ambassador system producing weekly content for snack product promotion.",
         points: ["Structured weekly content framework", "Consistent brand voice", "Scalable short-form output"],
         icon: Handshake,
-        color: "from-fuchsia-500/20 to-purple-500/20",
+        glow: "from-fuchsia-500/20",
         iconColor: "text-fuchsia-400"
     },
     {
@@ -65,7 +66,7 @@ const engagements = [
         description: "Produced a commercial film highlighting property experience, amenities, and brand positioning within the hospitality market.",
         points: ["Visual storytelling", "Structured narrative flow", "Destination-focused messaging"],
         icon: Map,
-        color: "from-cyan-500/20 to-blue-500/20",
+        glow: "from-cyan-500/20",
         iconColor: "text-blue-400"
     },
     {
@@ -74,7 +75,7 @@ const engagements = [
         description: "Designed and implemented operational and lead generation workflows to improve internal coordination and marketing pipeline structure.",
         points: ["Lead capture optimization", "Workflow automation", "Structured operational alignment"],
         icon: BriefcaseBusiness,
-        color: "from-teal-500/20 to-emerald-500/20",
+        glow: "from-teal-500/20",
         iconColor: "text-teal-400"
     }
 ];
@@ -82,13 +83,14 @@ const engagements = [
 export default function SelectedEngagementsVertical() {
     // Duplicate the array to create a seamless infinite loop
     const doubledEngagements = [...engagements, ...engagements];
+    const sectionRef = usePauseOffscreen<HTMLElement>();
     const [touchedCard, setTouchedCard] = useState<number | null>(null);
 
     return (
-        <section className="py-24 sm:py-32 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 my-12">
-            {/* Background elements specific to the vertical flow */}
-            <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent opacity-50 blur-[100px]" />
-            <div className="absolute top-1/2 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent opacity-50 blur-[100px]" />
+        <section ref={sectionRef} className="py-24 sm:py-32 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 my-12">
+            {/* Background elements specific to the vertical flow (already soft gradients, so no blur filter) */}
+            <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent opacity-50" />
+            <div className="absolute top-1/2 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent opacity-50" />
 
             <div className="container mx-auto px-4 relative z-10">
                 <div className="grid lg:grid-cols-2 gap-16 items-center">
@@ -122,32 +124,24 @@ export default function SelectedEngagementsVertical() {
                     </motion.div>
 
                     {/* Right Column: Vertical Infinite Scroll Marquee */}
-                    <div className="relative h-[600px] md:h-[800px] w-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 backdrop-blur-sm group">
+                    <div className="relative h-[600px] md:h-[800px] w-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 md:backdrop-blur-sm group">
 
                         {/* Top/Bottom Fade Masks to hide the seam */}
                         <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#050505] to-transparent z-10 pointer-events-none" />
                         <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-10 pointer-events-none" />
 
-                        {/* Animated Track */}
-                        <motion.div
-                            className="flex flex-col gap-6 p-4 md:p-8"
-                            animate={{ y: ["0%", "-50%"] }}
-                            transition={{
-                                ease: "linear",
-                                duration: 45,
-                                repeat: Infinity,
-                            }}
-                        >
+                        {/* Animated Track: a CSS loop, paused while the section is off-screen */}
+                        <div className="flex flex-col gap-6 p-4 md:p-8 animate-[marquee-vertical_45s_linear_infinite]">
                             {doubledEngagements.map((item, index) => (
                                 <div
                                     key={index}
                                     onMouseEnter={() => setTouchedCard(index)}
                                     onMouseLeave={() => setTouchedCard(null)}
                                     onClick={() => setTouchedCard(touchedCard === index ? null : index)} // Toggle on Touch
-                                    className={`w-full flex-shrink-0 relative rounded-2xl border bg-[#0a0a0a]/80 backdrop-blur-xl p-6 transition-all duration-500 overflow-hidden cursor-pointer ${touchedCard === index ? 'border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] bg-[#111] scale-105 z-20' : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] hover:bg-[#111] hover:scale-[1.02] z-10'}`}
+                                    className={`w-full flex-shrink-0 relative rounded-2xl border bg-[#0a0a0a]/90 md:bg-[#0a0a0a]/80 md:backdrop-blur-xl p-6 transition-all duration-500 overflow-hidden cursor-pointer ${touchedCard === index ? 'border-white/20 shadow-[0_0_40px_rgba(0,0,0,0.6)] bg-[#111] scale-105 z-20' : 'border-white/10 hover:border-white/20 hover:shadow-[0_0_40px_rgba(0,0,0,0.6)] hover:bg-[#111] hover:scale-[1.02] z-10'}`}
                                 >
                                     {/* Card Hover Glow (Active on Touch) */}
-                                    <div className={`absolute -top-32 -right-32 w-64 h-64 bg-gradient-to-br ${item.color} rounded-full blur-[80px] transition-opacity duration-700 pointer-events-none ${touchedCard === index ? 'opacity-60' : 'opacity-20 hover:opacity-60'}`} />
+                                    <div className={`absolute -top-48 -right-48 w-96 h-96 bg-radial ${item.glow} to-transparent to-70% transition-opacity duration-700 pointer-events-none ${touchedCard === index ? 'opacity-60' : 'opacity-20 hover:opacity-60'}`} />
 
                                     <div className="mb-4 flex items-center justify-between relative z-10">
                                         <span className="text-[10px] md:text-xs font-bold tracking-widest uppercase text-gray-400 bg-white/5 border border-white/5 px-3 py-1 rounded-full">{item.client}</span>
@@ -170,7 +164,7 @@ export default function SelectedEngagementsVertical() {
                                     </div>
                                 </div>
                             ))}
-                        </motion.div>
+                        </div>
                     </div>
                 </div>
             </div>
