@@ -28,6 +28,60 @@ const pillars: { icon: LucideIcon; title: string; body: string }[] = [
     },
 ];
 
+/**
+ * Grid lines of a box seen from inside in one-point perspective (floor, ceiling and both walls
+ * converging on the centre), in a 1000x1000 viewBox stretched to the card. `cols`/`rows` set the
+ * lines along the floor and walls; `dzFloor`/`dzWall` set the depth spacing, so cells come out
+ * near-square for the card's shape.
+ */
+function roomGrid({ cols, rows, dzFloor, dzWall }: { cols: number; rows: number; dzFloor: number; dzWall: number }) {
+    const back = 140; // half-size of the far wall
+    const depth = 500 / back;
+    const farthest = depth * 0.67; // depth lines stop short of the far wall, which stays a clean dark centre
+    const f = (n: number) => n.toFixed(1);
+    const d: string[] = [];
+    const line = (x1: number, y1: number, x2: number, y2: number) => d.push(`M${f(x1)} ${f(y1)}L${f(x2)} ${f(y2)}`);
+
+    for (let i = 0; i <= cols; i++) {
+        const t = -1 + (2 * i) / cols;
+        line(500 + 500 * t, 1000, 500 + back * t, 500 + back); // floor
+        line(500 + 500 * t, 0, 500 + back * t, 500 - back); // ceiling
+    }
+    for (let j = 1; j < rows; j++) {
+        const t = -1 + (2 * j) / rows;
+        line(0, 500 + 500 * t, 500 - back, 500 + back * t); // left wall
+        line(1000, 500 + 500 * t, 500 + back, 500 + back * t); // right wall
+    }
+    for (let z = 1 + dzFloor; z < farthest; z += dzFloor) {
+        const s = 500 / z;
+        line(500 - s, 500 + s, 500 + s, 500 + s);
+        line(500 - s, 500 - s, 500 + s, 500 - s);
+    }
+    for (let z = 1 + dzWall; z < farthest; z += dzWall) {
+        const s = 500 / z;
+        line(500 - s, 500 - s, 500 - s, 500 + s);
+        line(500 + s, 500 - s, 500 + s, 500 + s);
+    }
+    return d.join('');
+}
+
+// Desktop: a roughly square card. Phones: a tall, narrow one, so more rows and finer floor depth.
+const ROOM_DESKTOP = roomGrid({ cols: 24, rows: 26, dzFloor: 0.08, dzWall: 0.08 });
+const ROOM_PHONE = roomGrid({ cols: 8, rows: 60, dzFloor: 0.034, dzWall: 0.34 });
+
+function RoomGrid({ d, className }: { d: string; className: string }) {
+    return (
+        <svg
+            aria-hidden
+            viewBox="0 0 1000 1000"
+            preserveAspectRatio="none"
+            className={`absolute inset-0 w-full h-full pointer-events-none [mask-image:radial-gradient(ellipse_at_center,transparent_34%,black_78%)] ${className}`}
+        >
+            <path d={d} fill="none" stroke="rgb(240 217 143 / 0.15)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
+        </svg>
+    );
+}
+
 const spaces = [
     { label: 'Crew', note: 'where our team works' },
     { label: 'Client', note: 'where you review and approve' },
@@ -45,27 +99,23 @@ const spaces = [
 export default function PlatformSection() {
     return (
         <section className="relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1300px] h-[1000px] bg-radial from-[#CBA54D]/[0.06] to-transparent to-70% -z-10 pointer-events-none" />
-
             <motion.div
                 initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 onViewportEnter={warmGenreline}
                 transition={{ duration: 0.45, ease: 'easeOut' }}
-                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-[#1a1508]/60 via-black/40 to-black/60 md:backdrop-blur-md border border-[#CBA54D]/15 overflow-hidden"
+                className="gold-room relative p-8 md:p-20 rounded-[1.75rem] overflow-hidden ring-1 ring-inset ring-[#F2D98A]/40"
             >
-                {/* Gold atmosphere */}
-                <div className="absolute -top-[220px] left-1/3 -ml-[140px] w-[800px] h-[800px] bg-radial from-[#CBA54D]/10 to-transparent to-70% pointer-events-none" />
-                <div className="absolute bottom-0 right-0 -mr-[140px] -mb-[140px] w-[700px] h-[700px] bg-radial from-amber-900/10 to-transparent to-70% pointer-events-none" />
-                <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
-                <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#CBA54D]/50 to-transparent pointer-events-none" />
+                {/* The room: gold rim light (.gold-room) and its perspective grid */}
+                <RoomGrid d={ROOM_DESKTOP} className="hidden md:block" />
+                <RoomGrid d={ROOM_PHONE} className="md:hidden" />
 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                     {/* Copy */}
                     <div className="lg:col-span-6 flex flex-col gap-6">
-                        <p className="font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-[#CBA54D]/80 flex items-center gap-3">
-                            <span className="w-8 h-px bg-[#CBA54D]/60" /> The platform
+                        <p className="font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-[#F7E3A6] flex items-center gap-3">
+                            <span className="w-8 h-px bg-[#F7E3A6]/70" /> The platform
                         </p>
                         <h2 className="text-3xl md:text-5xl font-bold font-serif leading-[1.05] text-white">
                             McPrime productions run on{' '}
@@ -83,7 +133,7 @@ export default function PlatformSection() {
                         <p className="text-gray-300 text-lg leading-relaxed">
                             Genreline is the operating system for AI and hybrid film production. It is separately managed infrastructure, developed and operated by our sister software company under common ownership.
                         </p>
-                        <p className="text-gray-400 leading-relaxed">
+                        <p className="text-gray-300 leading-relaxed">
                             Every McPrime production, from films and commercials to ambassador and UGC content, is governed inside Genreline from first treatment to final delivery. Creative review, approvals, contracts and invoicing share a single system of record, giving your team one accountable view of the work.
                         </p>
 

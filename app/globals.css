@@ -339,6 +339,33 @@ h6 {
   }
 }
 
+/* --- Genreline "room" ---
+   The platform section is drawn as the inside of a box seen in one-point perspective, lit from
+   its rim: gold at the edge, falling to near black over ~270px (the falloff was measured from the
+   reference and moved from green to gold). Each edge is its own translucent layer, so the corners
+   brighten where two walls meet. Phones use a tighter falloff (--room-k) for the narrow card. */
+.gold-room {
+  --room-k: 0.8;
+  --room-rim: rgb(234 194 93 / 1) 0, rgb(234 194 93 / 0.86) calc(10px * var(--room-k)),
+    rgb(234 194 93 / 0.66) calc(20px * var(--room-k)), rgb(234 194 93 / 0.56) calc(30px * var(--room-k)),
+    rgb(234 194 93 / 0.45) calc(45px * var(--room-k)), rgb(234 194 93 / 0.37) calc(60px * var(--room-k)),
+    rgb(234 194 93 / 0.28) calc(80px * var(--room-k)), rgb(234 194 93 / 0.22) calc(100px * var(--room-k)),
+    rgb(234 194 93 / 0.17) calc(130px * var(--room-k)), rgb(234 194 93 / 0.11) calc(165px * var(--room-k)),
+    rgb(234 194 93 / 0.05) calc(210px * var(--room-k)), transparent calc(270px * var(--room-k));
+  background:
+    linear-gradient(to bottom, var(--room-rim)),
+    linear-gradient(to top, var(--room-rim)),
+    linear-gradient(to right, var(--room-rim)),
+    linear-gradient(to left, var(--room-rim)),
+    #030303;
+}
+
+@media (max-width: 767px) {
+  .gold-room {
+    --room-k: 0.42;
+  }
+}
+
 .mask-image-gradient {
   mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
   -webkit-mask-image: linear-gradient(to bottom, transparent, black 10%, black 90%, transparent);
