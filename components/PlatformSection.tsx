@@ -43,7 +43,7 @@ const spaces = [
 export default function PlatformSection() {
     return (
         <section className="relative">
-            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-[#CBA54D]/[0.06] blur-[160px] -z-10 rounded-full pointer-events-none" />
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1300px] h-[1000px] bg-radial from-[#CBA54D]/[0.06] to-transparent to-70% -z-10 pointer-events-none" />
 
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
@@ -51,11 +51,11 @@ export default function PlatformSection() {
                 viewport={{ once: true, margin: '-80px' }}
                 onViewportEnter={warmGenreline}
                 transition={{ duration: 0.7, ease: 'easeOut' }}
-                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-[#1a1508]/60 via-black/40 to-black/60 backdrop-blur-md border border-[#CBA54D]/15 overflow-hidden"
+                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-[#1a1508]/60 via-black/40 to-black/60 md:backdrop-blur-md border border-[#CBA54D]/15 overflow-hidden"
             >
                 {/* Gold atmosphere */}
-                <div className="absolute -top-20 left-1/3 w-[520px] h-[520px] bg-[#CBA54D]/10 rounded-full blur-[140px] mix-blend-screen pointer-events-none" />
-                <div className="absolute bottom-0 right-0 w-[420px] h-[420px] bg-amber-900/10 rounded-full blur-[140px] mix-blend-screen pointer-events-none" />
+                <div className="absolute -top-[220px] left-1/3 -ml-[140px] w-[800px] h-[800px] bg-radial from-[#CBA54D]/10 to-transparent to-70% pointer-events-none" />
+                <div className="absolute bottom-0 right-0 -mr-[140px] -mb-[140px] w-[700px] h-[700px] bg-radial from-amber-900/10 to-transparent to-70% pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
                 <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-[#CBA54D]/50 to-transparent pointer-events-none" />
 
@@ -139,7 +139,7 @@ export default function PlatformSection() {
                             ) : (
                                 <div className="relative md:aspect-[16/10] p-5 md:p-8 flex flex-col justify-between gap-6">
                                     <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:28px_28px]" />
-                                    <div className="absolute -bottom-24 -right-16 w-72 h-72 bg-[#CBA54D]/10 rounded-full blur-[90px] pointer-events-none" />
+                                    <div className="absolute -bottom-[186px] -right-[154px] w-[468px] h-[468px] bg-radial from-[#CBA54D]/10 to-transparent to-70% pointer-events-none" />
 
                                     {/* The three spaces, joined by one record */}
                                     <div className="relative grid grid-cols-1 sm:grid-cols-3 gap-3 md:gap-4">

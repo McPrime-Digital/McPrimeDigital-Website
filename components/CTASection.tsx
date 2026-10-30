@@ -115,7 +115,7 @@ export default function CTASection() {
 
                 {/* Right Side: Lead Gen Form */}
                 {/* Right Side: Lead Gen Form with Reactive Spotlight */}
-                <SpotlightBox className="p-8 md:p-10 rounded-3xl shadow-2xl bg-black/40 backdrop-blur-xl border border-white/10 group-hover:border-white/20 transition-all">
+                <SpotlightBox className="p-8 md:p-10 rounded-3xl shadow-2xl bg-black/40 md:backdrop-blur-xl border border-white/10 group-hover:border-white/20 transition-all">
                     <form className="flex flex-col gap-6 relative z-10" onSubmit={handleSubmit}>
                         {/* Honeypot: hidden from people, filled by bots, checked server-side */}
                         <input type="text" name="website" value={formData.website} onChange={(e) => setFormData({ ...formData, website: e.target.value })} className="hidden" tabIndex={-1} autoComplete="off" aria-hidden="true" />

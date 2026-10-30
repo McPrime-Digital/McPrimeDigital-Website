@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import Button from './ui/Button';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 // 8 Posts
 const posts = [
@@ -18,21 +19,13 @@ const posts = [
     { title: "The Ethics of Generative Content", category: "Opinion", date: "Dec 10, 2025", image: "/blog/ai-ethics.png", type: "blog", slug: "ethics-generative-content" }
 ];
 
+type Post = (typeof posts)[number];
+
 export default function BlogSection() {
+    const sectionRef = usePauseOffscreen<HTMLElement>();
+
     return (
-        <section className="overflow-hidden">
-            <style jsx global>{`
-                @keyframes marquee {
-                    0% { transform: translateX(0); }
-                    100% { transform: translateX(-50%); }
-                }
-                .animate-marquee {
-                    animation: marquee 40s linear infinite;
-                }
-                .animate-marquee:hover {
-                    animation-play-state: paused;
-                }
-            `}</style>
+        <section ref={sectionRef} className="overflow-hidden">
             <div className="flex justify-between items-end mb-12">
                 <div>
                     <motion.h2
@@ -47,45 +40,19 @@ export default function BlogSection() {
                 </div>
             </div>
 
-            {/* Auto-Slideshow Container */}
-            <div className="relative w-full overflow-hidden mask-gradient-x">
+            {/* Phones: a swipeable row (no endlessly moving strip to repaint) */}
+            <div className="md:hidden -mx-4 flex overflow-x-auto snap-x snap-mandatory px-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                {posts.map((post) => <PostCard key={post.slug} post={post} className="w-[80vw] max-w-[320px] snap-center" />)}
+            </div>
+
+            {/* Desktop: Auto-Slideshow Container */}
+            <div className="hidden md:block relative w-full overflow-hidden mask-gradient-x">
                 <div className="absolute left-0 top-0 bottom-0 w-12 bg-gradient-to-r from-black to-transparent z-10" />
                 <div className="absolute right-0 top-0 bottom-0 w-12 bg-gradient-to-l from-black to-transparent z-10" />
 
-                <div
-                    className="flex w-max animate-marquee"
-                >
+                <div className="animate-marquee hover:[animation-play-state:paused]">
                     {/* Double the list for infinite loop */}
-                    {[...posts, ...posts].map((post, i) => (
-                        <div
-                            key={i}
-                            className="group w-[300px] md:w-[25vw] flex-shrink-0 px-4"
-                        >
-                            <Link href={`/insights#${post.slug}`} className="block h-full">
-                                {/* Card Image Area */}
-                                <div className={`aspect-[4/3] rounded-3xl bg-gray-900 border border-white/10 mb-6 overflow-hidden relative group-hover:border-white/20 transition-all`}>
-                                    <Image src={post.image} alt={post.title} fill sizes="(max-width: 768px) 100vw, 33vw" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-105" />
-                                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-                                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
-                                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wider border border-white/10 backdrop-blur-md ${post.type === 'case-study' ? 'bg-amber-500/80' : 'bg-black/50'}`}>
-                                        {post.type === 'case-study' ? '★ CASE STUDY' : post.category}
-                                    </div>
-                                </div>
-
-                                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
-                                    <span>{post.date}</span>
-                                </div>
-
-                                <h3 className="text-2xl font-bold mb-4 group-hover:text-indigo-300 transition-colors duration-300 leading-tight h-[3.5em] overflow-hidden">
-                                    {post.title}
-                                </h3>
-
-                                <div className="flex items-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors">
-                                    READ ARTICLE <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                                </div>
-                            </Link>
-                        </div>
-                    ))}
+                    {[...posts, ...posts].map((post, i) => <PostCard key={i} post={post} className="w-[25vw]" />)}
                 </div>
             </div>
 
@@ -95,5 +62,35 @@ export default function BlogSection() {
                 </Link>
             </div>
         </section>
+    );
+}
+
+function PostCard({ post, className }: { post: Post; className: string }) {
+    return (
+        <div className={`group flex-shrink-0 px-4 ${className}`}>
+            <Link href={`/insights#${post.slug}`} className="block h-full">
+                {/* Card Image Area */}
+                <div className={`aspect-[4/3] rounded-3xl bg-gray-900 border border-white/10 mb-6 overflow-hidden relative group-hover:border-white/20 transition-all`}>
+                    <Image src={post.image} alt={post.title} fill sizes="(max-width: 768px) 80vw, 25vw" className="object-cover opacity-80 group-hover:opacity-100 transition-opacity duration-300 transform group-hover:scale-105" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-20 transition-opacity duration-300" />
+                    <div className={`absolute top-4 right-4 px-3 py-1 rounded-full text-xs font-bold text-white uppercase tracking-wider border border-white/10 md:backdrop-blur-md ${post.type === 'case-study' ? 'bg-amber-500/80' : 'bg-black/60 md:bg-black/50'}`}>
+                        {post.type === 'case-study' ? '★ CASE STUDY' : post.category}
+                    </div>
+                </div>
+
+                <div className="flex items-center gap-4 text-sm text-gray-500 mb-3">
+                    <span>{post.date}</span>
+                </div>
+
+                <h3 className="text-2xl font-bold mb-4 group-hover:text-indigo-300 transition-colors duration-300 leading-tight h-[3.5em] overflow-hidden">
+                    {post.title}
+                </h3>
+
+                <div className="flex items-center text-sm font-bold text-gray-400 group-hover:text-white transition-colors">
+                    READ ARTICLE <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+                </div>
+            </Link>
+        </div>
     );
 }

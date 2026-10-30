@@ -156,16 +156,27 @@ export default function AutomationFlow() {
         setPan(FIT_PAN);
     };
 
-    // Execution loop: each cycle produces a verifiable run result
+    // Execution loop: each cycle produces a verifiable run result. It only ticks while the card
+    // is on screen, and data-offscreen pauses the flowing edges (globals.css), so the page goes
+    // quiet once the visitor has scrolled past.
     useEffect(() => {
-        const interval = setInterval(() => {
-            setRunSeq(seq => {
-                const next = seq + 1;
-                setResult(nextResult(next));
-                return next;
-            });
-        }, 4200);
-        return () => clearInterval(interval);
+        const el = containerRef.current;
+        if (!el) return;
+        let interval: ReturnType<typeof setInterval> | undefined;
+        const observer = new IntersectionObserver(([entry]) => {
+            clearInterval(interval);
+            el.toggleAttribute('data-offscreen', !entry.isIntersecting);
+            if (!entry.isIntersecting) return;
+            interval = setInterval(() => {
+                setRunSeq(seq => {
+                    const next = seq + 1;
+                    setResult(nextResult(next));
+                    return next;
+                });
+            }, 4200);
+        });
+        observer.observe(el);
+        return () => { observer.disconnect(); clearInterval(interval); };
     }, []);
 
     const onNodePointerDown = (e: React.PointerEvent, id: string) => {
@@ -239,7 +250,9 @@ export default function AutomationFlow() {
         <div
             ref={containerRef}
             className="absolute inset-0 bg-[#070A11] overflow-hidden select-none"
-            style={{ touchAction: 'none' }}
+            // Vertical swipes scroll the page (a full-width card must not trap the scroll on phones);
+            // sideways drags pan the canvas and nodes stay fully draggable.
+            style={{ touchAction: 'pan-y' }}
             onPointerDown={onCanvasPointerDown}
             onPointerMove={onPointerMove}
             onPointerUp={endDrag}
@@ -313,6 +326,7 @@ export default function AutomationFlow() {
                             onPointerDown={(e) => onNodePointerDown(e, node.id)}
                             className="absolute cursor-grab active:cursor-grabbing"
                             style={{
+                                touchAction: 'none',
                                 left: p.x,
                                 top: p.y,
                                 width: NODE_W,

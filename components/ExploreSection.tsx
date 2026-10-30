@@ -67,11 +67,11 @@ export default function ExploreSection() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="relative mb-32 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 backdrop-blur-md border border-amber-500/10 overflow-hidden"
+                className="relative mb-32 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 md:backdrop-blur-md border border-amber-500/10 overflow-hidden"
             >
-                {/* Amber atmosphere */}
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-amber-900/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
-                <div className="absolute bottom-0 right-1/4 w-[600px] h-[600px] bg-yellow-900/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
+                {/* Amber atmosphere (gradients: the same glow without a GPU blur) */}
+                <div className="absolute top-0 left-1/4 -ml-[120px] -mt-[120px] w-[740px] h-[740px] bg-radial from-amber-900/20 to-transparent to-70% pointer-events-none" />
+                <div className="absolute bottom-0 right-1/4 -mr-[150px] -mb-[150px] w-[900px] h-[900px] bg-radial from-yellow-900/10 to-transparent to-70% pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
 
                 {/* Top Row: Header & Alignment Context */}
@@ -90,7 +90,7 @@ export default function ExploreSection() {
                     {/* Right: Access & Alignment Disclaimer */}
                     <div className="p-8 rounded-3xl bg-gradient-to-br from-amber-950/40 to-black border border-amber-500/10 relative overflow-hidden">
                         <div className="absolute top-0 right-0 p-4 opacity-20">
-                            <div className="w-24 h-24 bg-amber-500/30 rounded-full blur-2xl" />
+                            <div className="w-40 h-40 -m-8 bg-radial from-amber-500/30 to-transparent to-70%" />
                         </div>
                         <h4 className="text-xl font-bold text-amber-100 font-serif mb-2">Access & Alignment</h4>
                         <p className="text-amber-200/60 leading-relaxed text-sm">
@@ -176,7 +176,7 @@ function SolutionCard({ title, description, icon: Icon, color, media, href }: { 
         orange: "from-purple-600 via-pink-500 to-orange-400" // High-Energy: Purple -> Pink -> Orange
     };
 
-    const glowColor = color === 'teal' ? 'bg-cyan-500/20' : 'bg-pink-500/20';
+    const glowColor = color === 'teal' ? 'from-cyan-500/20' : 'from-pink-500/20';
 
     return (
         <motion.div
@@ -186,13 +186,14 @@ function SolutionCard({ title, description, icon: Icon, color, media, href }: { 
             whileHover={{ y: -10 }}
             className="group relative p-0 rounded-3xl bg-gradient-to-b from-white/10 to-black border border-white/10 overflow-hidden shadow-2xl transition-all duration-500 hover:shadow-[0_0_50px_rgba(0,0,0,0.5)]"
         >
-            {/* Elegant Background Glow from Blueprint - Enhanced */}
-            <div className={`absolute top-0 right-0 w-80 h-80 ${glowColor} rounded-full blur-[100px] -mr-20 -mt-20 transition-all duration-700 group-hover:opacity-60 group-hover:scale-125`} />
-            <div className={`absolute bottom-0 left-0 w-64 h-64 ${color === 'teal' ? 'bg-blue-600/10' : 'bg-purple-600/10'} rounded-full blur-[80px] -ml-20 -mb-20 transition-all duration-700 group-hover:opacity-50`} />
+            {/* Elegant Background Glow from Blueprint - Enhanced (gradients sized to match the old blurred circles) */}
+            <div className={`absolute top-0 right-0 w-[560px] h-[560px] bg-radial ${glowColor} to-transparent to-70% -mr-[200px] -mt-[200px] transition-all duration-700 group-hover:opacity-60 group-hover:scale-125`} />
+            <div className={`absolute bottom-0 left-0 w-[480px] h-[480px] bg-radial ${color === 'teal' ? 'from-blue-600/10' : 'from-purple-600/10'} to-transparent to-70% -ml-[192px] -mb-[192px] transition-all duration-700 group-hover:opacity-50`} />
 
 
             <div className="aspect-video bg-black/50 relative flex items-center justify-center group-hover:bg-black/30 transition-colors overflow-hidden">
-                <div className={`absolute inset-0 bg-gradient-to-br ${colorClasses[color]} opacity-20 group-hover:opacity-30 transition-opacity duration-500 mix-blend-overlay`} />
+                {/* Colour wash blended over the media (desktop: a blend layer over live video is costly on phones) */}
+                <div className={`hidden md:block absolute inset-0 bg-gradient-to-br ${colorClasses[color]} opacity-20 group-hover:opacity-30 transition-opacity duration-500 mix-blend-overlay`} />
 
                 {media ?? (
                     <div className="flex flex-col items-center gap-4 relative z-10">
@@ -236,7 +237,7 @@ function AddOnCard({ title, content, icon: Icon }: { title: string; content: Rea
             className="group relative p-8 rounded-3xl bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 border border-amber-500/10 overflow-hidden shadow-lg h-full transition-all duration-300 hover:border-amber-500/30 hover:bg-amber-900/10"
         >
             {/* Elegant Background Glow from Blueprint */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-amber-500/5 rounded-full blur-3xl -mr-20 -mt-20 transition-all group-hover:bg-amber-500/15 pointer-events-none" />
+            <div className="absolute top-0 right-0 w-[400px] h-[400px] bg-radial from-amber-500/5 group-hover:from-amber-500/15 to-transparent to-70% -mr-[150px] -mt-[150px] transition-all pointer-events-none" />
             <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-3xl" />
 
             <div className="relative z-10 flex flex-col h-full">

@@ -27,8 +27,9 @@ export default function Home() {
       {/* Background Mesh/Glow Effects - Fixed Layer */}
       <div className="fixed inset-0 pointer-events-none z-0 bg-slate-950">
         <div className="absolute top-0 left-0 w-full h-[500px] bg-gradient-to-b from-slate-900 to-transparent opacity-60" />
-        <div className="absolute top-[20%] right-[-10%] w-[500px] h-[500px] bg-indigo-950/30 rounded-full blur-[120px]" />
-        <div className="absolute bottom-[20%] left-[-10%] w-[500px] h-[500px] bg-slate-900/40 rounded-full blur-[120px]" />
+        {/* Glows are gradients: a blurred circle in a fixed layer is re-blurred on every scroll frame on phones */}
+        <div className="absolute top-[20%] -right-[300px] w-[740px] h-[740px] bg-radial from-indigo-950/30 to-transparent to-70%" />
+        <div className="absolute bottom-[20%] -left-[300px] w-[740px] h-[740px] bg-radial from-slate-900/40 to-transparent to-70%" />
         <div className="absolute inset-0 opacity-20 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-slate-900 via-slate-950 to-black">
         </div>
       </div>
@@ -45,10 +46,6 @@ export default function Home() {
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:44px_44px]" />
             {/* Top Gradient - Dark Premium Fade */}
             <div className="absolute top-0 left-0 right-0 h-[800px] bg-gradient-to-b from-slate-950 via-slate-900/40 to-transparent pointer-events-none" />
-            {/* Subtle Deep Glow */}
-            <div className="absolute top-0 left-0 right-0 h-[600px] bg-[radial-gradient(circle_800px_at_50%_-200px,#1e1b4b,transform-gpu)] opacity-20 blur-[120px]" />
-            {/* Bottom Glow */}
-            <div className="absolute bottom-0 left-0 right-0 h-[600px] bg-[radial-gradient(circle_800px_at_50%_100%,#1e1b4b,transform-gpu)] opacity-40 blur-[100px]" />
           </div>
 
           {/* Content Container */}

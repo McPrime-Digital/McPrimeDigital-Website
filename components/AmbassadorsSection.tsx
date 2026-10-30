@@ -84,10 +84,10 @@ export default function AmbassadorsSection() {
 function AmbassadorCard({ person, index }: { person: Ambassador, index: number }) {
     return (
         <motion.div
-            initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
+            initial={{ opacity: 0, x: index % 2 === 0 ? -24 : 24 }}
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 0.5 }}
             className="group relative"
         >
             {/* Image Frame */}

@@ -6,12 +6,13 @@ import Image from 'next/image';
 import Link from 'next/link';
 import Button from './ui/Button';
 import InViewVideo from './media/InViewVideo';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 
 export default function HeroSketch() {
     const mouseX = useMotionValue(0);
     const mouseY = useMotionValue(0);
     const containerRef = useRef<HTMLDivElement>(null);
-    // Refs not needed for simple video
+    const loopsRef = usePauseOffscreen<HTMLDivElement>();
 
     // Video logic simplified - just standard HTML5 video tag
 
@@ -62,7 +63,7 @@ export default function HeroSketch() {
             </div>
 
             {/* Content Wrapper - Constrained Width */}
-            <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center pt-10 pb-14 md:pb-20">
+            <div ref={loopsRef} className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 flex flex-col items-center pt-10 pb-14 md:pb-20">
                 {/* Top Row: Logo - AI - About */}
                 <div className="flex justify-center items-center w-full mb-8 md:mb-12 relative z-20">
                     {/* Logo Image - Absolute Left (Hidden on Mobile, handled by Navbar) */}
@@ -83,16 +84,17 @@ export default function HeroSketch() {
                         transition={{ type: "spring", stiffness: 260, damping: 20 }}
                         className="relative z-50 group mt-16 md:mt-0"
                     >
-                        {/* Glass Circle Container - Reduced Size */}
+                        {/* Glass Circle Container - Reduced Size. Its fill is opaque, so a backdrop blur or a
+                            screen blend over it would cost the GPU without changing a pixel. */}
                         <div
-                            className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-[#0B0F19] backdrop-blur-md overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
+                            className="w-[150px] h-[150px] md:w-[200px] md:h-[200px] flex items-center justify-center relative rounded-full border border-white/10 bg-[#0B0F19] overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]"
                             style={{ isolation: 'isolate', WebkitMaskImage: '-webkit-radial-gradient(white, black)' }}
                         >
                             <InViewVideo
                                 src="/compressed_videos/hero-robot.mp4"
                                 poster="/compressed_videos/hero-robot.jpg"
                                 eager
-                                className="w-full h-full object-cover opacity-80 mix-blend-screen rounded-full"
+                                className="w-full h-full object-cover opacity-80 rounded-full"
                             />
                         </div>
                     </motion.div>
@@ -161,47 +163,42 @@ export default function HeroSketch() {
                             <motion.div
                                 initial={{ height: 0 }}
                                 animate={{ height: "100%" }}
-                                transition={{ duration: 0.4, delay: 0.8 }}
+                                transition={{ duration: 0.3, delay: 0.1 }}
                                 className="w-full h-full bg-cyan-500/50"
                             />
                         </div>
-                        <ServiceBox title="FILMMAKING" delay={1.2} href="/filmmaking" />
+                        <ServiceBox title="FILMMAKING" delay={0.2} href="/filmmaking" />
                         {/* Mobile line: Filmmaking to Automations */}
                         <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
                             <motion.div
                                 initial={{ height: 0 }}
                                 animate={{ height: "100%" }}
-                                transition={{ duration: 0.2, delay: 1.3 }}
+                                transition={{ duration: 0.2, delay: 0.3 }}
                                 className="w-full h-full bg-cyan-500/40"
                             />
                         </div>
                     </div>
 
                     <div className="md:px-4 relative">
-                        <ServiceBox title="AUTOMATIONS" delay={1.4} href="/automations" />
+                        <ServiceBox title="AUTOMATIONS" delay={0.3} href="/automations" />
                         {/* Mobile line: Automations to Add-ons */}
                         <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
                             <motion.div
                                 initial={{ height: 0 }}
                                 animate={{ height: "100%" }}
-                                transition={{ duration: 0.2, delay: 1.5 }}
+                                transition={{ duration: 0.2, delay: 0.4 }}
                                 className="w-full h-full bg-cyan-500/30"
                             />
                         </div>
                     </div>
 
                     <div className="md:px-4 relative">
-                        <ServiceBox title="ADD-ONS" delay={1.6} href="/add-ons" />
+                        <ServiceBox title="ADD-ONS" delay={0.4} href="/add-ons" />
                     </div>
                 </div>
 
-                {/* Hero Content Area */}
-                <motion.div
-                    initial={{ opacity: 0, y: 50 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ delay: 1.8, duration: 0.8 }}
-                    className="text-center max-w-6xl mx-auto relative z-20 md:-mt-8" // Adjusted spacing and centered
-                >
+                {/* Hero Content Area: a CSS entrance, so the headline paints with the page instead of after JavaScript */}
+                <div className="text-center max-w-6xl mx-auto relative z-20 md:-mt-8 animate-rise [animation-delay:500ms]">
                     {/* Headline: Responsive Wrap */}
                     <h1 className="mb-8 leading-tight tracking-tight font-serif uppercase max-w-7xl mx-auto flex flex-col gap-2">
                         {/* 3D lettering: perfectly straight, depth built as a straight-down extrusion */}
@@ -240,14 +237,13 @@ export default function HeroSketch() {
                             >
                                 ARCHITECTS OF
                             </span>
-                            {/* Specular light sweep across the glass */}
+                            {/* Specular light sweep across the glass (desktop only: it repaints the headline every frame) */}
                             <span
                                 aria-hidden
-                                className="absolute inset-0 !font-serif text-transparent bg-clip-text select-none pointer-events-none"
+                                className="hidden md:block absolute inset-0 !font-serif text-transparent bg-clip-text select-none pointer-events-none animate-[heroShine_5.5s_ease-in-out_infinite]"
                                 style={{
                                     backgroundImage: 'linear-gradient(100deg, transparent 30%, rgba(255,255,255,0.9) 50%, transparent 70%)',
                                     backgroundSize: '250% 100%',
-                                    animation: 'heroShine 5.5s ease-in-out infinite',
                                 }}
                             >
                                 ARCHITECTS OF
@@ -269,7 +265,7 @@ export default function HeroSketch() {
                     <p className="text-gray-200/90 text-base md:text-lg italic max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
                         From first treatment to final conform, every picture moves through a governed, AI-native pipeline built to broadcast standard — while automation systems carry scheduling, versioning, and delivery in the background. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
                     </p>
-                </motion.div>
+                </div>
             </div>
 
         </section>
@@ -280,11 +276,7 @@ function ServiceBoxContent({ title, isCenter }: { title: string; isCenter: boole
     return (
         <>
             {/* Connector dot at top of box (where line connects) */}
-            <motion.div
-                animate={{ scale: [1, 1.5, 1], opacity: [0.6, 1, 0.6] }}
-                transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
-                className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 shadow-[0_0_12px_rgba(34,211,238,0.8)]"
-            />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 opacity-60 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[node-pulse_2s_ease-in-out_infinite]" />
 
             <div className="absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" />
             <div className={`
@@ -302,12 +294,7 @@ function ServiceBoxContent({ title, isCenter }: { title: string; isCenter: boole
 
 function ServiceBox({ title, delay, isCenter = false, href }: { title: string, delay: number, isCenter?: boolean, href?: string }) {
     return (
-        <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay, duration: 0.8 }}
-            className="group relative"
-        >
+        <div className="group relative animate-rise" style={{ animationDelay: `${delay}s` }}>
             {href ? (
                 <Link href={href} className="block h-full">
                     <ServiceBoxContent title={title} isCenter={isCenter} />
@@ -315,6 +302,6 @@ function ServiceBox({ title, delay, isCenter = false, href }: { title: string, d
             ) : (
                 <ServiceBoxContent title={title} isCenter={isCenter} />
             )}
-        </motion.div>
+        </div>
     );
 }

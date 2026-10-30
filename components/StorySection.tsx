@@ -42,18 +42,18 @@ export default function StorySection() {
     return (
         <section className="flex flex-col gap-24 relative overflow-hidden">
             {/* Ambient Background Glow */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[800px] bg-indigo-900/10 blur-[150px] -z-10 rounded-full" />
+            <div className="absolute -top-[150px] left-1/2 -translate-x-1/2 w-[1100px] h-[1100px] bg-radial from-indigo-900/10 to-transparent to-70% -z-10" />
 
             {/* Top Section: Story Card */}
             <motion.div
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-indigo-950/20 via-black/40 to-black/60 backdrop-blur-md border border-indigo-500/10 overflow-hidden"
+                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-indigo-950/20 via-black/40 to-black/60 md:backdrop-blur-md border border-indigo-500/10 overflow-hidden"
             >
-                {/* Indigo atmosphere */}
-                <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-indigo-900/20 rounded-full blur-[120px] mix-blend-screen pointer-events-none" />
-                <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-blue-900/10 rounded-full blur-[150px] mix-blend-screen pointer-events-none" />
+                {/* Indigo atmosphere (gradients: the same glow without a GPU blur) */}
+                <div className="absolute top-0 left-1/4 -ml-[120px] -mt-[120px] w-[740px] h-[740px] bg-radial from-indigo-900/20 to-transparent to-70% pointer-events-none" />
+                <div className="absolute bottom-0 right-1/4 -mr-[150px] -mb-[150px] w-[800px] h-[800px] bg-radial from-blue-900/10 to-transparent to-70% pointer-events-none" />
                 <div className="absolute inset-0 bg-gradient-to-b from-white/[0.03] to-transparent pointer-events-none rounded-[2.5rem]" />
 
                 <div className="relative z-10 grid grid-cols-1 lg:grid-cols-2 gap-10 lg:gap-16 items-center">
@@ -72,7 +72,7 @@ export default function StorySection() {
                         <div className="absolute top-0 right-0 p-4 opacity-50 group-hover:opacity-100 transition-opacity">
                             <ArrowUpRight className="w-6 h-6 text-indigo-500" />
                         </div>
-                        <div className="absolute top-0 right-0 w-40 h-40 bg-indigo-500/10 rounded-full blur-3xl pointer-events-none" />
+                        <div className="absolute top-0 right-0 -mr-12 -mt-12 w-64 h-64 bg-radial from-indigo-500/10 to-transparent to-70% pointer-events-none" />
                         <p className="text-gray-300 italic mb-4 text-lg leading-relaxed">
                             "We are chosen by organizations that value structured execution, measurable performance, and long-term scalability over short-term activity."
                         </p>
@@ -165,7 +165,7 @@ function WhyChooseUsVault() {
                                     className="absolute inset-0 flex flex-col p-8 md:p-10"
                                 >
                                     {/* Accent atmosphere */}
-                                    <div className="absolute -top-24 -right-24 w-64 h-64 bg-[#2D6BFF]/10 rounded-full blur-[80px] pointer-events-none" />
+                                    <div className="absolute -top-[176px] -right-[176px] w-[416px] h-[416px] bg-radial from-[#2D6BFF]/10 to-transparent to-70% pointer-events-none" />
 
                                     <div className="flex items-start justify-between mb-auto relative z-10" style={{ minWidth: 300 }}>
                                         <div className="w-12 h-12 rounded-xl bg-[#2D6BFF]/15 border border-[#2D6BFF]/30 flex items-center justify-center shadow-[0_0_24px_rgba(45,107,255,0.2)]">
@@ -238,8 +238,8 @@ function WhyChooseUsMobileCarousel() {
                                 dragElastic={0.2}
                                 onDragEnd={handleDragEnd}
                             >
-                                {/* Glass Surface Details */}
-                                <div className={`absolute inset-0 rounded-3xl backdrop-blur-xl transition-all duration-500
+                                {/* Glass Surface Details (fills are opaque, so no backdrop blur is needed) */}
+                                <div className={`absolute inset-0 rounded-3xl transition-all duration-500
                                     ${isCenter
                                         ? 'bg-gradient-to-b from-[#0E1526] to-[#080B12] shadow-[0_24px_60px_-20px_rgba(45,107,255,0.4)] border border-[#2D6BFF]/40'
                                         : 'bg-[#0A0E16] border border-white/[0.08]'
