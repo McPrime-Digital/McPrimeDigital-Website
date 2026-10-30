@@ -115,8 +115,8 @@ function RoomGrid({ d, className }: { d: string; className: string }) {
  * the grid lines it passes, while cyan streaks shoot the other way along the four corner edges
  * and cross it; the rim light swells as the frame arrives. The moving layers are masked by the
  * grid and only their transform and opacity animate, so nothing is repainted per frame. Starts
- * once the room is well into view; loops on desktop, runs once on phones, pauses off-screen and
- * is absent for reduced motion (timing in globals.css).
+ * once the room is well into view and loops seamlessly on every screen; pauses off-screen and is
+ * absent for reduced motion (timing in globals.css).
  */
 function RoomPulse({ mask, className }: { mask: string; className: string }) {
     const ref = usePauseOffscreen<HTMLDivElement>();

@@ -366,13 +366,15 @@ h6 {
   }
 }
 
-/* The room's light (RoomPulse in components/PlatformSection.tsx), one 7s cycle: the gold frame
-   travels from the back of the room to the viewer (0-40%), speeding up as a real object does in
-   perspective; cyan streaks shoot the other way along the corner edges (21-50%), slowing as they
-   recede, and cross it; the rim light swells as the frame arrives; then the room holds still.
-   The linear() curves are the perspective motion sampled at tenths of each move. */
+/* The room's light (RoomPulse in components/PlatformSection.tsx), one 5.6s cycle on every screen:
+   the gold frame travels from the back of the room to the viewer (0-66.7%), speeding up as a real
+   object does in perspective; cyan streaks shoot the other way along the corner edges (35-83.3%),
+   slowing as they recede, and cross it; the rim light swells as the frame lands while the next
+   frame is already rising out of the dark at the back. Every layer is invisible at the loop point,
+   so the cycle repeats without a seam. The linear() curves are the perspective motion sampled at
+   tenths of each move. */
 .room-pulse {
-  --room-loops: infinite;
+  --room-cycle: 5.6s;
 }
 
 .room-mask {
@@ -403,21 +405,15 @@ h6 {
 }
 
 .room-pulse[data-play] .room-flare {
-  animation: room-flare 7s linear var(--room-loops);
+  animation: room-flare var(--room-cycle) linear infinite;
 }
 
 .room-pulse[data-play] .room-ring {
-  animation: room-ring-travel 7s var(--room-loops), room-ring-fade 7s linear var(--room-loops);
+  animation: room-ring-travel var(--room-cycle) infinite, room-ring-fade var(--room-cycle) linear infinite;
 }
 
 .room-pulse[data-play] .room-streak {
-  animation: room-streak-travel 7s var(--room-loops), room-streak-fade 7s linear var(--room-loops);
-}
-
-@media (max-width: 767px) {
-  .room-pulse {
-    --room-loops: 1;
-  }
+  animation: room-streak-travel var(--room-cycle) infinite, room-streak-fade var(--room-cycle) linear infinite;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -432,7 +428,7 @@ h6 {
     animation-timing-function: linear(0, 0.036, 0.077, 0.125, 0.182, 0.25, 0.333, 0.438, 0.571, 0.75, 1);
   }
 
-  40%,
+  66.7%,
   100% {
     transform: scale(1);
   }
@@ -440,25 +436,25 @@ h6 {
 
 @keyframes room-ring-fade {
   0%,
-  42%,
+  70%,
   100% {
     opacity: 0;
   }
 
-  4%,
-  35% {
+  6.7%,
+  58.3% {
     opacity: 1;
   }
 }
 
 @keyframes room-streak-travel {
   0%,
-  21% {
+  35% {
     transform: translate(0, 0) scale(1);
     animation-timing-function: linear(0, 0.258, 0.439, 0.573, 0.676, 0.758, 0.824, 0.879, 0.926, 0.966, 1);
   }
 
-  50%,
+  83.3%,
   100% {
     transform: translate(212.5%, 212.5%) scale(0.32);
   }
@@ -466,27 +462,27 @@ h6 {
 
 @keyframes room-streak-fade {
   0%,
-  21%,
-  50%,
+  35%,
+  83.3%,
   100% {
     opacity: 0;
   }
 
-  23%,
-  44% {
+  38.3%,
+  73.3% {
     opacity: 1;
   }
 }
 
 @keyframes room-flare {
   0%,
-  36%,
-  56%,
+  60%,
+  93.3%,
   100% {
     opacity: 0;
   }
 
-  42% {
+  70% {
     opacity: 0.3;
   }
 }
