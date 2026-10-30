@@ -1,6 +1,8 @@
 'use client';
 
 import { motion, useScroll, useTransform } from 'framer-motion';
+import Image from 'next/image';
+import Link from 'next/link';
 import { CheckCircle2, Lock, Zap, LayoutGrid, Sparkles } from 'lucide-react';
 import FlowingBackground from '@/components/add-ons/FlowingBackground';
 import PremiumCard from '@/components/add-ons/PremiumCard';
@@ -180,6 +182,15 @@ export default function GrowthAddOns() {
                             <p className="text-gray-500 italic text-sm pt-4 border-l-2 border-[#2D6BFF] pl-4">
                                 A permanent asset for your brand legacy.
                             </p>
+
+                            {/* Ambassador and UGC work is part of filmmaking, so it is reviewed in the same client portal */}
+                            <div className="flex items-start gap-3 rounded-2xl border border-[#CBA54D]/15 bg-[#CBA54D]/[0.04] p-4">
+                                <Image src="/platform/genreline-mark-gold.png" alt="" width={512} height={407} className="h-4 w-auto mt-1 shrink-0" />
+                                <p className="text-sm text-gray-400 leading-relaxed">
+                                    Ambassador and UGC content is reviewed and approved in your McPrime client portal on Genreline, separately managed infrastructure from our sister software company under common ownership.{' '}
+                                    <Link href="/filmmaking#platform" className="text-[#E0C06A] hover:text-[#F0D98F] whitespace-nowrap transition-colors">How it works →</Link>
+                                </p>
+                            </div>
                         </div>
 
                         {/* RIGHT: Grid */}

@@ -15,7 +15,7 @@ export const metadata: Metadata = {
 const ExploreSection = dynamic(() => import('@/components/ExploreSection'), { ssr: true });
 const AmbassadorsSection = dynamic(() => import('@/components/AmbassadorsSection'), { ssr: true });
 const StorySection = dynamic(() => import('@/components/StorySection'), { ssr: true });
-const PlatformSection = dynamic(() => import('@/components/PlatformSection'), { ssr: true });
+const PlatformStrip = dynamic(() => import('@/components/PlatformStrip'), { ssr: true });
 const SelectedEngagementsHorizontal = dynamic(() => import('@/components/SelectedEngagementsHorizontal'), { ssr: true });
 const CTASection = dynamic(() => import('@/components/CTASection'), { ssr: true });
 const BlogSection = dynamic(() => import('@/components/BlogSection'), { ssr: true });
@@ -60,8 +60,8 @@ export default function Home() {
             {/* 3. Story & Why Choose Us */}
             <div id="story"><StorySection /></div>
 
-            {/* 3b. The platform every engagement runs on */}
-            <div id="platform"><PlatformSection /></div>
+            {/* 3b. Client portal pointer (the full Genreline section lives on /filmmaking) */}
+            <div id="platform"><PlatformStrip /></div>
 
             {/* 4. Selected Engagements */}
             <div id="engagements"><SelectedEngagementsHorizontal /></div>

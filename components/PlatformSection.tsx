@@ -35,8 +35,10 @@ const spaces = [
 ];
 
 /**
- * "Runs on Genreline": the platform every McPrime engagement runs on, and the
- * relationship between the studio and the company that builds it. The capture
+ * "Runs on Genreline": the platform every McPrime production (films, commercials,
+ * ambassador and UGC content) runs on, and the relationship between the studio and
+ * the company that builds it. Lives on the filmmaking page; the homepage carries a
+ * short pointer (PlatformStrip). The capture
  * frame renders the real client portal once GENRELINE.portalCapture points at a
  * current screenshot; until then it shows the three spaces of the system.
  */
@@ -46,11 +48,11 @@ export default function PlatformSection() {
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1300px] h-[1000px] bg-radial from-[#CBA54D]/[0.06] to-transparent to-70% -z-10 pointer-events-none" />
 
             <motion.div
-                initial={{ opacity: 0, y: 30 }}
+                initial={{ opacity: 0, y: 16 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: '-80px' }}
+                viewport={{ once: true }}
                 onViewportEnter={warmGenreline}
-                transition={{ duration: 0.7, ease: 'easeOut' }}
+                transition={{ duration: 0.45, ease: 'easeOut' }}
                 className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-[#1a1508]/60 via-black/40 to-black/60 md:backdrop-blur-md border border-[#CBA54D]/15 overflow-hidden"
             >
                 {/* Gold atmosphere */}
@@ -66,7 +68,7 @@ export default function PlatformSection() {
                             <span className="w-8 h-px bg-[#CBA54D]/60" /> The platform
                         </p>
                         <h2 className="text-3xl md:text-5xl font-bold font-serif leading-[1.05] text-white">
-                            McPrime Digital runs on{' '}
+                            McPrime productions run on{' '}
                             <span className="inline-flex items-center gap-3 align-baseline">
                                 <Image
                                     src="/platform/genreline-mark-gold.png"
@@ -82,7 +84,7 @@ export default function PlatformSection() {
                             Genreline is the operating system for AI and hybrid film production. It is separately managed infrastructure, developed and operated by our sister software company under common ownership.
                         </p>
                         <p className="text-gray-400 leading-relaxed">
-                            Every McPrime engagement is governed inside Genreline, from first treatment to final delivery. Creative review, approvals, contracts and invoicing share a single system of record, giving your team one accountable view of the work.
+                            Every McPrime production, from films and commercials to ambassador and UGC content, is governed inside Genreline from first treatment to final delivery. Creative review, approvals, contracts and invoicing share a single system of record, giving your team one accountable view of the work.
                         </p>
 
                         <div className="flex flex-wrap items-center gap-3 pt-2">

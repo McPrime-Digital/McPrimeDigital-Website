@@ -4,6 +4,7 @@ import FilmmakingHero from '@/components/filmmaking/FilmmakingHero';
 
 // Dynamically import below-the-fold components
 const FilmmakingWorkflow = dynamic(() => import('@/components/filmmaking/FilmmakingWorkflow'), { ssr: true });
+const PlatformSection = dynamic(() => import('@/components/PlatformSection'), { ssr: true });
 const CinematicCapabilityVault = dynamic(() => import('@/components/filmmaking/CinematicCapabilityVault'), { ssr: true });
 const FilmmakingPortfolio = dynamic(() => import('@/components/filmmaking/FilmmakingPortfolio'), { ssr: true });
 const FilmmakingTarget = dynamic(() => import('@/components/filmmaking/FilmmakingTarget'), { ssr: true });
@@ -26,6 +27,12 @@ export default function FilmmakingPage() {
         <div className="min-h-screen bg-[#0B0D12] text-white overflow-x-clip font-sans selection:bg-[#2D6BFF]/30">
             <FilmmakingHero />
             <FilmmakingWorkflow />
+            {/* The platform behind step 05 (client review); the hero badge jumps here */}
+            <div id="platform" className="relative isolate scroll-mt-24 bg-[#0B0D12] pt-4 pb-20 md:pb-28">
+                <div className="container mx-auto px-4 md:px-12">
+                    <PlatformSection />
+                </div>
+            </div>
             <CinematicCapabilityVault />
             <FilmmakingPortfolio />
             <FilmmakingTarget />
