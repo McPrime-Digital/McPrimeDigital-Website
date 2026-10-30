@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import { ArrowUpRight, BadgeCheck, LayoutPanelLeft, LogIn, Workflow, type LucideIcon } from 'lucide-react';
 import { GENRELINE } from '@/lib/site';
+import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
 import { warmOrigins } from '@/lib/warmOrigins';
 
 const warmGenreline = () => warmOrigins(GENRELINE.url, GENRELINE.login);
@@ -34,8 +36,10 @@ const pillars: { icon: LucideIcon; title: string; body: string }[] = [
  * lines along the floor and walls; `dzFloor`/`dzWall` set the depth spacing, so cells come out
  * near-square for the card's shape.
  */
+const BACK = 140; // half-size of the far wall
+
 function roomGrid({ cols, rows, dzFloor, dzWall }: { cols: number; rows: number; dzFloor: number; dzWall: number }) {
-    const back = 140; // half-size of the far wall
+    const back = BACK;
     const depth = 500 / back;
     const farthest = depth * 0.67; // depth lines stop short of the far wall, which stays a clean dark centre
     const f = (n: number) => n.toFixed(1);
@@ -69,6 +73,30 @@ function roomGrid({ cols, rows, dzFloor, dzWall }: { cols: number; rows: number;
 const ROOM_DESKTOP = roomGrid({ cols: 32, rows: 26, dzFloor: 0.08, dzWall: 0.06 });
 const ROOM_PHONE = roomGrid({ cols: 8, rows: 60, dzFloor: 0.034, dzWall: 0.34 });
 
+// The four edges where walls meet floor and ceiling, from the card's corners to the far wall's
+const ROOM_CORNERS = [
+    [0, 0, 500 - BACK, 500 - BACK],
+    [1000, 0, 500 + BACK, 500 - BACK],
+    [0, 1000, 500 - BACK, 500 + BACK],
+    [1000, 1000, 500 + BACK, 500 + BACK],
+].map(([x1, y1, x2, y2]) => `M${x1} ${y1}L${x2} ${y2}`).join('');
+
+/**
+ * Grid lines as a CSS mask, fading in from the dark centre the way the visible grid does: a sharp
+ * core plus a faint wide halo, so light passing through reads as a glow rather than a hairline
+ */
+function lineMask(d: string, core: number, halo: number, haloOpacity: number) {
+    const path = (w: number, o: number) =>
+        `<path d='${d}' fill='none' stroke='url(#f)' stroke-width='${w}' stroke-opacity='${o}' vector-effect='non-scaling-stroke'/>`;
+    const svg = `<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1000 1000' preserveAspectRatio='none'><radialGradient id='f' gradientUnits='userSpaceOnUse' cx='500' cy='500' r='707'><stop offset='.34' stop-opacity='0'/><stop offset='.78'/></radialGradient>${path(halo, haloOpacity)}${path(core, 1)}</svg>`;
+    return `url("data:image/svg+xml,${encodeURIComponent(svg)}")`;
+}
+
+const MASK_DESKTOP = lineMask(ROOM_DESKTOP, 1.5, 6, 0.16);
+const MASK_PHONE = lineMask(ROOM_PHONE, 1.5, 6, 0.16);
+const MASK_CORNERS = lineMask(ROOM_CORNERS, 2.5, 12, 0.3);
+const MIRRORS = ['', '-scale-x-100', '-scale-y-100', '-scale-100'];
+
 function RoomGrid({ d, className }: { d: string; className: string }) {
     return (
         <svg
@@ -79,6 +107,49 @@ function RoomGrid({ d, className }: { d: string; className: string }) {
         >
             <path d={d} fill="none" stroke="rgb(240 217 143 / 0.15)" strokeWidth={1} vectorEffect="non-scaling-stroke" />
         </svg>
+    );
+}
+
+/**
+ * The room's light. A gold frame travels from the back of the room toward the viewer, lighting
+ * the grid lines it passes, while cyan streaks shoot the other way along the four corner edges
+ * and cross it; the rim light swells as the frame arrives. The moving layers are masked by the
+ * grid and only their transform and opacity animate, so nothing is repainted per frame. Starts
+ * once the room is well into view; loops on desktop, runs once on phones, pauses off-screen and
+ * is absent for reduced motion (timing in globals.css).
+ */
+function RoomPulse({ mask, className }: { mask: string; className: string }) {
+    const ref = usePauseOffscreen<HTMLDivElement>();
+
+    useEffect(() => {
+        const el = ref.current;
+        if (!el) return;
+        const observer = new IntersectionObserver(
+            ([entry]) => {
+                if (!entry.isIntersecting) return;
+                el.setAttribute('data-play', '');
+                observer.disconnect();
+            },
+            { rootMargin: '0px 0px -40% 0px' }
+        );
+        observer.observe(el);
+        return () => observer.disconnect();
+    }, [ref]);
+
+    return (
+        <div ref={ref} aria-hidden className={`room-pulse absolute inset-0 pointer-events-none ${className}`}>
+            <div className="room-flare absolute inset-0" />
+            <div className="room-mask absolute inset-0" style={{ maskImage: mask }}>
+                <div className="room-ring absolute inset-0" />
+            </div>
+            <div className="room-mask absolute inset-0" style={{ maskImage: MASK_CORNERS }}>
+                {MIRRORS.map((m) => (
+                    <div key={m} className={`absolute inset-0 ${m}`}>
+                        <div className="room-streak" />
+                    </div>
+                ))}
+            </div>
+        </div>
     );
 }
 
@@ -110,6 +181,8 @@ export default function PlatformSection() {
                 {/* The room: gold rim light (.gold-room) and its perspective grid */}
                 <RoomGrid d={ROOM_DESKTOP} className="hidden md:block" />
                 <RoomGrid d={ROOM_PHONE} className="md:hidden" />
+                <RoomPulse mask={MASK_DESKTOP} className="hidden md:block" />
+                <RoomPulse mask={MASK_PHONE} className="md:hidden" />
 
                 <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                     {/* Copy */}

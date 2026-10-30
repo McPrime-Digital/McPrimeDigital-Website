@@ -352,17 +352,142 @@ h6 {
     rgb(234 194 93 / 0.28) calc(80px * var(--room-k)), rgb(234 194 93 / 0.22) calc(100px * var(--room-k)),
     rgb(234 194 93 / 0.17) calc(130px * var(--room-k)), rgb(234 194 93 / 0.11) calc(165px * var(--room-k)),
     rgb(234 194 93 / 0.05) calc(210px * var(--room-k)), transparent calc(270px * var(--room-k));
-  background:
+  --room-light:
     linear-gradient(to bottom, var(--room-rim)),
     linear-gradient(to top, var(--room-rim)),
     linear-gradient(to right, var(--room-rim)),
-    linear-gradient(to left, var(--room-rim)),
-    #030303;
+    linear-gradient(to left, var(--room-rim));
+  background: var(--room-light), #030303;
 }
 
 @media (max-width: 767px) {
   .gold-room {
     --room-k: 0.42;
+  }
+}
+
+/* The room's light (RoomPulse in components/PlatformSection.tsx), one 7s cycle: the gold frame
+   travels from the back of the room to the viewer (0-40%), speeding up as a real object does in
+   perspective; cyan streaks shoot the other way along the corner edges (21-50%), slowing as they
+   recede, and cross it; the rim light swells as the frame arrives; then the room holds still.
+   The linear() curves are the perspective motion sampled at tenths of each move. */
+.room-pulse {
+  --room-loops: infinite;
+}
+
+.room-mask {
+  mask-size: 100% 100%;
+  mask-repeat: no-repeat;
+}
+
+.room-flare {
+  background: var(--room-light);
+  opacity: 0;
+}
+
+.room-ring {
+  opacity: 0;
+  box-shadow: inset 0 0 0 2px rgb(255 247 224), inset 0 0 40px 12px rgb(250 220 140);
+}
+
+/* Bright head at its bottom-right corner, tail toward the top-left; mirrored for the other corners */
+.room-streak {
+  position: absolute;
+  left: -16%;
+  top: -16%;
+  width: 16%;
+  height: 16%;
+  opacity: 0;
+  transform-origin: 100% 100%;
+  background: radial-gradient(100% 100% at 100% 100%, rgb(240 254 255) 0, rgb(103 232 249) 15%, rgb(34 211 238 / 0.5) 55%, transparent 100%);
+}
+
+.room-pulse[data-play] .room-flare {
+  animation: room-flare 7s linear var(--room-loops);
+}
+
+.room-pulse[data-play] .room-ring {
+  animation: room-ring-travel 7s var(--room-loops), room-ring-fade 7s linear var(--room-loops);
+}
+
+.room-pulse[data-play] .room-streak {
+  animation: room-streak-travel 7s var(--room-loops), room-streak-fade 7s linear var(--room-loops);
+}
+
+@media (max-width: 767px) {
+  .room-pulse {
+    --room-loops: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .room-pulse {
+    display: none;
+  }
+}
+
+@keyframes room-ring-travel {
+  0% {
+    transform: scale(0.333);
+    animation-timing-function: linear(0, 0.036, 0.077, 0.125, 0.182, 0.25, 0.333, 0.438, 0.571, 0.75, 1);
+  }
+
+  40%,
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes room-ring-fade {
+  0%,
+  42%,
+  100% {
+    opacity: 0;
+  }
+
+  4%,
+  35% {
+    opacity: 1;
+  }
+}
+
+@keyframes room-streak-travel {
+  0%,
+  21% {
+    transform: translate(0, 0) scale(1);
+    animation-timing-function: linear(0, 0.258, 0.439, 0.573, 0.676, 0.758, 0.824, 0.879, 0.926, 0.966, 1);
+  }
+
+  50%,
+  100% {
+    transform: translate(212.5%, 212.5%) scale(0.32);
+  }
+}
+
+@keyframes room-streak-fade {
+  0%,
+  21%,
+  50%,
+  100% {
+    opacity: 0;
+  }
+
+  23%,
+  44% {
+    opacity: 1;
+  }
+}
+
+@keyframes room-flare {
+  0%,
+  36%,
+  56%,
+  100% {
+    opacity: 0;
+  }
+
+  42% {
+    opacity: 0.3;
   }
 }
 
