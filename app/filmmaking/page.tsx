@@ -29,7 +29,8 @@ export default function FilmmakingPage() {
             <FilmmakingWorkflow />
             {/* The platform behind step 05 (client review); the hero badge jumps here */}
             <div id="platform" className="relative isolate scroll-mt-24 bg-[#0B0D12] pt-4 pb-20 md:pb-28">
-                <div className="container mx-auto px-4 md:px-12">
+                {/* The room runs nearly edge to edge; its content keeps a reading width inside */}
+                <div className="mx-auto max-w-[1920px] px-3 md:px-6">
                     <PlatformSection />
                 </div>
             </div>

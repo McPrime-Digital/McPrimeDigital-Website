@@ -65,8 +65,8 @@ function roomGrid({ cols, rows, dzFloor, dzWall }: { cols: number; rows: number;
     return d.join('');
 }
 
-// Desktop: a roughly square card. Phones: a tall, narrow one, so more rows and finer floor depth.
-const ROOM_DESKTOP = roomGrid({ cols: 24, rows: 26, dzFloor: 0.08, dzWall: 0.08 });
+// Desktop: a wide card (nearly the full window). Phones: a tall, narrow one, so more rows and finer floor depth.
+const ROOM_DESKTOP = roomGrid({ cols: 32, rows: 26, dzFloor: 0.08, dzWall: 0.06 });
 const ROOM_PHONE = roomGrid({ cols: 8, rows: 60, dzFloor: 0.034, dzWall: 0.34 });
 
 function RoomGrid({ d, className }: { d: string; className: string }) {
@@ -111,7 +111,7 @@ export default function PlatformSection() {
                 <RoomGrid d={ROOM_DESKTOP} className="hidden md:block" />
                 <RoomGrid d={ROOM_PHONE} className="md:hidden" />
 
-                <div className="relative z-10 grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
+                <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 lg:grid-cols-12 gap-10 lg:gap-14 items-center">
                     {/* Copy */}
                     <div className="lg:col-span-6 flex flex-col gap-6">
                         <p className="font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-[#F7E3A6] flex items-center gap-3">
@@ -239,7 +239,7 @@ export default function PlatformSection() {
                 </div>
 
                 {/* Pillars */}
-                <div className="relative z-10 grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mt-12 md:mt-16">
+                <div className="relative z-10 max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-5 md:gap-6 mt-12 md:mt-16">
                     {pillars.map((p, i) => (
                         <motion.div
                             key={p.title}
