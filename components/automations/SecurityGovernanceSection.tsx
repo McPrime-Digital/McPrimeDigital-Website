@@ -6,7 +6,7 @@ import Link from 'next/link';
 
 export default function SecurityGovernanceSection() {
     return (
-        <section className="py-24 bg-[#080808] border-t border-white/5 relative overflow-hidden">
+        <section className="py-16 md:py-24 bg-[#080808] border-t border-white/5 relative overflow-hidden">
             {/* Background Pattern */}
             <div className="absolute inset-0 bg-[linear-gradient(to_right,#8080800a_1px,transparent_1px),linear-gradient(to_bottom,#8080800a_1px,transparent_1px)] bg-[size:24px_24px] opacity-20" />
 

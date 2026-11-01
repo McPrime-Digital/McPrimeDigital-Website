@@ -16,7 +16,7 @@ export default function SelectedEngagementsPage() {
     return (
         <div className="min-h-screen bg-[#0b0b0d] text-white font-sans selection:bg-indigo-500/30">
             {/* HERO SECTION */}
-            <section className="pt-32 pb-20 px-6 md:px-12 lg:px-20 border-b border-white/10">
+            <section className="pt-32 pb-14 md:pb-20 px-6 md:px-12 lg:px-20 border-b border-white/10">
                 <div className="max-w-4xl">
                     <motion.div
                         initial={{ opacity: 0, y: 20 }}
@@ -41,7 +41,7 @@ export default function SelectedEngagementsPage() {
                 const d = DEPARTMENTS[department];
                 const work = engagements.filter((e) => e.department === department);
                 return (
-                    <section key={department} className="relative px-6 md:px-12 lg:px-20 py-20 border-b border-white/10 overflow-hidden">
+                    <section key={department} className="relative px-6 md:px-12 lg:px-20 py-12 md:py-20 border-b border-white/10 overflow-hidden">
                         {/* The department's own light, faint, from the top corner */}
                         <div
                             aria-hidden
@@ -78,7 +78,7 @@ export default function SelectedEngagementsPage() {
                                         transition={{ duration: 0.5, delay: Math.min(index, 3) * 0.08 }}
                                         className="group"
                                     >
-                                        <div className="py-12 border-b border-white/5 group-last:border-0 group-hover:bg-white/[0.02] transition-colors -mx-6 px-6 rounded-lg">
+                                        <div className="py-10 md:py-12 border-b border-white/5 group-last:border-0 group-hover:bg-white/[0.02] transition-colors -mx-6 px-6 rounded-lg">
                                             <span className="block text-xs font-medium tracking-widest text-gray-500 uppercase mb-4">
                                                 {item.client}
                                             </span>
@@ -102,7 +102,7 @@ export default function SelectedEngagementsPage() {
             })}
 
             {/* Bottom Navigation */}
-            <section className="px-6 md:px-12 lg:px-20 py-20 bg-[#0a0a0a]">
+            <section className="px-6 md:px-12 lg:px-20 py-14 md:py-20 bg-[#0a0a0a]">
                 <div className="max-w-4xl">
                     <h3 className="text-white text-lg font-bold mb-6">Ready to discuss your project?</h3>
                     <Link href="/#contact" className="inline-flex items-center gap-2 text-indigo-400 hover:text-indigo-300 transition-colors uppercase tracking-wider text-sm font-medium">

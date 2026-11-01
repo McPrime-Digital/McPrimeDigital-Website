@@ -12,9 +12,9 @@ import Footer from '@/components/Footer';
 
 // --- SHARED COMPONENTS ---
 
-function Section({ children, className = "", id }: { children: React.ReactNode, className?: string, id?: string }) {
+function Section({ children, className = "", id, pad = "py-16 md:py-24" }: { children: React.ReactNode, className?: string, id?: string, pad?: string }) {
     return (
-        <section id={id} className={`relative py-32 overflow-hidden ${className}`}>
+        <section id={id} className={`relative ${pad} overflow-hidden ${className}`}>
             {children}
         </section>
     );
@@ -285,7 +285,7 @@ export default function GrowthAddOns() {
 
 
             {/* 6. FINAL CTA - "Expand Within the System" */}
-            <Section id="cta" className="bg-black py-40 relative">
+            <Section id="cta" pad="pt-16 md:pt-24 pb-20 md:pb-32" className="bg-black relative">
                 <Container className="max-w-6xl relative z-10">
                     <PremiumCard className="rounded-[4rem] p-12 md:p-32 text-center bg-black/40 md:backdrop-blur-3xl border border-white/10 shadow-2xl relative overflow-hidden group/card">
 

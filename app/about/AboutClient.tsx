@@ -75,7 +75,7 @@ export default function AboutPage() {
                     initial={{ opacity: 0, y: 30 }}
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.8, ease: "easeOut" }}
-                    className="mb-16 md:mb-32 text-center relative"
+                    className="mb-12 md:mb-32 text-center relative"
                 >
                     {/* Hero Gradient Text Glow */}
                     <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full h-80 bg-radial from-blue-500/20 to-transparent to-70% pointer-events-none" />
@@ -90,7 +90,7 @@ export default function AboutPage() {
 
 
                 {/* 2. ABOUT McPRIME DIGITAL - With Glass Background */}
-                <section className="mb-20 md:mb-40 grid grid-cols-1 md:grid-cols-12 gap-12 pt-12 md:pt-20 relative">
+                <section className="mb-20 md:mb-40 grid grid-cols-1 md:grid-cols-12 gap-12 pt-8 md:pt-20 relative">
                     <div className="absolute inset-0 bg-white/[0.01] border border-white/5 rounded-3xl md:backdrop-blur-sm -z-10" />
                     <div className="absolute inset-0 bg-gradient-to-br from-blue-900/10 via-transparent to-transparent opacity-30 rounded-3xl -z-10" />
 
@@ -297,7 +297,7 @@ export default function AboutPage() {
 
 
                 {/* 4. OUR COMMITMENT - Glass Panel */}
-                <section className="mb-20 md:mb-40 text-center relative py-16 md:py-24">
+                <section className="mb-20 md:mb-40 text-center relative">
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/[0.015] to-transparent pointer-events-none" />
                     <div className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
                     <div className="absolute bottom-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
@@ -398,7 +398,7 @@ export default function AboutPage() {
 
 
                 {/* 6. CORE PRINCIPLES - 4D DEEP LIQUID GLASSS HORIZONTAL LAYOUT */}
-                <section className="mb-12 md:mb-20">
+                <section className="md:mb-20">
                     <div className="text-center mb-16 relative">
                         {/* Glow behind title */}
                         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-radial from-blue-500/20 to-transparent to-70%" />

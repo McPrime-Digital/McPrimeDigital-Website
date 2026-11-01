@@ -22,7 +22,7 @@ export default function RoiSection() {
     const [isCard2Active, setIsCard2Active] = useState(false);
 
     return (
-        <section className="py-24 sm:py-32 relative bg-[#050505] text-white overflow-hidden">
+        <section className="py-16 md:py-24 relative bg-[#050505] text-white overflow-hidden">
             {/* Background Gradients */}
             <div className="absolute top-0 left-0 w-full h-full overflow-hidden pointer-events-none">
                 <div className="absolute top-[-10%] left-[-10%] w-[40%] h-[40%] bg-radial from-purple-900/10 to-transparent to-70% scale-[1.6]" />

@@ -39,7 +39,7 @@ export default function Footer() {
                 <div className="absolute inset-0 bg-black/20 md:backdrop-blur-[2px]" />
             </div>
 
-            <div className="max-w-7xl mx-auto px-6 md:px-12 py-20 relative z-10">
+            <div className="max-w-7xl mx-auto px-6 md:px-12 pt-14 pb-20 md:py-20 relative z-10">
 
                 {/* --- NEWSLETTER SECTION --- */}
                 <div className="flex flex-col items-center justify-center text-center mb-24 max-w-2xl mx-auto">

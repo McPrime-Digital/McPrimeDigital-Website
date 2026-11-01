@@ -25,7 +25,7 @@ export default function SelectedEngagementsHorizontal({ department }: { departme
     );
 
     return (
-        <section ref={sectionRef} className="py-24 sm:py-32 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 my-12 group/section">
+        <section ref={sectionRef} className="py-16 md:py-24 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 group/section">
             {/* Reinstated Background Image (desktop: its overlay blend all but vanishes over this dark base on phones) */}
             <div className="hidden md:block absolute inset-0 z-0 pointer-events-none transition-transform duration-1000 scale-100 group-hover/section:scale-105">
                 <div

@@ -85,7 +85,7 @@ export default function FilmmakingTarget() {
     };
 
     return (
-        <section ref={sectionRef} className="relative bg-[#0B0D12] py-32 overflow-hidden border-t border-white/5">
+        <section ref={sectionRef} className="relative bg-[#0B0D12] pt-12 md:pt-20 pb-12 md:pb-24 overflow-hidden border-t border-white/5">
             {/* Ambient Background Glows (gradients: same softness, no GPU blur) */}
             <div className="absolute -top-[120px] -right-[120px] w-[740px] h-[740px] bg-radial from-[#2D6BFF]/10 to-transparent to-70% pointer-events-none" />
             <div className="absolute -bottom-[120px] -left-[120px] w-[740px] h-[740px] bg-radial from-purple-900/10 to-transparent to-70% pointer-events-none" />

@@ -40,7 +40,7 @@ const features = [
 
 export default function StorySection() {
     return (
-        <section className="flex flex-col gap-24 relative overflow-hidden">
+        <section className="flex flex-col gap-16 md:gap-24 relative overflow-hidden">
             {/* Ambient Background Glow */}
             <div className="absolute -top-[150px] left-1/2 -translate-x-1/2 w-[1100px] h-[1100px] bg-radial from-indigo-900/10 to-transparent to-70% -z-10" />
 

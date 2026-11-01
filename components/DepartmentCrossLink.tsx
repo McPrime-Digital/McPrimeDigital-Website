@@ -18,7 +18,7 @@ export default function DepartmentCrossLink({ to }: { to: Department }) {
     const d = DEPARTMENTS[to];
     const { question, line } = COPY[to];
     return (
-        <section className="relative px-6 md:px-12 py-14 md:py-16 border-t border-white/5 overflow-hidden">
+        <section className="relative px-6 md:px-12 py-12 md:py-16 border-t border-white/5 overflow-hidden">
             <div
                 aria-hidden
                 className="absolute -bottom-64 right-0 w-[720px] h-[520px] pointer-events-none opacity-[0.12]"

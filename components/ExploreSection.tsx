@@ -41,7 +41,7 @@ export default function ExploreSection() {
             </div>
 
             {/* 1. The two departments */}
-            <div className="mb-32">
+            <div className="mb-16 md:mb-24">
                 <SectionHeader title="Two Departments" subtitle="Two separate practices, each with its own specialists, process and engagements." color="text-teal-400" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <SolutionCard
@@ -70,7 +70,7 @@ export default function ExploreSection() {
                 initial={{ opacity: 0, y: 30 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                className="relative mb-32 p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 md:backdrop-blur-md border border-amber-500/10 overflow-hidden"
+                className="relative p-8 md:p-14 rounded-[2.5rem] bg-gradient-to-b from-amber-950/20 via-black/40 to-black/60 md:backdrop-blur-md border border-amber-500/10 overflow-hidden"
             >
                 {/* Amber atmosphere (gradients: the same glow without a GPU blur) */}
                 <div className="absolute top-0 left-1/4 -ml-[120px] -mt-[120px] w-[740px] h-[740px] bg-radial from-amber-900/20 to-transparent to-70% pointer-events-none" />

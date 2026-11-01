@@ -93,7 +93,7 @@ export default function FilmmakingPortfolio() {
 
     return (
         <>
-            <section className="bg-[#050608] py-32">
+            <section className="bg-[#050608] pt-24 md:pt-32 pb-12 md:pb-20">
                 <div className="container mx-auto px-6 md:px-12">
                     {/* Section Header */}
                     <div className="mb-16">

@@ -18,7 +18,7 @@ export default function SelectedEngagementsVertical({ department }: { department
     const [touchedCard, setTouchedCard] = useState<number | null>(null);
 
     return (
-        <section ref={sectionRef} className="py-24 sm:py-32 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5 my-12">
+        <section ref={sectionRef} className="py-16 md:py-24 relative bg-[#050505] overflow-hidden rounded-3xl border border-white/5">
             {/* Background elements specific to the vertical flow (already soft gradients, so no blur filter) */}
             <div className="absolute top-0 right-0 w-1/2 h-full bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-indigo-900/10 via-transparent to-transparent opacity-50" />
             <div className="absolute top-1/2 left-0 w-1/2 h-1/2 bg-[radial-gradient(ellipse_at_center,_var(--tw-gradient-stops))] from-emerald-900/10 via-transparent to-transparent opacity-50" />

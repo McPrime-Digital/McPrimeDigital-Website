@@ -20,7 +20,7 @@ export default function InsightsPage() {
             `}</style>
 
             {/* HERO SECTION */}
-            <section className="relative pt-40 pb-20 px-4 md:px-8 border-b border-white/10 overflow-hidden">
+            <section className="relative pt-40 pb-12 md:pb-20 px-4 md:px-8 border-b border-white/10 overflow-hidden">
                 {/* Background Atmosphere */}
                 <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-indigo-900/20 rounded-full blur-[150px] pointer-events-none" />
                 <div className="absolute bottom-0 left-0 w-[400px] h-[400px] bg-sky-900/10 rounded-full blur-[100px] pointer-events-none" />
@@ -47,10 +47,10 @@ export default function InsightsPage() {
             </section>
 
             {/* ARTICLES LIST SECTION */}
-            <section className="py-20 px-4 md:px-8">
+            <section className="pt-12 md:pt-20 pb-8 md:pb-12 px-4 md:px-8">
                 <div className="container mx-auto max-w-5xl">
-                    <div className="flex flex-col gap-32">
-                        {articles.map((article) => (
+                    <div className="flex flex-col gap-16 md:gap-24">
+                        {articles.map((article, i) => (
                             <article
                                 key={article.id}
                                 className="group relative"
@@ -105,8 +105,10 @@ export default function InsightsPage() {
 
                                 </div>
 
-                                {/* Divider */}
-                                <div className="mt-20 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                {/* Divider between articles */}
+                                {i < articles.length - 1 && (
+                                    <div className="mt-12 md:mt-16 w-full h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                                )}
                             </article>
                         ))}
                     </div>
@@ -114,7 +116,7 @@ export default function InsightsPage() {
             </section>
 
             {/* Footer CTA */}
-            <section className="py-32 px-4 md:px-8 bg-gradient-to-b from-black to-indigo-950/20">
+            <section className="py-14 md:py-24 px-4 md:px-8 bg-gradient-to-b from-black to-indigo-950/20">
                 <div className="container mx-auto max-w-4xl text-center">
                     <h3 className="text-3xl md:text-5xl font-serif font-bold mb-8">Ready to move from Insight to Action?</h3>
                     <p className="text-xl text-gray-400 mb-12 max-w-2xl mx-auto">
