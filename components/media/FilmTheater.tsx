@@ -1,18 +1,18 @@
 'use client';
 
-import {
-    AnimatePresence,
-    animate,
-    motion,
-    useIsPresent,
-    useMotionValue,
-    type AnimationPlaybackControls,
-    type MotionValue,
-    type Transition,
-    type Variants,
-} from 'framer-motion';
+import { AnimatePresence, animate, motion, useMotionValue, type AnimationPlaybackControls } from 'framer-motion';
 import { ChevronLeft, ChevronRight, Maximize, Minimize, Pause, Play, Volume2, VolumeX, X } from 'lucide-react';
-import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore, type ReactNode } from 'react';
+import {
+    useCallback,
+    useEffect,
+    useLayoutEffect,
+    useRef,
+    useState,
+    useSyncExternalStore,
+    type CSSProperties,
+    type ReactNode,
+    type Ref,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { usePrefersReducedMotion } from '@/lib/useReducedMotion';
 
@@ -25,13 +25,6 @@ export interface TheaterFilm {
 }
 
 type Step = 1 | -1;
-type Axis = 'x' | 'y';
-/** What every change of film needs to know: which way the strip runs, and whether it moves at all. */
-interface Travel {
-    dir: Step;
-    axis: Axis;
-    reduced: boolean;
-}
 
 interface FilmTheaterProps {
     films: TheaterFilm[];
@@ -48,48 +41,59 @@ interface FilmTheaterProps {
     kicker: (film: TheaterFilm) => string;
 }
 
-// The strip advances on one curve: a slow start, a decisive middle and a soft landing.
-const ADVANCE = 0.9;
-const EASE_ADVANCE = [0.76, 0, 0.24, 1] as const;
+/** A film in the gate. One that is leaving keeps playing under the change and is dropped once it has left. */
+interface Shot {
+    id: number;
+    film: TheaterFilm;
+    leaving: boolean;
+    /** Seconds the poster holds before the film rolls */
+    delay: number;
+}
+
+/**
+ * A lightly damped spring baked into a CSS linear() curve, so the compositor can run it: a quick
+ * departure, a long soft arrival and a barely visible settle (about 1.5% overshoot).
+ */
+function springCurve(damping: number, samples = 60) {
+    const w = 6.9 / damping; // the envelope has decayed to 0.1% by the end
+    const wd = w * Math.sqrt(1 - damping * damping);
+    const points: string[] = [];
+    for (let i = 0; i <= samples; i++) {
+        const t = i / samples;
+        const v = i === samples ? 1 : 1 - Math.exp(-damping * w * t) * (Math.cos(wd * t) + ((damping * w) / wd) * Math.sin(wd * t));
+        points.push(v.toFixed(4));
+    }
+    return `linear(${points.join(', ')})`;
+}
+
+// The change of film is one gesture, run entirely on the compositor so nothing the page is doing can
+// stall it: the picture pulls back from the gate, the strip glides to the next film on a spring with
+// the perforations travelling alongside, and the picture settles back into the gate.
+const LIFT = 0.9;
+const LIFT_MS = 1000;
+const SLIDE = { delay: 80, duration: 820 };
+const SPRING = springCurve(0.8);
+/** Dark leader between two films on the strip, in px */
+const LEADER = 28;
+/** When the new film starts rolling, once it has landed */
+const START_DELAY = 0.85;
+/** Reduced motion: a plain crossfade */
+const FADE_MS = 350;
 const EASE_OUT = [0.16, 1, 0.3, 1] as const;
-/** The incoming picture drifts a fifth of the gate while its edge crosses all of it. */
-const PARALLAX = 0.2;
 /** Seconds before the end that the next film is announced */
 const UP_NEXT_LEAD = 6;
-/** Perforation pitch in px. The strip is EXTRA pitches longer at each end, so whole-pitch shifts never show a seam. */
+/** Perforation pitch in px, and how far the perforated strip runs past the gate at each end */
 const PITCH = { x: 36, y: 44 } as const;
-const EXTRA = 12;
+const STRIP_RUN = 4000;
 
-const along = (axis: Axis, value: string) => (axis === 'x' ? { x: value } : { y: value });
-
-/** The incoming film slides over the outgoing one, edge first. */
-const gate: Variants = {
-    enter: ({ dir, axis, reduced }: Travel) => (reduced ? { opacity: 0, zIndex: 2 } : { ...along(axis, `${dir * 100}%`), zIndex: 2 }),
-    center: { x: '0%', y: '0%', opacity: 1, zIndex: 2 },
-    exit: { zIndex: 1 },
-};
-/** The picture inside each gate moves less than the gate itself: parallax. */
-const picture: Variants = {
-    enter: ({ dir, axis, reduced }: Travel) => (reduced ? {} : along(axis, `${-dir * (1 - PARALLAX) * 100}%`)),
-    center: { x: '0%', y: '0%' },
-    exit: ({ dir, axis, reduced }: Travel) => (reduced ? {} : along(axis, `${-dir * PARALLAX * 100}%`)),
-};
-/** The outgoing film dims as it is covered. */
-const shade: Variants = {
-    enter: { opacity: 0 },
-    center: { opacity: 0 },
-    exit: ({ reduced }: Travel) => ({ opacity: reduced ? 0.4 : 0.7 }),
-};
-/** Markings and titles roll to their next value in the strip's direction: the old one leaves, then the new one lands. */
-const roll: Variants = {
-    enter: ({ dir, reduced }: Travel & { delay: number }) => ({ opacity: 0, y: reduced ? '0%' : `${dir * 70}%` }),
-    center: { opacity: 1, y: '0%', transition: { duration: 0.5, ease: EASE_OUT } },
-    exit: ({ dir, reduced, delay }: Travel & { delay: number }) => ({
-        opacity: 0,
-        y: reduced ? '0%' : `${-dir * 70}%`,
-        transition: { duration: 0.22, ease: [0.4, 0, 1, 1], delay },
-    }),
-};
+const perforation = (w: number, h: number, x: number, y: number, size: number, height: number) =>
+    `url("data:image/svg+xml,${encodeURIComponent(
+        `<svg xmlns='http://www.w3.org/2000/svg' width='${w}' height='${h}' viewBox='0 0 ${w} ${h}'>` +
+            `<rect x='${x}' y='${y}' width='${size}' height='${height}' rx='3' fill='#000' stroke='#fff' stroke-opacity='.13'/>` +
+            `<path d='M${x + 3} ${y + 1.2}h${size - 6}' stroke='#fff' stroke-opacity='.08'/></svg>`
+    )}")`;
+const HOLES_X = perforation(36, 28, 10.5, 8.5, 15, 11);
+const HOLES_Y = perforation(36, 44, 10.5, 14.5, 15, 15);
 
 function formatTime(seconds: number) {
     if (!isFinite(seconds)) return '0:00';
@@ -100,7 +104,7 @@ function formatTime(seconds: number) {
 
 const pad = (n: number) => String(n).padStart(2, '0');
 
-/** Fades a film's sound rather than cutting it. Browsers that fix volume (iOS) simply ignore it. */
+/** Fades a film's sound rather than cutting it. Browsers that fix the volume (iOS) simply ignore it. */
 function fadeVolume(video: HTMLVideoElement, to: number, duration: number, then?: () => void): AnimationPlaybackControls {
     return animate(video.volume, to, {
         duration,
@@ -110,53 +114,59 @@ function fadeVolume(video: HTMLVideoElement, to: number, duration: number, then?
     });
 }
 
+/** Where an element currently is, including any animation in flight */
+function liveMatrix(el: HTMLElement) {
+    const t = getComputedStyle(el).transform;
+    return t === 'none' ? new DOMMatrixReadOnly() : new DOMMatrixReadOnly(t);
+}
+
 const subscribeNever = () => () => undefined;
 
-/** Text that rolls to its next value, like a split-flap marking. */
-function Roll({ value, travel, delay = 0, className = '' }: { value: string; travel: Travel; delay?: number; className?: string }) {
-    const custom = { ...travel, delay };
+/** Text that rolls to its next value like a split-flap marking. Runs as CSS animation (globals.css: .roll). */
+function Roll({ value, dir, delay = 0, className = '' }: { value: string; dir: Step; delay?: number; className?: string }) {
+    const [items, setItems] = useState(() => [{ key: 0, value, leaving: false, fresh: false }]);
+    const [shown, setShown] = useState(value);
+    if (value !== shown) {
+        setShown(value);
+        setItems((prev) => [
+            ...prev.filter((i) => !i.leaving).map((i) => ({ ...i, leaving: true })),
+            { key: prev[prev.length - 1].key + 1, value, leaving: false, fresh: true },
+        ]);
+    }
+    const style = { '--roll-dir': dir, '--roll-delay': `${delay}ms` } as CSSProperties;
     return (
-        <span
-            className={`grid min-w-0 overflow-hidden py-[0.15em] -my-[0.15em] [mask-image:linear-gradient(transparent,#000_0.15em,#000_calc(100%_-_0.15em),transparent)] ${className}`}
-        >
-            <AnimatePresence initial={false} custom={custom} mode="wait">
-                <motion.span
-                    key={value}
-                    custom={custom}
-                    variants={roll}
-                    initial="enter"
-                    animate="center"
-                    exit="exit"
-                    className="col-start-1 row-start-1 truncate"
+        <span className={`roll grid min-w-0 overflow-hidden ${className}`} style={style}>
+            {items.map((i) => (
+                <span
+                    key={i.key}
+                    aria-hidden={i.leaving || undefined}
+                    className={`col-start-1 row-start-1 truncate ${i.leaving ? 'roll-out' : i.fresh ? 'roll-in' : ''}`}
+                    onAnimationEnd={i.leaving ? () => setItems((p) => p.filter((x) => x.key !== i.key)) : undefined}
                 >
-                    {value || ' '}
-                </motion.span>
-            </AnimatePresence>
+                    {i.value || ' '}
+                </span>
+            ))}
         </span>
     );
 }
 
-/** Perforated film edge that travels with the picture when the strip advances. */
-function Perforations({ axis, offset }: { axis: Axis; offset: MotionValue<number> }) {
-    const horizontal = axis === 'x';
-    const holes = Array.from({ length: horizontal ? 96 : 56 }, (_, i) => (
-        <span key={i} className={`flex shrink-0 items-center justify-center ${horizontal ? 'w-9 h-full' : 'h-11 w-full'}`}>
-            <span
-                className={`rounded-[3px] bg-black border border-white/12 shadow-[inset_0_1px_2px_rgba(255,255,255,0.07)] ${horizontal ? 'w-3.5 h-3 md:w-4 md:h-3.5' : 'w-3 h-3.5 md:w-4 md:h-4'}`}
-            />
-        </span>
-    ));
-    return horizontal ? (
+/** Perforated film edge. A long strip drawn as a repeating image, so it can travel with the picture at no cost. */
+function Perforations({ axis, stripRef }: { axis: 'x' | 'y'; stripRef: Ref<HTMLDivElement> }) {
+    return axis === 'x' ? (
         <div aria-hidden className="relative h-6 md:h-7 overflow-hidden bg-[#0B0B0E]">
-            <motion.div style={{ x: offset, left: -EXTRA * PITCH.x }} className="absolute inset-y-0 flex">
-                {holes}
-            </motion.div>
+            <div
+                ref={stripRef}
+                className="absolute inset-y-0 will-change-transform"
+                style={{ left: -STRIP_RUN, right: -STRIP_RUN, backgroundImage: HOLES_X, backgroundSize: `${PITCH.x}px 100%`, backgroundRepeat: 'repeat-x' }}
+            />
         </div>
     ) : (
         <div aria-hidden className="relative w-7 md:w-9 shrink-0 overflow-hidden bg-[#0B0B0E] border-x border-black">
-            <motion.div style={{ y: offset, top: -EXTRA * PITCH.y }} className="absolute inset-x-0 flex flex-col">
-                {holes}
-            </motion.div>
+            <div
+                ref={stripRef}
+                className="absolute inset-x-0 will-change-transform"
+                style={{ top: -STRIP_RUN, bottom: -STRIP_RUN, backgroundImage: HOLES_Y, backgroundSize: `100% ${PITCH.y}px`, backgroundRepeat: 'repeat-y' }}
+            />
         </div>
     );
 }
@@ -211,10 +221,9 @@ interface ReelEvents {
 
 interface ReelProps {
     film: TheaterFilm;
-    /** Seconds to hold the poster before rolling, so a film starts once it has landed in the gate */
+    /** False once the film is leaving the gate: it stops reporting to the controls and its sound fades */
+    live: boolean;
     delay: number;
-    travel: Travel;
-    timing: Transition;
     muted: boolean;
     register: (video: HTMLVideoElement) => void;
     onSoundBlocked: () => void;
@@ -223,12 +232,10 @@ interface ReelProps {
 }
 
 /**
- * One film in the gate. When the next film arrives this one stays where it is, keeps moving and
- * dims while the new film slides over it, and its sound fades out instead of stopping dead.
- * Only the film in the gate reports to the controls.
+ * The film itself. Its poster holds until the film has landed in the gate and then dissolves into
+ * the moving picture; its sound rises as it starts and fades as it leaves.
  */
-function Reel({ film, delay, travel, timing, muted, register, onSoundBlocked, onBlocked, events }: ReelProps) {
-    const isPresent = useIsPresent();
+function Reel({ film, live, delay, muted, register, onSoundBlocked, onBlocked, events }: ReelProps) {
     const video = useRef<HTMLVideoElement | null>(null);
     const rise = useRef<AnimationPlaybackControls | null>(null);
     const [startDelay] = useState(delay);
@@ -237,7 +244,6 @@ function Reel({ film, delay, travel, timing, muted, register, onSoundBlocked, on
     useEffect(() => {
         const v = video.current;
         if (!v) return;
-        // Sound rises with the picture instead of starting at full level
         v.volume = 0;
         const onPlaying = () => { rise.current = fadeVolume(v, 1, 0.8); };
         v.addEventListener('playing', onPlaying, { once: true });
@@ -257,96 +263,84 @@ function Reel({ film, delay, travel, timing, muted, register, onSoundBlocked, on
 
     useEffect(() => {
         const v = video.current;
-        if (isPresent || !v) return;
+        if (live || !v) return;
         rise.current?.stop();
         const fall = fadeVolume(v, 0, 0.45, () => v.pause());
         return () => {
             fall.stop();
             v.pause();
         };
-    }, [isPresent]);
+    }, [live]);
 
-    const live = isPresent ? events : undefined;
+    const on = live ? events : undefined;
 
     return (
-        <motion.div
-            custom={travel}
-            variants={gate}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            transition={timing}
-            className="absolute inset-0 shadow-[0_0_64px_16px_rgba(0,0,0,0.75)]"
-        >
-            <motion.div custom={travel} variants={picture} transition={timing} className="absolute inset-0">
-                <video
-                    ref={(el) => {
-                        video.current = el;
-                        if (el && isPresent) register(el);
-                    }}
-                    src={film.src}
-                    poster={film.poster ?? undefined}
-                    className="w-full h-full object-contain bg-black"
-                    playsInline
-                    preload="auto"
-                    muted={muted}
-                    onClick={live?.onToggle}
-                    onPlay={live?.onPlay}
-                    onPause={live ? (e) => live.onPause(e.currentTarget) : undefined}
-                    onWaiting={live?.onWaiting}
-                    onPlaying={() => { setRolling(true); live?.onReady(); }}
-                    onCanPlay={live?.onReady}
-                    onLoadedMetadata={live ? (e) => live.onDuration(e.currentTarget.duration) : undefined}
-                    onTimeUpdate={live ? (e) => live.onSecond(Math.floor(e.currentTarget.currentTime)) : undefined}
-                    onEnded={live?.onEnded}
+        <>
+            <video
+                ref={(el) => {
+                    video.current = el;
+                    if (el && live) register(el);
+                }}
+                src={film.src}
+                poster={film.poster ?? undefined}
+                className="absolute inset-0 w-full h-full object-contain bg-black"
+                playsInline
+                preload="auto"
+                muted={muted}
+                onClick={on?.onToggle}
+                onPlay={on?.onPlay}
+                onPause={on ? (e) => on.onPause(e.currentTarget) : undefined}
+                onWaiting={on?.onWaiting}
+                onPlaying={() => { setRolling(true); on?.onReady(); }}
+                onCanPlay={on?.onReady}
+                onLoadedMetadata={on ? (e) => on.onDuration(e.currentTarget.duration) : undefined}
+                onTimeUpdate={on ? (e) => on.onSecond(Math.floor(e.currentTarget.currentTime)) : undefined}
+                onEnded={on?.onEnded}
+            />
+            {film.poster && (
+                // Posters are pre-sized JPEGs from the media CDN; the image optimizer would only spend quota
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
+                    src={film.poster}
+                    alt=""
+                    draggable={false}
+                    className={`absolute inset-0 w-full h-full object-contain bg-black pointer-events-none transition-opacity duration-700 ease-in-out ${rolling ? 'opacity-0' : 'opacity-100'}`}
                 />
-                {/* The poster holds while the film lands, then dissolves into the moving picture */}
-                {film.poster && (
-                    <motion.img
-                        src={film.poster}
-                        alt=""
-                        draggable={false}
-                        initial={false}
-                        animate={{ opacity: rolling ? 0 : 1 }}
-                        transition={{ duration: 0.7, ease: 'easeInOut' }}
-                        className="absolute inset-0 w-full h-full object-contain bg-black pointer-events-none"
-                    />
-                )}
-            </motion.div>
-            <motion.div custom={travel} variants={shade} transition={timing} className="absolute inset-0 bg-black pointer-events-none" />
-        </motion.div>
+            )}
+        </>
     );
 }
 
 /**
- * The film theater: house lights down, the film in a 35mm frame whose perforations and
- * markings travel with it. Changing film, by arrow, key, swipe or at the end of a film,
- * advances the strip: the next film slides in over the last while the frame stays put,
- * the markings roll to the new title and the sound crossfades. The final seconds of each
- * film announce what plays next.
+ * The film theater: house lights down, the film in a 35mm frame whose perforations and markings
+ * travel with it. Changing film, by arrow, key, swipe or at the end of a film, advances the strip:
+ * the picture pulls back from the gate, the next film glides in beside the last with the
+ * perforations moving alongside, and settles into the gate while the markings roll over and the
+ * sound crossfades. The final seconds of each film announce what plays next.
  */
 export default function FilmTheater({ films, index, onClose, onNavigate, orientation, label, marking, kicker }: FilmTheaterProps) {
     const client = useSyncExternalStore(subscribeNever, () => true, () => false);
     const reduced = usePrefersReducedMotion();
     const portrait = orientation === 'portrait';
-    const axis: Axis = portrait ? 'y' : 'x';
 
     const rootRef = useRef<HTMLDivElement>(null);
-    const screenRef = useRef<HTMLDivElement>(null);
+    const gateRef = useRef<HTMLDivElement>(null);
+    const stageRef = useRef<HTMLDivElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const barRef = useRef<HTMLDivElement>(null);
     const videoRef = useRef<HTMLVideoElement | null>(null);
     const hideTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const stripMotion = useRef<AnimationPlaybackControls | null>(null);
     const rewinding = useRef(false);
+    const lastAdvance = useRef(0);
     const touchStart = useRef<{ x: number; y: number } | null>(null);
+    const shotEls = useRef(new Map<number, HTMLDivElement>());
+    const strips = useRef(new Set<HTMLDivElement>());
+    const choreographed = useRef(0);
 
-    const strip = useMotionValue(0);
     const progress = useMotionValue(0);
     const upNextFill = useMotionValue(0);
 
     const [dir, setDir] = useState<Step>(1);
-    const [advanced, setAdvanced] = useState(false);
     const [playing, setPlaying] = useState(false);
     const [paused, setPaused] = useState(false);
     const [muted, setMuted] = useState(false);
@@ -355,24 +349,111 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
     const [seconds, setSeconds] = useState(0);
     const [controlsVisible, setControlsVisible] = useState(true);
     const [isFullscreen, setIsFullscreen] = useState(false);
+    const [shots, setShots] = useState<Shot[]>([]);
+    const [serial, setSerial] = useState(0);
 
     const open = index !== null;
     const count = films.length;
     const current = open ? films[index] : null;
-    const travel = useMemo<Travel>(() => ({ dir, axis, reduced }), [dir, axis, reduced]);
-    const timing: Transition = reduced ? { duration: 0.4, ease: 'easeOut' } : { duration: ADVANCE, ease: EASE_ADVANCE };
 
-    // Reset per film: state is adjusted during render when the selected film changes
-    const [shownIndex, setShownIndex] = useState<number | null>(index);
+    // A new film enters the gate: state is adjusted during render when the selected film changes
+    const [shownIndex, setShownIndex] = useState<number | null>(null);
     if (index !== shownIndex) {
-        if (shownIndex === null) setAdvanced(false);
         setShownIndex(index);
         setBuffering(true);
         setDuration(0);
         setSeconds(0);
         setPaused(false);
         setControlsVisible(true);
+        if (index === null) {
+            setShots([]);
+        } else {
+            const id = serial + 1;
+            const changing = shownIndex !== null;
+            setSerial(id);
+            setShots((prev) => [
+                ...(changing ? prev.map((s) => ({ ...s, leaving: true })) : []),
+                { id, film: films[index], leaving: false, delay: changing && !reduced ? START_DELAY : 0 },
+            ]);
+        }
     }
+
+    const trackShot = useCallback((id: number, el: HTMLDivElement | null) => {
+        if (el) shotEls.current.set(id, el);
+        else shotEls.current.delete(id);
+    }, []);
+    const trackStrip = useCallback((el: HTMLDivElement | null) => {
+        if (!el) return;
+        const set = strips.current;
+        set.add(el);
+        return () => { set.delete(el); };
+    }, []);
+    const dropShot = useCallback((id: number) => setShots((prev) => prev.filter((s) => s.id !== id)), []);
+
+    // The choreography of a change of film
+    useLayoutEffect(() => {
+        const incoming = shots[shots.length - 1];
+        if (!incoming || incoming.id <= choreographed.current) return;
+        choreographed.current = incoming.id;
+        const leaving = shots.filter((s) => s.leaving);
+        if (!leaving.length) return; // the first film rides in with the frame itself
+
+        const inEl = shotEls.current.get(incoming.id);
+        // The film that was in the gate (or still arriving) is the one that now leaves
+        const outShot = leaving[leaving.length - 1];
+        const outEl = shotEls.current.get(outShot.id);
+        if (!inEl || !outEl) return;
+
+        const outFrom = liveMatrix(outEl);
+        const outOpacity = getComputedStyle(outEl).opacity;
+        outEl.getAnimations().forEach((a) => a.cancel());
+        const leave = (keyframes: Keyframe[], options: KeyframeAnimationOptions) =>
+            outEl.animate(keyframes, options).finished.then(() => dropShot(outShot.id), () => undefined);
+
+        if (reduced) {
+            inEl.animate([{ opacity: 0 }, { opacity: 1 }], { duration: FADE_MS, easing: 'ease-out', fill: 'backwards' });
+            leave([{ opacity: outOpacity }, { opacity: outOpacity }], { duration: FADE_MS, fill: 'forwards' });
+            return;
+        }
+
+        const axis = portrait ? 'Y' : 'X';
+        const along = (k: number) => `translate${axis}(calc(${k * 100}% + ${k * LEADER}px))`;
+        const slide: KeyframeAnimationOptions = { delay: SLIDE.delay, duration: SLIDE.duration, easing: SPRING };
+
+        inEl.animate([{ transform: along(dir), opacity: 0.55 }, { transform: 'none', opacity: 1 }], { ...slide, fill: 'backwards' });
+        leave([{ transform: outFrom.toString(), opacity: outOpacity }, { transform: along(-dir), opacity: 0.35 }], { ...slide, fill: 'forwards' });
+
+        // The picture pulls back from the gate for the journey and settles back in as it lands
+        const stage = stageRef.current;
+        if (stage) {
+            const from = liveMatrix(stage).a;
+            stage.getAnimations().forEach((a) => a.cancel());
+            stage.animate(
+                [
+                    { transform: `scale(${from})`, easing: 'cubic-bezier(0.3, 0, 0.2, 1)' },
+                    { transform: `scale(${LIFT})`, offset: 0.3 },
+                    { transform: `scale(${LIFT})`, offset: 0.56, easing: 'cubic-bezier(0.45, 0, 0.15, 1)' },
+                    { transform: 'scale(1)' },
+                ],
+                { duration: LIFT_MS }
+            );
+        }
+
+        // The perforations travel as far as the picture appears to, in whole pitches so the strip never jumps
+        const gate = gateRef.current;
+        if (gate) {
+            const pitch = portrait ? PITCH.y : PITCH.x;
+            const size = portrait ? gate.offsetHeight : gate.offsetWidth;
+            const travel = Math.round((LIFT * (size + LEADER)) / pitch) * pitch;
+            for (const strip of strips.current) {
+                const m = liveMatrix(strip);
+                strip.getAnimations().forEach((a) => a.cancel());
+                let from = (portrait ? m.f : m.e) + dir * travel;
+                while (Math.abs(from) > STRIP_RUN) from -= Math.sign(from) * pitch;
+                strip.animate([{ transform: `translate${axis}(${from}px)` }, { transform: 'none' }], { ...slide, fill: 'backwards' });
+            }
+        }
+    }, [shots, dir, reduced, portrait, dropShot]);
 
     const wakeControls = useCallback(() => {
         setControlsVisible(true);
@@ -385,27 +466,18 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
 
     const advance = useCallback((step: Step) => {
         if (index === null || count < 2) return;
+        // A held key or a double click is one change, not a queue of them
+        const now = performance.now();
+        if (now - lastAdvance.current < 300) return;
+        lastAdvance.current = now;
         setDir(step);
-        setAdvanced(true);
         wakeControls();
-        // The perforations travel with the new picture, by whole pitches so the strip never jumps
-        const screen = screenRef.current;
-        if (screen && !reduced) {
-            const pitch = PITCH[axis];
-            const size = axis === 'x' ? screen.offsetWidth : screen.offsetHeight;
-            const pitches = Math.max(1, Math.round((size * PARALLAX) / pitch));
-            let from = strip.get() + step * pitches * pitch;
-            while (Math.abs(from) > EXTRA * pitch) from -= Math.sign(from) * pitch;
-            stripMotion.current?.stop();
-            strip.set(from);
-            stripMotion.current = animate(strip, 0, { duration: ADVANCE, ease: EASE_ADVANCE });
-        }
         // The progress line glides back to the start rather than snapping
         rewinding.current = true;
         animate(progress, 0, { duration: 0.6, ease: EASE_OUT, onComplete: () => { rewinding.current = false; } });
         upNextFill.set(0);
         onNavigate((((index + step) % count) + count) % count);
-    }, [index, count, reduced, axis, strip, progress, upNextFill, onNavigate, wakeControls]);
+    }, [index, count, progress, upNextFill, onNavigate, wakeControls]);
 
     const togglePlay = useCallback(() => {
         const v = videoRef.current;
@@ -451,6 +523,7 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
     useEffect(() => {
         if (!open) return;
         const onKey = (e: KeyboardEvent) => {
+            if (e.repeat && e.key.startsWith('Arrow')) return;
             switch (e.key) {
                 case 'Escape': onClose(); break;
                 case 'ArrowRight': advance(1); break;
@@ -467,7 +540,8 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
     }, [open, portrait, onClose, advance, togglePlay, toggleFullscreen, toggleMute]);
 
     // While the theater is open the page behind it is out of reach: it cannot scroll, even under a
-    // finger on iOS, and it takes no focus and no screen-reader attention.
+    // finger on iOS, and it takes no focus and no screen-reader attention. Once the house lights are
+    // down it is not drawn either, so its blurs and loops cost nothing while films play.
     useEffect(() => {
         if (!open) return;
         const root = rootRef.current;
@@ -483,9 +557,10 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
             (el): el is HTMLElement => el instanceof HTMLElement && el !== root && !el.inert
         );
         behind.forEach((el) => { el.inert = true; });
+        const visibility = behind.map((el) => el.style.visibility);
+        const lightsDown = setTimeout(() => behind.forEach((el) => { el.style.visibility = 'hidden'; }), 600);
         const returnFocus = document.activeElement instanceof HTMLElement ? document.activeElement : null;
         root?.focus({ preventScroll: true });
-        strip.set(0);
         progress.set(0);
         upNextFill.set(0);
         return () => {
@@ -493,14 +568,18 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
             body.style.overflow = saved.body;
             body.style.paddingRight = saved.padding;
             root?.removeEventListener('touchmove', holdStill);
-            behind.forEach((el) => { el.inert = false; });
+            clearTimeout(lightsDown);
+            behind.forEach((el, i) => {
+                el.inert = false;
+                el.style.visibility = visibility[i];
+            });
             returnFocus?.focus({ preventScroll: true });
             // The sound fades with the house lights instead of cutting off
             const v = videoRef.current;
             if (v && !v.paused) fadeVolume(v, 0, 0.4, () => v.pause());
             if (document.fullscreenElement) document.exitFullscreen().catch(() => undefined);
         };
-    }, [open, strip, progress, upNextFill]);
+    }, [open, progress, upNextFill]);
 
     useEffect(() => {
         const onFsChange = () => setIsFullscreen(Boolean(document.fullscreenElement));
@@ -534,28 +613,29 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
         return () => cancelAnimationFrame(frame);
     }, [open, playing, progress, upNextFill]);
 
-    // House light: colour sampled from the film spills into the hall. Each sample only partly covers
-    // the last, so the light drifts between shots and between films instead of jumping. Phones skip
-    // it: the film fills the screen there, and a full-screen 120px blur is costly.
+    // House light: the film's colours spill into the hall. The film is sampled into a 16x9 canvas that
+    // the browser stretches across the screen, which is soft enough by itself, so no full-screen blur
+    // has to be redrawn. Each sample only partly covers the last, so the light drifts between shots
+    // and between films instead of jumping. Phones skip it: the film fills the screen there.
     useEffect(() => {
         if (!open || !window.matchMedia('(min-width: 768px)').matches) return;
         const canvas = canvasRef.current;
         const ctx = canvas?.getContext('2d');
         if (!canvas || !ctx) return;
-        canvas.width = 32;
-        canvas.height = 18;
+        canvas.width = 16;
+        canvas.height = 9;
         let lit = false;
         const interval = setInterval(() => {
             const v = videoRef.current;
             if (!v || v.readyState < 2) return;
-            ctx.globalAlpha = lit ? 0.22 : 1;
+            ctx.globalAlpha = lit ? 0.25 : 1;
             try {
-                ctx.drawImage(v, 0, 0, 32, 18);
+                ctx.drawImage(v, 0, 0, 16, 9);
                 lit = true;
             } catch {
                 // decoder hiccup: the light holds
             }
-        }, 160);
+        }, 200);
         return () => clearInterval(interval);
     }, [open]);
 
@@ -603,6 +683,22 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
 
     const plateVisible = controlsVisible || paused;
     const upNext = nextFilm !== null && duration > UP_NEXT_LEAD * 2 && duration - seconds <= UP_NEXT_LEAD;
+    const events: ReelEvents = {
+        onToggle: togglePlay,
+        onPlay: () => { setPlaying(true); setPaused(false); wakeControls(); },
+        onPause: (v) => {
+            // A film that ran out is about to hand over to the next, not paused
+            if (v.ended) return;
+            setPlaying(false);
+            setPaused(true);
+            setControlsVisible(true);
+        },
+        onWaiting: () => setBuffering(true),
+        onReady: () => setBuffering(false),
+        onDuration: setDuration,
+        onSecond: setSeconds,
+        onEnded: () => advance(1),
+    };
 
     if (!client) return null;
 
@@ -630,7 +726,7 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                     <canvas
                         ref={canvasRef}
                         aria-hidden
-                        className="hidden md:block absolute inset-0 w-full h-full scale-125 blur-[120px] saturate-150 brightness-[0.4] opacity-70 pointer-events-none"
+                        className="hidden md:block absolute -inset-[8%] w-[116%] h-[116%] saturate-150 brightness-[0.45] opacity-70 pointer-events-none"
                     />
                     <div aria-hidden className="absolute inset-0 pointer-events-none bg-[radial-gradient(ellipse_at_center,transparent_30%,rgba(0,0,0,0.9)_100%)]" />
 
@@ -649,53 +745,45 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                             onClick={(e) => e.stopPropagation()}
                         >
                             <Marking
-                                left={<Roll value={`McPrime Digital · ${marking(current)}`} travel={travel} delay={0.2} />}
+                                left={<Roll value={`McPrime Digital · ${marking(current)}`} dir={dir} delay={120} />}
                                 right={
                                     <>
                                         <span>Film&nbsp;</span>
-                                        <Roll value={pad(index + 1)} travel={travel} delay={0.2} />
+                                        <Roll value={pad(index + 1)} dir={dir} delay={120} />
                                         <span>&nbsp;/ {pad(count)}</span>
                                     </>
                                 }
                             />
 
                             <div className={portrait ? 'flex items-stretch' : ''}>
-                                {portrait ? <Perforations axis="y" offset={strip} /> : <Perforations axis="x" offset={strip} />}
+                                <Perforations axis={portrait ? 'y' : 'x'} stripRef={trackStrip} />
 
                                 {/* The gate */}
                                 <div
-                                    ref={screenRef}
+                                    ref={gateRef}
                                     className={`relative overflow-hidden bg-black ${portrait ? 'h-[62vh] md:h-[70vh] aspect-[9/16]' : 'aspect-video'}`}
                                 >
-                                    <AnimatePresence initial={false} custom={travel}>
-                                        <Reel
-                                            key={`${index}:${current.src}`}
-                                            film={current}
-                                            delay={advanced && !reduced ? ADVANCE * 0.8 : 0}
-                                            travel={travel}
-                                            timing={timing}
-                                            muted={muted}
-                                            register={register}
-                                            onSoundBlocked={onSoundBlocked}
-                                            onBlocked={onBlocked}
-                                            events={{
-                                                onToggle: togglePlay,
-                                                onPlay: () => { setPlaying(true); setPaused(false); wakeControls(); },
-                                                onPause: (v) => {
-                                                    // A film that ran out is about to hand over to the next, not paused
-                                                    if (v.ended) return;
-                                                    setPlaying(false);
-                                                    setPaused(true);
-                                                    setControlsVisible(true);
-                                                },
-                                                onWaiting: () => setBuffering(true),
-                                                onReady: () => setBuffering(false),
-                                                onDuration: setDuration,
-                                                onSecond: setSeconds,
-                                                onEnded: () => advance(1),
-                                            }}
-                                        />
-                                    </AnimatePresence>
+                                    <div ref={stageRef} className="absolute inset-0 will-change-transform">
+                                        {shots.map((shot) => (
+                                            <div
+                                                key={shot.id}
+                                                ref={(el) => trackShot(shot.id, el)}
+                                                className="absolute inset-0 will-change-transform"
+                                                style={{ zIndex: shot.leaving ? 1 : 2 }}
+                                            >
+                                                <Reel
+                                                    film={shot.film}
+                                                    live={!shot.leaving}
+                                                    delay={shot.delay}
+                                                    muted={muted}
+                                                    register={register}
+                                                    onSoundBlocked={onSoundBlocked}
+                                                    onBlocked={onBlocked}
+                                                    events={events}
+                                                />
+                                            </div>
+                                        ))}
+                                    </div>
 
                                     {/* Waiting and paused states: the spinner only appears if the wait is noticeable */}
                                     <div className="absolute inset-0 z-10 flex items-center justify-center pointer-events-none">
@@ -704,7 +792,7 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                                                 <motion.span
                                                     key="waiting"
                                                     initial={{ opacity: 0 }}
-                                                    animate={{ opacity: 1, transition: { delay: 0.6, duration: 0.3 } }}
+                                                    animate={{ opacity: 1, transition: { delay: 1, duration: 0.3 } }}
                                                     exit={{ opacity: 0, transition: { duration: 0.2 } }}
                                                     className="w-9 h-9 rounded-full border-[1.5px] border-white/15 border-t-white/80 animate-spin"
                                                 />
@@ -790,12 +878,12 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                                     </motion.div>
                                 </div>
 
-                                {portrait ? <Perforations axis="y" offset={strip} /> : <Perforations axis="x" offset={strip} />}
+                                <Perforations axis={portrait ? 'y' : 'x'} stripRef={trackStrip} />
                             </div>
 
                             <Marking
-                                left={<Roll value={current.title} travel={travel} delay={0.26} />}
-                                right={<Roll value={duration > 0 ? `Runtime ${formatTime(duration)}` : ''} travel={travel} />}
+                                left={<Roll value={current.title} dir={dir} delay={180} />}
+                                right={<Roll value={duration > 0 ? `Runtime ${formatTime(duration)}` : ''} dir={dir} />}
                             />
                         </motion.div>
 
@@ -807,15 +895,15 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                         >
                             <Roll
                                 value={`${kicker(current)} · ${pad(index + 1)}/${pad(count)}`}
-                                travel={travel}
-                                delay={0.18}
+                                dir={dir}
+                                delay={100}
                                 className="mb-1 text-[#2D6BFF] text-[10px] tracking-[0.25em] font-mono uppercase"
                             />
                             <h2 className="flex max-w-full justify-center text-white text-xl md:text-2xl font-black tracking-tight leading-tight">
-                                <Roll value={current.title} travel={travel} delay={0.24} />
+                                <Roll value={current.title} dir={dir} delay={160} />
                             </h2>
                             <p className="mt-1 hidden md:flex max-w-full justify-center text-gray-500 text-sm">
-                                <Roll value={current.subtitle ?? ''} travel={travel} delay={0.3} />
+                                <Roll value={current.subtitle ?? ''} dir={dir} delay={220} />
                             </p>
                         </motion.div>
                     </div>
@@ -829,7 +917,7 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                                 transition={{ duration: 0.3 }}
                                 onClick={(e) => { e.stopPropagation(); advance(-1); }}
                                 aria-label="Previous film"
-                                className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white/70 hover:text-white transition-colors"
+                                className="absolute left-3 md:left-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white/70 hover:text-white transition-[background-color,color,scale] active:scale-90"
                             >
                                 <ChevronLeft className="w-6 h-6" />
                             </motion.button>
@@ -839,7 +927,7 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                                 transition={{ duration: 0.3 }}
                                 onClick={(e) => { e.stopPropagation(); advance(1); }}
                                 aria-label="Next film"
-                                className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white/70 hover:text-white transition-colors"
+                                className="absolute right-3 md:right-8 top-1/2 -translate-y-1/2 z-20 p-3 rounded-full bg-white/5 hover:bg-white/15 border border-white/10 text-white/70 hover:text-white transition-[background-color,color,scale] active:scale-90"
                             >
                                 <ChevronRight className="w-6 h-6" />
                             </motion.button>
@@ -857,7 +945,6 @@ export default function FilmTheater({ films, index, onClose, onNavigate, orienta
                     >
                         <X className="w-5 h-5" />
                     </motion.button>
-
                 </motion.div>
             )}
         </AnimatePresence>,

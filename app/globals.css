@@ -322,6 +322,38 @@ h6 {
   }
 }
 
+/* --- Film theater ---
+   Frame markings and titles roll to the next film like a split-flap board: the old value leaves in
+   the strip's direction, then the new one lands (components/media/FilmTheater.tsx sets --roll-dir to
+   1 or -1, and --roll-delay to stagger the lines). Transform and opacity only, so the compositor runs it. */
+.roll {
+  padding-block: 0.15em;
+  margin-block: -0.15em;
+  mask-image: linear-gradient(transparent, #000 0.15em, #000 calc(100% - 0.15em), transparent);
+}
+
+.roll-in {
+  animation: roll-in 0.5s cubic-bezier(0.16, 1, 0.3, 1) calc(var(--roll-delay) + 220ms) both;
+}
+
+.roll-out {
+  animation: roll-out 0.22s cubic-bezier(0.4, 0, 1, 1) var(--roll-delay) both;
+}
+
+@keyframes roll-in {
+  from {
+    opacity: 0;
+    transform: translateY(calc(var(--roll-dir) * 70%));
+  }
+}
+
+@keyframes roll-out {
+  to {
+    opacity: 0;
+    transform: translateY(calc(var(--roll-dir) * -70%));
+  }
+}
+
 [data-offscreen],
 [data-offscreen] * {
   animation-play-state: paused !important;
