@@ -3,7 +3,7 @@
 import { motion } from 'framer-motion';
 import { Play, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import PortfolioTheater from './PortfolioTheater';
+import FilmTheater from '@/components/media/FilmTheater';
 import InViewVideo from '@/components/media/InViewVideo';
 import { prettifyFilename } from '@/lib/video-utils';
 
@@ -125,7 +125,7 @@ export default function FilmmakingPortfolio() {
             </section>
 
             {/* The Portfolio Theater: widescreen 35mm catalog player. Loads a film only when opened. */}
-            <PortfolioTheater
+            <FilmTheater
                 films={videos.map(v => ({
                     src: v.url,
                     poster: v.posterUrl,
@@ -136,6 +136,10 @@ export default function FilmmakingPortfolio() {
                 index={selectedIndex}
                 onClose={() => setSelectedIndex(null)}
                 onNavigate={(i) => setSelectedIndex(i)}
+                orientation="landscape"
+                label="Portfolio theater"
+                marking={(film) => film.category || 'Original'}
+                kicker={(film) => film.category || 'Original'}
             />
         </>
     );

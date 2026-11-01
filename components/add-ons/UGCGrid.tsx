@@ -4,7 +4,7 @@ import { motion } from 'framer-motion';
 import PremiumCard from './PremiumCard';
 import { Volume2, Loader2 } from 'lucide-react';
 import { useState, useEffect } from 'react';
-import AmbassadorTheater from './AmbassadorTheater';
+import FilmTheater from '@/components/media/FilmTheater';
 import InViewVideo from '@/components/media/InViewVideo';
 import { prettifyFilename } from '@/lib/video-utils';
 
@@ -95,11 +95,15 @@ export default function UGCGrid() {
             </div>
 
             {/* The Ambassador Theater: film-frame catalog player. Loads a film only when opened. */}
-            <AmbassadorTheater
-                videos={videos.map(v => ({ src: v.url, poster: v.posterUrl, title: v.title, context: v.context }))}
+            <FilmTheater
+                films={videos.map(v => ({ src: v.url, poster: v.posterUrl, title: v.title, subtitle: v.context }))}
                 index={selectedIndex}
                 onClose={() => setSelectedIndex(null)}
                 onNavigate={(i) => setSelectedIndex(i)}
+                orientation="portrait"
+                label="Ambassador theater"
+                marking={() => 'AI Brand Ambassador'}
+                kicker={() => 'Verified Ambassador'}
             />
         </>
     );
