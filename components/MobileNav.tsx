@@ -69,14 +69,20 @@ export default function MobileNav() {
                             <Link href="/about" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-cyan-400 transition-colors">
                                 ABOUT
                             </Link>
-                            <Link href="/filmmaking" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-cyan-400 transition-colors">
-                                FILMMAKING
-                            </Link>
-                            <Link href="/automations" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-cyan-400 transition-colors">
+                            {/* The two departments; Add-ons extend Filmmaking, so they sit under it */}
+                            <div className="flex items-center justify-center gap-3 pt-2 font-mono text-[10px] tracking-[0.35em] uppercase text-white/35">
+                                <span className="h-px w-6 bg-white/20" /> Departments <span className="h-px w-6 bg-white/20" />
+                            </div>
+                            <div className="flex flex-col items-center gap-3">
+                                <Link href="/filmmaking" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-[#2D6BFF] transition-colors">
+                                    FILMMAKING
+                                </Link>
+                                <Link href="/add-ons" onClick={toggleMenu} className="text-base font-semibold tracking-[0.2em] text-white/55 hover:text-white transition-colors">
+                                    ↳ ADD-ONS
+                                </Link>
+                            </div>
+                            <Link href="/automations" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-[#22D3EE] transition-colors">
                                 AUTOMATIONS
-                            </Link>
-                            <Link href="/add-ons" onClick={toggleMenu} className="text-2xl font-bold text-white hover:text-cyan-400 transition-colors">
-                                ADD-ONS
                             </Link>
                         </div>
                     </motion.div>

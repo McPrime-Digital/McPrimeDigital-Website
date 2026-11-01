@@ -67,7 +67,7 @@ export default function FilmmakingTarget() {
             const res = await fetch('/api/contact', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ ...formData, source: 'Filmmaking Target CTA' })
+                body: JSON.stringify({ ...formData, source: 'Filmmaking Target CTA', department: 'Filmmaking' })
             });
 
             if (!res.ok) {

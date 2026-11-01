@@ -16,6 +16,20 @@ const organizationJsonLd = {
   foundingDate: "2023",
   sameAs: Object.values(SOCIAL_URLS),
   knowsAbout: ["AI commercial filmmaking", "AI automation systems", "Hybrid film production", GENRELINE.url],
+  department: [
+    {
+      "@type": "Organization",
+      name: "McPrime Digital Filmmaking Department",
+      url: `${SITE_URL}/filmmaking`,
+      description: "AI-native and hybrid commercial films, brand films, AI brand ambassadors and UGC.",
+    },
+    {
+      "@type": "Organization",
+      name: "McPrime Digital Automations Department",
+      url: `${SITE_URL}/automations`,
+      description: "AI automation systems for revenue, customer experience, operations, finance, people and IT, and data.",
+    },
+  ],
 };
 
 const manrope = Manrope({ subsets: ["latin"] });

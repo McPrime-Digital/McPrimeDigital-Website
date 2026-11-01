@@ -22,7 +22,7 @@ export default function JoinOurTeamPage() {
                             Careers at McPrime Digital
                         </h1>
                         <p className="text-xl text-gray-400 font-light leading-relaxed max-w-2xl">
-                            We build structured systems for production and automation. We recruit accordingly.
+                            We recruit for two departments, Filmmaking and Automations, each hiring for its own discipline.
                         </p>
                     </motion.div>
                 </div>

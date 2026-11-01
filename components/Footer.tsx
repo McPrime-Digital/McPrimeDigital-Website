@@ -47,7 +47,7 @@ export default function Footer() {
                         Receive Structured Insights
                     </h2>
                     <p className="text-gray-400 text-sm mb-10 font-light tracking-wide">
-                        Periodic briefings on AI production and automation systems.
+                        Periodic briefings from our Filmmaking and Automations departments.
                     </p>
 
                     <div className="w-full max-w-md relative group">
@@ -82,7 +82,8 @@ export default function Footer() {
                             </h3>
                             <div className="h-px w-12 bg-indigo-500/50" />
                             <p className="text-xs text-gray-400 uppercase tracking-widest font-medium">
-                                AI Commercial Filmmaking & Automation Infrastructure
+                                <span className="block">Filmmaking Department</span>
+                                <span className="block">Automations Department</span>
                             </p>
                         </div>
 
@@ -123,17 +124,21 @@ export default function Footer() {
                         </a>
                     </div>
 
-                    {/* COLUMN 2 — Services */}
+                    {/* COLUMN 2 — Departments (Add-ons extend Filmmaking, so they sit under it) */}
                     <div className="flex flex-col space-y-6">
-                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-2 opacity-50">Services</h4>
+                        <h4 className="text-sm font-bold text-white uppercase tracking-wider mb-2 opacity-50">Departments</h4>
                         <ul className="space-y-3">
-                            {['AI Commercial Filmmaking', 'AI Automation', 'Add-Ons'].map((item) => (
-                                <li key={item}>
+                            {[
+                                { label: 'Filmmaking Department', href: '/filmmaking', nested: false },
+                                { label: 'Add-Ons', href: '/add-ons', nested: true },
+                                { label: 'Automations Department', href: '/automations', nested: false },
+                            ].map((item) => (
+                                <li key={item.label} className={item.nested ? 'pl-4 border-l border-white/10' : undefined}>
                                     <Link
-                                        href={item === 'Add-Ons' ? '/add-ons' : item === 'AI Commercial Filmmaking' ? '/filmmaking' : item === 'AI Automation' ? '/automations' : '#'}
+                                        href={item.href}
                                         className="text-gray-400 hover:text-white transition-all text-sm font-light hover:underline underline-offset-4 decoration-indigo-500 decoration-2"
                                     >
-                                        {item}
+                                        {item.label}
                                     </Link>
                                 </li>
                             ))}

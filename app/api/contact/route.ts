@@ -6,6 +6,8 @@ const limiter = rateLimit({ interval: 60_000, uniqueTokenPerInterval: 1000 });
 
 const MAX = { name: 120, company: 120, email: 254, message: 5000, source: 80 };
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
+/** Which department an inquiry is for; anything else is recorded as not specified. */
+const DEPARTMENTS = ["Filmmaking", "Automations", "Both"] as const;
 
 /** Single-line field: trims, strips CR/LF so nothing can inject mail headers, caps length. */
 function line(value: unknown, max: number): string {
@@ -34,6 +36,7 @@ export async function POST(req: Request) {
         const company = line(body.company, MAX.company);
         const email = line(body.email, MAX.email);
         const source = line(body.source, MAX.source) || "Website";
+        const department = DEPARTMENTS.find((d) => d === body.department) ?? "Not specified";
         const message = typeof body.message === "string" ? body.message.replace(/\r/g, "").trim().slice(0, MAX.message) : "";
 
         if (!name || !email || !message) {
@@ -56,7 +59,7 @@ export async function POST(req: Request) {
         formData.append("from", `McPrime Digital <postmaster@${MAILGUN_DOMAIN}>`);
         formData.append("to", CONTACT_EMAIL_DESTINATION);
         formData.append("h:Reply-To", email);
-        formData.append("subject", `New Contact: ${name}${company ? ` (${company})` : ""} - ${source}`);
+        formData.append("subject", `New Contact [${department}]: ${name}${company ? ` (${company})` : ""} - ${source}`);
         formData.append("text", `
 You have received a new contact form submission.
 
@@ -65,6 +68,7 @@ Details:
 Name: ${name}
 Company: ${company || "Not provided"}
 Email: ${email}
+Department: ${department}
 Source: ${source}
 
 Message:

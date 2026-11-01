@@ -34,6 +34,10 @@ export default function FilmmakingHero() {
 
             {/* Content Anchored Bottom Left - No Grid / Immersion */}
             <div className="absolute bottom-20 left-6 md:bottom-32 md:left-20 z-10 max-w-2xl">
+                <p className="mb-5 flex items-center gap-3 font-mono text-[11px] md:text-xs tracking-[0.35em] uppercase text-white/85 [text-shadow:0_1px_12px_rgba(0,0,0,0.8)] animate-rise">
+                    <span className="h-px w-8 bg-[#2D6BFF] shadow-[0_0_8px_#2D6BFF]" />
+                    Filmmaking Department
+                </p>
                 <h1 className="text-5xl md:text-7xl lg:text-8xl font-bold text-white tracking-tight leading-[0.95] mb-6 animate-rise">
                     AI-NATIVE<br />
                     FILM, TV,<br />
@@ -47,7 +51,7 @@ export default function FilmmakingHero() {
 
                 <div className="flex flex-col gap-6">
                     <p className="text-lg md:text-xl text-gray-300 font-light italic leading-relaxed max-w-lg animate-rise [animation-delay:300ms]">
-                        An AI-native production system delivering broadcast-grade film without physical shoot constraints — compressed timelines, full creative control.
+                        An AI-native and hybrid production system delivering broadcast-grade film — compressed timelines, full creative control.
                     </p>
                 </div>
             </div>

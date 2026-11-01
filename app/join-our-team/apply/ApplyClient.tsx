@@ -121,10 +121,14 @@ export default function ApplicationPage() {
                                         defaultValue=""
                                     >
                                         <option value="" disabled>Select a role...</option>
-                                        <option value="cinematographer">Traditional Cinematographer</option>
-                                        <option value="automations_auditor">Automations Auditor</option>
-                                        <option value="ai_specialist">AI Production Specialist</option>
-                                        <option value="post_engineer">Post-Production Engineer</option>
+                                        <optgroup label="Filmmaking Department">
+                                            <option value="cinematographer">Traditional Cinematographer</option>
+                                            <option value="ai_specialist">AI Production Specialist</option>
+                                            <option value="post_engineer">Post-Production Engineer</option>
+                                        </optgroup>
+                                        <optgroup label="Automations Department">
+                                            <option value="automations_auditor">Automations Auditor</option>
+                                        </optgroup>
                                         <option value="other">Other</option>
                                     </select>
                                 </div>

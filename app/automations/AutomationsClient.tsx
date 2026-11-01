@@ -7,6 +7,7 @@ import { ArrowRight, FileText, TrendingUp, MessageSquare, Settings, Users, Datab
 import Link from 'next/link';
 import dynamic from 'next/dynamic';
 import Footer from '@/components/Footer';
+import DepartmentCrossLink from '@/components/DepartmentCrossLink';
 
 import TextType from '@/components/TextType';
 
@@ -38,7 +39,7 @@ export default function AutomationsPage() {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500"></span>
                             </span>
-                            <span className="text-sm font-bold tracking-widest uppercase">Next Gen Ecosystems</span>
+                            <span className="text-sm font-bold tracking-widest uppercase">Automations Department</span>
                         </div>
 
                         <h1 className="text-3xl md:text-5xl lg:text-7xl font-black tracking-tighter mb-8 leading-none uppercase animate-rise [animation-delay:150ms]">
@@ -165,7 +166,7 @@ export default function AutomationsPage() {
 
 
             {/* --- SELECTED ENGAGEMENTS (VERTICAL) --- */}
-            <SelectedEngagementsVertical />
+            <SelectedEngagementsVertical department="automations" />
 
 
             {/* --- CTA SECTION --- */}
@@ -173,6 +174,8 @@ export default function AutomationsPage() {
 
             {/* --- SECURITY & GOVERNANCE --- */}
             <SecurityGovernanceSection />
+
+            <DepartmentCrossLink to="filmmaking" />
 
             <Footer />
         </div>

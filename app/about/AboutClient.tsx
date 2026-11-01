@@ -3,7 +3,9 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Footer from '@/components/Footer';
-import { Target, Zap, Clock, Eye, Sliders, Clapperboard, Code2, Layers, ArrowUpRight, type LucideIcon } from 'lucide-react';
+import { Target, Zap, Clock, Eye, Sliders, Clapperboard, Code2, Layers, ArrowUpRight, ArrowRight, Cpu, type LucideIcon } from 'lucide-react';
+import Link from 'next/link';
+import { DEPARTMENTS, type Department } from '@/lib/departments';
 import { GENRELINE } from '@/lib/site';
 
 const companies: { icon: LucideIcon; kicker: string; name: string; body: string; accent: string; href?: string }[] = [
@@ -11,7 +13,7 @@ const companies: { icon: LucideIcon; kicker: string; name: string; body: string;
         icon: Clapperboard,
         kicker: 'The studio',
         name: 'McPrime Digital',
-        body: 'AI-native film, commercials and automation systems for mid-market and enterprise teams. Founded in 2023. Every engagement runs on Genreline.',
+        body: 'Two departments, Filmmaking and Automations, serving mid-market and enterprise teams. Founded in 2023. Every engagement runs on Genreline.',
         accent: '#2D6BFF',
     },
     {
@@ -28,6 +30,25 @@ const companies: { icon: LucideIcon; kicker: string; name: string; body: string;
         body: 'Developed by our sister software company. The operating system for AI and hybrid film production: the Crew space, the Client space and portal, and the Suite where the work is made, with contracts, rights and money on one record.',
         accent: '#CBA54D',
         href: GENRELINE.url,
+    },
+];
+
+const departments: { department: Department; icon: LucideIcon; body: string; includes: string[]; howLabel: string; how: string }[] = [
+    {
+        department: 'filmmaking',
+        icon: Clapperboard,
+        body: 'AI-native and hybrid production for commercials, brand films, TV and music video: AI-assisted scripting, image and video generation and high-end post-production, held to traditional cinematographic standards.',
+        includes: ['Commercial and brand films', 'AI-native and hybrid production', 'AI brand ambassadors and UGC', 'Paid advertising for active clients'],
+        howLabel: 'How clients work with it',
+        how: 'Reviews, approvals, contracts and invoices in your McPrime client portal, with a record of who approved each version and when.',
+    },
+    {
+        department: 'automations',
+        icon: Cpu,
+        body: 'Custom AI automation systems across six business pillars, designed, integrated and deployed inside client operations with governed execution and complete audit trails.',
+        includes: ['Revenue and growth', 'Customer experience', 'Operations, finance and admin', 'People, IT and data'],
+        howLabel: 'How clients work with it',
+        how: 'Direct access to operational data, performance metrics and measurable return tracking.',
     },
 ];
 
@@ -63,7 +84,7 @@ export default function AboutPage() {
                         Alignment Over<br />Transactions
                     </h1>
                     <p className="relative z-10 text-xl md:text-2xl text-gray-300 max-w-4xl mx-auto font-light leading-relaxed md:mix-blend-plus-lighter">
-                        We do not operate as a traditional agency. We build structured AI-native production and automation systems designed to scale creative output and operational efficiency. Every engagement is engineered for alignment, not short-term execution.
+                        We do not operate as a traditional agency. We run two dedicated departments: a Filmmaking Department for AI-native and hybrid production, and an Automations Department for business systems. Every engagement is engineered for alignment, not short-term execution.
                     </p>
                 </motion.div>
 
@@ -81,10 +102,10 @@ export default function AboutPage() {
                     </div>
                     <div className="md:col-span-8 space-y-8 text-lg text-gray-300 leading-relaxed font-light p-8 md:p-12 md:pl-0">
                         <p>
-                            Founded in 2023, McPrime Digital was established to rethink how commercial production and business automation operate in an AI-driven environment. From filmmaking and generative content to integrated automation systems and performance deployment, our work replaces fragmented workflows with unified digital infrastructure.
+                            Founded in 2023, McPrime Digital was established to rethink how commercial production and business automation operate in an AI-driven environment. We do it through two separate departments, each with its own specialists, process and engagements, and each built to replace fragmented workflows with structured digital infrastructure.
                         </p>
                         <p>
-                            We combine AI-assisted scripting, image and video generation, high-end post-production, and operational automation into cohesive systems that reduce friction, accelerate execution, and preserve creative authority.
+                            Our Filmmaking Department brings AI-assisted scripting, image and video generation and high-end post-production together with traditional cinematography, preserving creative authority. Our Automations Department designs and deploys the operational systems that reduce friction and accelerate execution inside client businesses.
                         </p>
                         <p>
                             Our clients operate across regulated industries, high-growth technology sectors, and enterprise environments where precision and scalability are non-negotiable.
@@ -96,6 +117,70 @@ export default function AboutPage() {
                         <p className="text-gray-400 text-sm pt-4">
                             Our focus is not volume for its own sake, but controlled, scalable execution aligned with measurable performance.
                         </p>
+                    </div>
+                </section>
+
+
+                {/* 2a. THE TWO DEPARTMENTS. Background proposal: one panel lit from both upper corners, each
+                    department in its own colour, with a hairline between them. */}
+                <section className="mb-20 md:mb-40 relative">
+                    <div className="text-center mb-12 md:mb-16">
+                        <h2 className="text-sm font-mono text-white/50 uppercase tracking-widest mb-4 flex items-center justify-center gap-2">
+                            <span className="w-8 h-px bg-white/30" /> How we are organized <span className="w-8 h-px bg-white/30" />
+                        </h2>
+                        <h3 className="text-3xl md:text-5xl font-bold text-white leading-tight">Two departments. One standard.</h3>
+                        <p className="text-gray-400 text-lg mt-5 max-w-2xl mx-auto font-light leading-relaxed">
+                            Filmmaking and Automations are separate departments, each with its own specialists, process and engagements. Work with one, or both: every engagement is scoped, delivered and reported by the department that owns it.
+                        </p>
+                    </div>
+
+                    <div className="relative grid grid-cols-1 md:grid-cols-2 rounded-[2rem] border border-white/[0.08] bg-[#07080b]/80 overflow-hidden">
+                        {/* Each half lit in its department's colour */}
+                        <div aria-hidden className="absolute -top-48 -left-40 w-[620px] h-[620px] pointer-events-none opacity-[0.16]" style={{ background: `radial-gradient(closest-side, ${DEPARTMENTS.filmmaking.accent}, transparent)` }} />
+                        <div aria-hidden className="absolute -top-48 -right-40 w-[620px] h-[620px] pointer-events-none opacity-[0.12]" style={{ background: `radial-gradient(closest-side, ${DEPARTMENTS.automations.accent}, transparent)` }} />
+                        <div aria-hidden className="absolute top-0 inset-x-0 h-px bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+                        {/* The line between them */}
+                        <div aria-hidden className="hidden md:block absolute inset-y-10 left-1/2 w-px bg-gradient-to-b from-transparent via-white/15 to-transparent" />
+
+                        {departments.map(({ department, icon: Icon, body, includes, howLabel, how }, i) => {
+                            const d = DEPARTMENTS[department];
+                            return (
+                                <motion.div
+                                    key={department}
+                                    initial={{ opacity: 0, y: 24 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true }}
+                                    transition={{ delay: i * 0.12, duration: 0.6 }}
+                                    className={`relative flex flex-col p-8 md:p-12 ${i > 0 ? 'border-t border-white/[0.08] md:border-t-0' : ''}`}
+                                >
+                                    <div className="flex items-start justify-between mb-8">
+                                        <div className="w-12 h-12 rounded-xl border flex items-center justify-center" style={{ borderColor: d.accent + '55', background: d.accent + '1a' }}>
+                                            <Icon className="w-6 h-6" style={{ color: d.accent }} />
+                                        </div>
+                                        <span aria-hidden className="font-mono text-5xl md:text-6xl font-bold leading-none text-transparent [-webkit-text-stroke:1px_rgba(255,255,255,0.14)]">{d.index}</span>
+                                    </div>
+                                    <p className="font-mono text-[11px] tracking-[0.3em] uppercase mb-2" style={{ color: d.accent }}>Department {d.index}</p>
+                                    <h4 className="text-2xl md:text-3xl font-bold text-white mb-4">{d.name}</h4>
+                                    <p className="text-gray-400 leading-relaxed text-[15px] mb-8">{body}</p>
+                                    <ul className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 mb-8">
+                                        {includes.map((item) => (
+                                            <li key={item} className="flex items-start gap-3 text-sm text-gray-300">
+                                                <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: d.accent, boxShadow: `0 0 8px ${d.accent}` }} />
+                                                {item}
+                                            </li>
+                                        ))}
+                                    </ul>
+                                    <div className="mt-auto rounded-2xl border border-white/[0.07] bg-white/[0.02] p-5 mb-8">
+                                        <p className="font-mono text-[10px] tracking-[0.25em] uppercase text-white/40 mb-2">{howLabel}</p>
+                                        <p className="text-sm text-gray-300 leading-relaxed">{how}</p>
+                                    </div>
+                                    <Link href={d.href} className="group inline-flex items-center gap-2 text-sm font-semibold uppercase tracking-[0.2em] text-white/70 hover:text-white transition-colors self-start">
+                                        Explore {d.short}
+                                        <ArrowRight className="w-4 h-4 transition-transform group-hover:translate-x-1" style={{ color: d.accent }} />
+                                    </Link>
+                                </motion.div>
+                            );
+                        })}
                     </div>
                 </section>
 
@@ -164,7 +249,7 @@ export default function AboutPage() {
 
                         <div className="space-y-6 text-gray-300 text-lg leading-relaxed font-light">
                             <p>
-                                Creative output without infrastructure leads to inconsistency. Automation without strategy leads to inefficiency. Our philosophy integrates both. We build AI-native production and operational systems that align creative execution with measurable performance.
+                                Creative output without infrastructure leads to inconsistency. Automation without strategy leads to inefficiency. Each of our departments answers one of them: Filmmaking builds production systems that hold creative work to a standard, and Automations builds operational systems that align execution with measurable performance.
                             </p>
                             <p>
                                 We do not operate outside our clients’ businesses. We embed within their objectives, their metrics, and their operational reality. Alignment means shared visibility, structured execution, and accountable outcomes — not surface-level collaboration.
@@ -229,7 +314,7 @@ export default function AboutPage() {
                         <h3 className="text-5xl md:text-6xl font-bold mb-10 text-white drop-shadow-md">Mastery requires focus.</h3>
 
                         <p className="text-xl text-gray-300 leading-relaxed mb-10 font-light">
-                            We remove inefficiencies across production, automation, and performance deployment. Every workflow is designed for clarity, speed, and measurable output. Clients gain full visibility into spend, performance, and return — without opacity or disconnected reporting.
+                            Each department removes inefficiencies in its own discipline: production in Filmmaking, operations in Automations. Every workflow is designed for clarity, speed, and measurable output. Clients gain full visibility into spend, performance, and return — without opacity or disconnected reporting.
                         </p>
 
                         <p className="text-gray-400">
@@ -288,10 +373,10 @@ export default function AboutPage() {
                                 Performance requires visibility.
                             </p>
                             <p>
-                                For filmmaking projects, reviews, approvals, contracts and invoices sit in your McPrime client portal on Genreline, with a record of who approved each version and when.
+                                For filmmaking projects, reviews, approvals, contracts and invoices sit in your McPrime client portal on Genreline, with a record of who approved each version and when. Paid campaigns run for film clients report spend and return the same way.
                             </p>
                             <p>
-                                For automation systems and paid deployment, clients have direct access to operational data, performance metrics, and measurable return tracking.
+                                For automation systems, clients have direct access to operational data, performance metrics, and measurable return tracking.
                             </p>
                             <ul className="space-y-3 py-4">
                                 <li className="flex items-center gap-3 text-gray-300">

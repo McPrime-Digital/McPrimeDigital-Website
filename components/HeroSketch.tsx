@@ -112,10 +112,12 @@ export default function HeroSketch() {
                     </motion.div>
                 </div>
 
-                {/* Connection Lines (Desktop) - Mathematically aligned to Grid fractions */}
+                {/* Connection Lines (Desktop) - Mathematically aligned to Grid fractions.
+                    The two departments hang from the trunk; Add-ons is not on the main tree and is
+                    reached only from Filmmaking, the department it extends. */}
                 <div className="hidden md:block relative w-full h-32 mb-6 -mt-20 z-0 px-4 md:px-20">
                     <svg className="w-full h-full overflow-visible">
-                        {/* Left Branch */}
+                        {/* Left Branch: Filmmaking */}
                         <motion.line
                             x1="16.67%" y1="93.75%" x2="16.67%" y2="80%"
                             stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
@@ -127,7 +129,7 @@ export default function HeroSketch() {
                             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
                         />
 
-                        {/* Right Branch */}
+                        {/* Right Branch: Automations */}
                         <motion.line
                             x1="83.33%" y1="93.75%" x2="83.33%" y2="80%"
                             stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
@@ -135,13 +137,6 @@ export default function HeroSketch() {
                         />
                         <motion.line
                             x1="83.33%" y1="80%" x2="50%" y2="80%"
-                            stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
-                            initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
-                        />
-
-                        {/* Center Branch */}
-                        <motion.line
-                            x1="50%" y1="93.75%" x2="50%" y2="80%"
                             stroke="rgba(255,255,255,0.3)" strokeWidth="1.5"
                             initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 1.5 }}
                         />
@@ -155,45 +150,45 @@ export default function HeroSketch() {
                     </svg>
                 </div>
 
-                {/* Services Row - Nodes */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-8 md:gap-0 w-full relative z-10 px-4 md:px-20 mb-20 md:-mt-8">
-                    <div className="md:px-4 relative">
-                        {/* Mobile line: Robot to Filmmaking */}
-                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 top-[-60px] h-[60px] w-[2px]">
-                            <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: "100%" }}
-                                transition={{ duration: 0.3, delay: 0.1 }}
-                                className="w-full h-full bg-cyan-500/50"
-                            />
-                        </div>
-                        <ServiceBox title="FILMMAKING" delay={0.2} href="/filmmaking" />
-                        {/* Mobile line: Filmmaking to Automations */}
-                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
-                            <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: "100%" }}
-                                transition={{ duration: 0.2, delay: 0.3 }}
-                                className="w-full h-full bg-cyan-500/40"
-                            />
-                        </div>
+                {/* Department nodes. Desktop: Filmmaking, Add-ons, Automations in one row. Phones: the two
+                    departments side by side under the robot, with Add-ons beneath Filmmaking. */}
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-y-8 md:gap-0 w-full relative z-10 px-4 md:px-20 mb-20 mt-10 md:-mt-8">
+                    {/* Phone lines: robot trunk, split to both departments (column centres sit at 25% and 75%) */}
+                    <svg className="md:hidden absolute left-4 -top-[88px] h-[88px] w-[calc(100%-2rem)] overflow-visible" aria-hidden>
+                        <motion.line x1="50%" y1="0" x2="50%" y2="50%" stroke="rgba(255,255,255,0.4)" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, delay: 0.1 }} />
+                        <motion.line x1="50%" y1="50%" x2="25%" y2="50%" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, delay: 0.4 }} />
+                        <motion.line x1="50%" y1="50%" x2="75%" y2="50%" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.4, delay: 0.4 }} />
+                        <motion.line x1="25%" y1="50%" x2="25%" y2="100%" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, delay: 0.75 }} />
+                        <motion.line x1="75%" y1="50%" x2="75%" y2="100%" stroke="rgba(255,255,255,0.3)" strokeWidth="1.5" initial={{ pathLength: 0 }} animate={{ pathLength: 1 }} transition={{ duration: 0.3, delay: 0.75 }} />
+                    </svg>
+
+                    <div className="col-start-1 row-start-1 px-1.5 md:px-4 relative">
+                        <ServiceBox title="FILMMAKING" kicker="Department" accent="#2D6BFF" delay={0.2} href="/filmmaking" />
                     </div>
 
-                    <div className="md:px-4 relative">
-                        <ServiceBox title="AUTOMATIONS" delay={0.3} href="/automations" />
-                        {/* Mobile line: Automations to Add-ons */}
-                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 bottom-[-32px] h-[32px] w-[2px]">
+                    <div className="col-start-1 row-start-2 md:col-start-2 md:row-start-1 px-1.5 md:px-4 relative">
+                        {/* Filmmaking to Add-ons: from above on phones, from the left on desktop */}
+                        <div className="md:hidden absolute left-1/2 -translate-x-1/2 -top-8 h-8 w-[1.5px]">
                             <motion.div
-                                initial={{ height: 0 }}
-                                animate={{ height: "100%" }}
-                                transition={{ duration: 0.2, delay: 0.4 }}
-                                className="w-full h-full bg-cyan-500/30"
+                                initial={{ scaleY: 0 }}
+                                animate={{ scaleY: 1 }}
+                                transition={{ duration: 0.3, delay: 1.1 }}
+                                className="w-full h-full origin-top bg-white/30"
                             />
                         </div>
+                        <div className="hidden md:block absolute top-1/2 -left-4 w-8 h-[1.5px] -translate-y-1/2">
+                            <motion.div
+                                initial={{ scaleX: 0 }}
+                                animate={{ scaleX: 1 }}
+                                transition={{ duration: 0.5, delay: 1.3 }}
+                                className="w-full h-full origin-left bg-white/30"
+                            />
+                        </div>
+                        <ServiceBox title="ADD-ONS" kicker="Extensions" accent="#2D6BFF" connect="left" delay={0.4} href="/add-ons" />
                     </div>
 
-                    <div className="md:px-4 relative">
-                        <ServiceBox title="ADD-ONS" delay={0.4} href="/add-ons" />
+                    <div className="col-start-2 row-start-1 md:col-start-3 px-1.5 md:px-4 relative">
+                        <ServiceBox title="AUTOMATIONS" kicker="Department" accent="#22D3EE" delay={0.3} href="/automations" />
                     </div>
                 </div>
 
@@ -263,7 +258,7 @@ export default function HeroSketch() {
                     </h1>
 
                     <p className="text-gray-200/90 text-base md:text-lg italic max-w-4xl mx-auto font-light leading-relaxed mt-6 mb-8">
-                        From first treatment to final conform, every picture moves through a governed, AI-native pipeline built to broadcast standard — while automation systems carry scheduling, versioning, and delivery in the background. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
+                        From first treatment to final conform, every picture from our Filmmaking Department moves through a governed, AI-native and hybrid pipeline built to broadcast standard. Our Automations Department, a separate practice, builds the systems that carry scheduling, workflows, and delivery inside client operations. Two decades of set discipline, re-engineered as infrastructure: the work arrives faster, cleaner, and fully accountable.
                     </p>
                 </div>
             </div>
@@ -272,36 +267,45 @@ export default function HeroSketch() {
     );
 }
 
-function ServiceBoxContent({ title, isCenter }: { title: string; isCenter: boolean }) {
+interface ServiceBoxProps {
+    title: string;
+    /** Small label above the title */
+    kicker: string;
+    /** Department colour, used for the connector dot and the hover light */
+    accent: string;
+    delay: number;
+    href: string;
+    /** Where the line from the tree meets the box: the top, or (Add-ons on desktop) the left side */
+    connect?: 'top' | 'left';
+}
+
+function ServiceBoxContent({ title, kicker, accent, connect = 'top' }: Omit<ServiceBoxProps, 'delay' | 'href'>) {
+    const dot = { background: accent, boxShadow: `0 0 12px ${accent}` };
     return (
         <>
-            {/* Connector dot at top of box (where line connects) */}
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-cyan-400 opacity-60 shadow-[0_0_12px_rgba(34,211,238,0.8)] animate-[node-pulse_2s_ease-in-out_infinite]" />
-
-            <div className="absolute inset-0 bg-cyan-500/20 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" />
-            <div className={`
-                relative p-6 md:p-8 rounded-xl text-center border transition-all duration-300 transform group-hover:-translate-y-2 cursor-pointer
-                ${isCenter
-                    ? 'border-indigo-500/50 bg-indigo-950/20 text-white shadow-[0_0_30px_rgba(99,102,241,0.15)] shadow-indigo-500/20'
-                    : 'border-white/10 bg-white/5 text-gray-300 hover:border-white/30 hover:text-white'
-                }
-            `}>
-                <span className="text-sm md:text-base font-black tracking-[0.2em]">{title}</span>
+            {/* Connector dot where the line meets the box */}
+            <div
+                className={`absolute top-0 left-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full opacity-80 z-10 animate-[node-pulse_2s_ease-in-out_infinite] ${connect === 'left' ? 'md:hidden' : ''}`}
+                style={dot}
+            />
+            {connect === 'left' && (
+                <div className="hidden md:block absolute left-0 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full opacity-80 z-10 animate-[node-pulse_2s_ease-in-out_infinite]" style={dot} />
+            )}
+            <div className="absolute inset-0 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-lg" style={{ background: `${accent}33` }} />
+            <div className="relative px-3 py-4 md:p-8 rounded-xl text-center border transition-all duration-300 transform group-hover:-translate-y-2 cursor-pointer border-white/10 bg-white/5 text-gray-300 hover:border-white/30 hover:text-white">
+                <span className="block font-mono text-[8px] md:text-[9px] tracking-[0.3em] uppercase mb-1.5 md:mb-2" style={{ color: accent }}>{kicker}</span>
+                <span className="block text-[13px] md:text-base font-black tracking-[0.14em] md:tracking-[0.2em]">{title}</span>
             </div>
         </>
     );
 }
 
-function ServiceBox({ title, delay, isCenter = false, href }: { title: string, delay: number, isCenter?: boolean, href?: string }) {
+function ServiceBox({ delay, href, ...content }: ServiceBoxProps) {
     return (
         <div className="group relative animate-rise" style={{ animationDelay: `${delay}s` }}>
-            {href ? (
-                <Link href={href} className="block h-full">
-                    <ServiceBoxContent title={title} isCenter={isCenter} />
-                </Link>
-            ) : (
-                <ServiceBoxContent title={title} isCenter={isCenter} />
-            )}
+            <Link href={href} className="block h-full">
+                <ServiceBoxContent {...content} />
+            </Link>
         </div>
     );
 }

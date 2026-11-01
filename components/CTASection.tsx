@@ -38,12 +38,19 @@ function SpotlightBox({ children, className = "" }: { children: React.ReactNode,
 }
 
 export default function CTASection() {
-    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '' });
+    const [formData, setFormData] = useState({ name: '', company: '', email: '', message: '', website: '', department: '' });
+    const [departmentMissing, setDepartmentMissing] = useState(false);
     const [status, setStatus] = useState<'idle' | 'loading' | 'success' | 'error'>('idle');
     const [errorMessage, setErrorMessage] = useState('');
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+        // Each inquiry goes to the department it is for
+        if (!formData.department) {
+            setDepartmentMissing(true);
+            document.getElementById('cta-department-filmmaking')?.focus();
+            return;
+        }
         setStatus('loading');
         setErrorMessage('');
 
@@ -60,7 +67,7 @@ export default function CTASection() {
             }
 
             setStatus('success');
-            setFormData({ name: '', company: '', email: '', message: '', website: '' });
+            setFormData({ name: '', company: '', email: '', message: '', website: '', department: '' });
             setTimeout(() => setStatus('idle'), 5000);
         } catch (error) {
             setStatus('error');
@@ -137,6 +144,11 @@ export default function CTASection() {
                             <InputField label="Company" type="text" placeholder="Acme Inc." value={formData.company} onChange={(e) => setFormData({ ...formData, company: e.target.value })} />
                         </div>
                         <InputField label="Email" type="email" placeholder="john@company.com" value={formData.email} onChange={(e) => setFormData({ ...formData, email: e.target.value })} required />
+                        <DepartmentChoice
+                            value={formData.department}
+                            missing={departmentMissing}
+                            onChange={(department) => { setFormData({ ...formData, department }); setDepartmentMissing(false); }}
+                        />
                         <InputField label="Message" type="textarea" placeholder="Tell us about your goals..." value={formData.message} onChange={(e) => setFormData({ ...formData, message: e.target.value })} required />
 
                         <Button
@@ -182,5 +194,50 @@ function InputField({ label, type, placeholder, value, onChange, required }: { l
                 />
             )}
         </div>
+    );
+}
+
+const DEPARTMENT_OPTIONS = [
+    { value: 'Filmmaking', label: 'Filmmaking', dot: 'bg-[#2D6BFF] shadow-[0_0_8px_#2D6BFF]', on: 'border-[#2D6BFF]/70 bg-[#2D6BFF]/10 text-white' },
+    { value: 'Automations', label: 'Automations', dot: 'bg-[#22D3EE] shadow-[0_0_8px_#22D3EE]', on: 'border-[#22D3EE]/70 bg-[#22D3EE]/10 text-white' },
+    { value: 'Both', label: 'Both', dot: 'bg-gradient-to-r from-[#2D6BFF] to-[#22D3EE]', on: 'border-white/40 bg-white/10 text-white' },
+] as const;
+
+/** Which department the inquiry is for. Native radios, so it works with the keyboard and screen readers. */
+function DepartmentChoice({ value, missing, onChange }: { value: string; missing: boolean; onChange: (department: string) => void }) {
+    return (
+        <fieldset className="flex flex-col gap-2 group" aria-describedby={missing ? 'cta-department-error' : undefined}>
+            <legend className="text-sm font-bold text-gray-400 group-focus-within:text-indigo-400 transition-colors uppercase tracking-wider ml-1 mb-2">
+                Department <span className="text-red-400">*</span>
+            </legend>
+            <div className="grid grid-cols-3 gap-2 md:gap-3">
+                {DEPARTMENT_OPTIONS.map((option) => {
+                    const selected = value === option.value;
+                    return (
+                        <label
+                            key={option.value}
+                            className={`relative flex cursor-pointer items-center justify-center gap-2 rounded-xl border px-2 py-3.5 text-xs md:text-sm font-semibold tracking-wide transition-all duration-300 has-[:focus-visible]:ring-2 has-[:focus-visible]:ring-indigo-400/70 ${selected ? option.on : `${missing ? 'border-red-400/50' : 'border-white/10'} bg-black/20 text-gray-400 hover:border-white/25 hover:text-white`}`}
+                        >
+                            <input
+                                id={`cta-department-${option.value.toLowerCase()}`}
+                                type="radio"
+                                name="department"
+                                value={option.value}
+                                checked={selected}
+                                onChange={() => onChange(option.value)}
+                                className="sr-only"
+                            />
+                            <span className={`h-1.5 w-1.5 shrink-0 rounded-full transition-opacity ${option.dot} ${selected ? 'opacity-100' : 'opacity-50'}`} />
+                            {option.label}
+                        </label>
+                    );
+                })}
+            </div>
+            {missing && (
+                <p id="cta-department-error" role="alert" className="ml-1 text-xs text-red-400">
+                    Choose the department you would like to speak with.
+                </p>
+            )}
+        </fieldset>
     );
 }

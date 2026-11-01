@@ -2,87 +2,18 @@
 
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
-import { FlaskConical, UtensilsCrossed, MonitorPlay, Building2, Gem, Handshake, Map, BriefcaseBusiness } from 'lucide-react';
 import { usePauseOffscreen } from '@/lib/usePauseOffscreen';
+import { engagements as allEngagements } from '@/lib/engagements';
+import { DEPARTMENTS, type Department } from '@/lib/departments';
+import DepartmentTag from './DepartmentTag';
 
-const engagements = [
-    {
-        client: "Pharmaceutical Organization",
-        title: "AI Commercial Film Production",
-        description: "Developed and delivered an AI-native commercial film explaining a pharmaceutical product, its intended use, and the problem it addresses. Scriptwriting was structured to align with approval requirements, and full production was completed in under six days.",
-        points: ["Structured script development", "Compliance-aware messaging", "Accelerated production timeline", "Deployment-ready commercial asset"],
-        icon: FlaskConical,
-        glow: "from-blue-500/20",
-        iconColor: "text-cyan-400"
-    },
-    {
-        client: "Food & Beverage Brand",
-        title: "Commercial Film Production",
-        description: "Produced a commercial film highlighting brand positioning and product appeal within a competitive consumer market.",
-        points: ["Concept development", "AI-native production", "Multi-format commercial delivery"],
-        icon: UtensilsCrossed,
-        glow: "from-emerald-500/20",
-        iconColor: "text-emerald-400"
-    },
-    {
-        client: "Sister Company · AI Software",
-        title: "Capability-Focused Commercial Film",
-        description: "Produced a short-form commercial explaining product capabilities, target users, practical application, and functional benefits.",
-        points: ["Structured product narrative", "Clear use-case communication", "Benefit-driven positioning", "Platform-ready output"],
-        icon: MonitorPlay,
-        glow: "from-purple-500/20",
-        iconColor: "text-indigo-400"
-    },
-    {
-        client: "Mobile Banking Institution",
-        title: "Payroll Automation Architecture",
-        description: "Designed and implemented an automation workflow supporting payroll operations within a financial environment.",
-        points: ["Workflow mapping", "Process automation design", "Operational efficiency improvement", "Structured deployment"],
-        icon: Building2,
-        glow: "from-amber-500/20",
-        iconColor: "text-amber-400"
-    },
-    {
-        client: "Luxury Brand",
-        title: "Multi-Product Commercial Production",
-        description: "Produced a high-end commercial showcasing five products within a unified narrative framework.",
-        points: ["Coordinated visual architecture", "Controlled brand tone", "Premium visual delivery"],
-        icon: Gem,
-        glow: "from-rose-500/20",
-        iconColor: "text-rose-400"
-    },
-    {
-        client: "Food & Beverage Brand",
-        title: "AI Brand Ambassador Program",
-        description: "Developed a recurring AI-powered brand ambassador system producing weekly content for snack product promotion.",
-        points: ["Structured weekly content framework", "Consistent brand voice", "Scalable short-form output"],
-        icon: Handshake,
-        glow: "from-fuchsia-500/20",
-        iconColor: "text-fuchsia-400"
-    },
-    {
-        client: "Hotel & Resort",
-        title: "Commercial Film Production",
-        description: "Produced a commercial film highlighting property experience, amenities, and brand positioning within the hospitality market.",
-        points: ["Visual storytelling", "Structured narrative flow", "Destination-focused messaging"],
-        icon: Map,
-        glow: "from-cyan-500/20",
-        iconColor: "text-blue-400"
-    },
-    {
-        client: "Hospitality Organization",
-        title: "Operational & Lead Generation Workflow",
-        description: "Designed and implemented operational and lead generation workflows to improve internal coordination and marketing pipeline structure.",
-        points: ["Lead capture optimization", "Workflow automation", "Structured operational alignment"],
-        icon: BriefcaseBusiness,
-        glow: "from-teal-500/20",
-        iconColor: "text-teal-400"
-    }
-];
 
-export default function SelectedEngagementsVertical() {
+/** Pass a department to show only its work (department pages). A short list sits still; four or more run as a loop. */
+export default function SelectedEngagementsVertical({ department }: { department?: Department }) {
+    const engagements = department ? allEngagements.filter((e) => e.department === department) : allEngagements;
+    const looping = engagements.length >= 4;
     // Duplicate the array to create a seamless infinite loop
-    const doubledEngagements = [...engagements, ...engagements];
+    const doubledEngagements = looping ? [...engagements, ...engagements] : engagements;
     const sectionRef = usePauseOffscreen<HTMLElement>();
     const [touchedCard, setTouchedCard] = useState<number | null>(null);
 
@@ -112,7 +43,11 @@ export default function SelectedEngagementsVertical() {
                         </h2>
 
                         <p className="text-lg text-gray-400 font-light leading-relaxed mb-8">
-                            Representative work across commercial production and operational systems. We build autonomous pipelines and high-end visual tools utilized by leading brands.
+                            {department === 'automations'
+                                ? `Representative work from our ${DEPARTMENTS.automations.name}: autonomous pipelines and governed workflows running inside client operations.`
+                                : department === 'filmmaking'
+                                    ? `Representative work from our ${DEPARTMENTS.filmmaking.name}: commercial and brand films for leading brands.`
+                                    : 'Representative work from both departments: commercial production from Filmmaking, operational systems from Automations.'}
                         </p>
 
                         {/* Visual Structural Diagram Line */}
@@ -124,14 +59,18 @@ export default function SelectedEngagementsVertical() {
                     </motion.div>
 
                     {/* Right Column: Vertical Infinite Scroll Marquee */}
-                    <div className="relative h-[600px] md:h-[800px] w-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 md:backdrop-blur-sm group">
+                    <div className={`relative w-full overflow-hidden rounded-2xl border border-white/5 bg-black/20 md:backdrop-blur-sm group ${looping ? 'h-[600px] md:h-[800px]' : ''}`}>
 
                         {/* Top/Bottom Fade Masks to hide the seam */}
-                        <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#050505] to-transparent z-10 pointer-events-none" />
-                        <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-10 pointer-events-none" />
+                        {looping && (
+                            <>
+                                <div className="absolute top-0 left-0 right-0 h-32 bg-gradient-to-b from-[#050505] to-transparent z-10 pointer-events-none" />
+                                <div className="absolute bottom-0 left-0 right-0 h-32 bg-gradient-to-t from-[#050505] to-transparent z-10 pointer-events-none" />
+                            </>
+                        )}
 
                         {/* Animated Track: a CSS loop, paused while the section is off-screen */}
-                        <div className="flex flex-col gap-6 p-4 md:p-8 animate-[marquee-vertical_45s_linear_infinite]">
+                        <div className={`flex flex-col gap-6 p-4 md:p-8 ${looping ? 'animate-[marquee-vertical_45s_linear_infinite]' : ''}`}>
                             {doubledEngagements.map((item, index) => (
                                 <div
                                     key={index}
@@ -148,16 +87,17 @@ export default function SelectedEngagementsVertical() {
                                         <item.icon className={`w-5 h-5 md:w-6 md:h-6 ${item.iconColor} drop-shadow-[0_0_10px_currentColor]`} />
                                     </div>
 
+                                    <DepartmentTag department={item.department} className="mb-2 relative z-10" />
                                     <h3 className="text-lg md:text-xl font-bold mb-3 text-white leading-tight uppercase tracking-wide relative z-10">{item.title}</h3>
 
-                                    <p className="text-gray-400 text-xs md:text-sm leading-relaxed mb-6 relative z-10 font-light hidden md:block">
+                                    <p className={`text-gray-400 text-xs md:text-sm leading-relaxed mb-6 relative z-10 font-light ${looping ? 'hidden md:block' : ''}`}>
                                         {item.description}
                                     </p>
 
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3 relative z-10 border-t border-white/5 pt-4">
                                         {item.points.map((point, idx) => (
                                             <div key={idx} className="flex items-start gap-2 text-xs md:text-sm text-gray-300">
-                                                <div className={`mt-1.5 w-1.5 h-1.5 rounded-full ${item.iconColor} shadow-[0_0_8px_currentColor] flex-shrink-0`} />
+                                                <div className={`mt-1.5 w-1.5 h-1.5 rounded-full bg-current ${item.iconColor} shadow-[0_0_8px_currentColor] flex-shrink-0`} />
                                                 <span className="font-medium tracking-wide">{point}</span>
                                             </div>
                                         ))}

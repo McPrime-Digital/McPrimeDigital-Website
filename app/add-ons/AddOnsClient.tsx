@@ -60,7 +60,7 @@ export default function GrowthAddOns() {
                                 <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-cyan-400 opacity-75"></span>
                                 <span className="relative inline-flex rounded-full h-2 w-2 bg-cyan-500 shadow-[0_0_10px_cyan]"></span>
                             </span>
-                            <span className="text-xs font-mono tracking-widest text-cyan-100 uppercase text-shadow-sm">Integrated Growth Add-Ons</span>
+                            <span className="text-xs font-mono tracking-widest text-cyan-100 uppercase text-shadow-sm">Filmmaking Department · Add-Ons</span>
                         </div>
 
                         {/* Force 2-Line Headline - Slightly Reduced Size (text-[4.5vw]) */}
@@ -71,7 +71,7 @@ export default function GrowthAddOns() {
 
                         {/* Refined Exclusive Undertext */}
                         <p className="text-xl md:text-2xl text-gray-300 font-light mb-12 max-w-3xl mx-auto leading-relaxed md:mix-blend-plus-lighter">
-                            Reserved strictly for our existing partners. A unified extension of your production ecosystem ensuring creative, distribution, and performance remain integrated under one infrastructure.
+                            Reserved strictly for active clients of our Filmmaking Department. A unified extension of your production ecosystem ensuring creative, distribution, and performance remain integrated under one infrastructure.
                         </p>
                     </motion.div>
                 </Container>
@@ -102,7 +102,7 @@ export default function GrowthAddOns() {
                                 </span>
                             </motion.h2>
                             <p className="text-lg text-gray-300 leading-relaxed font-light">
-                                Our add-on services are not standalone offerings. They extend the <span className="text-cyan-300 font-medium">production and automation systems</span> already built for your organization. By keeping creative, performance, and infrastructure aligned under one framework, execution remains consistent, measurable, and efficient.
+                                Our add-on services are not standalone offerings. They extend the <span className="text-cyan-300 font-medium">film program our Filmmaking Department</span> already runs for your organization. By keeping creative, performance, and delivery aligned under one framework, execution remains consistent, measurable, and efficient.
                                 <br /><br />
                                 This structure prevents fragmentation across vendors and preserves operational control.
                             </p>
@@ -112,7 +112,7 @@ export default function GrowthAddOns() {
                             {[
                                 { title: "Unified Framework", desc: "No fragmentation. One system for creative and performance.", icon: LayoutGrid, color: "from-cyan-500 to-blue-600" },
                                 { title: "Consistent Execution", desc: "Maintain brand voice across every new channel.", icon: CheckCircle2, color: "from-blue-500 to-indigo-600" },
-                                { title: "Measurable Impact", desc: "Data flows back into your central automation core.", icon: Zap, color: "from-purple-500 to-pink-600" }
+                                { title: "Measurable Impact", desc: "Performance data reports back alongside the films it promotes.", icon: Zap, color: "from-purple-500 to-pink-600" }
                             ].map((item, i) => (
                                 <motion.div
                                     key={i}
@@ -220,7 +220,7 @@ export default function GrowthAddOns() {
                                 Integrated Paid Advertising
                             </h2>
                             <p className="text-gray-400 text-lg leading-relaxed">
-                                For clients seeking unified execution, we manage paid advertising within the same performance framework as your AI-produced assets. Campaign deployment, optimization, and reporting remain connected to your automation systems, eliminating disconnected workflows.
+                                For clients seeking unified execution, we manage paid advertising within the same performance framework as your AI-produced assets. Campaign deployment, optimization, and reporting remain connected to the films they promote, eliminating disconnected workflows.
                             </p>
 
                             <h3 className="text-gray-500 uppercase tracking-widest text-sm font-mono pt-4">Services include:</h3>
@@ -272,7 +272,7 @@ export default function GrowthAddOns() {
                     </h2>
 
                     <p className="text-gray-400 leading-relaxed text-lg mb-12">
-                        These services are available only to organizations currently engaged in our AI Commercial Filmmaking or Automation programs. This ensures every extension integrates seamlessly into an existing production and operational framework.
+                        These services are available only to organizations currently engaged with our Filmmaking Department. This ensures every extension integrates seamlessly into an existing production framework.
                     </p>
 
                     <div className="inline-block px-10 py-5 border border-white/5 rounded-full bg-white/[0.01] backdrop-blur-sm">

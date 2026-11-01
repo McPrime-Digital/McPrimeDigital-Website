@@ -9,10 +9,11 @@ const CinematicCapabilityVault = dynamic(() => import('@/components/filmmaking/C
 const FilmmakingPortfolio = dynamic(() => import('@/components/filmmaking/FilmmakingPortfolio'), { ssr: true });
 const FilmmakingTarget = dynamic(() => import('@/components/filmmaking/FilmmakingTarget'), { ssr: true });
 const SelectedEngagementsHorizontal = dynamic(() => import('@/components/SelectedEngagementsHorizontal'), { ssr: true });
+const DepartmentCrossLink = dynamic(() => import('@/components/DepartmentCrossLink'), { ssr: true });
 const Footer = dynamic(() => import('@/components/Footer'), { ssr: true });
 
 const title = 'AI-Native Film, TV, Commercial & Music Video Production';
-const description = 'Broadcast-grade commercials, films and music videos produced through a governed AI-native pipeline. Built for scale, speed and full creative control.';
+const description = 'The McPrime Digital Filmmaking Department: broadcast-grade commercials, films and music videos produced through a governed AI-native and hybrid pipeline. Built for scale, speed and full creative control.';
 
 export const metadata: Metadata = {
     title,
@@ -37,7 +38,8 @@ export default function FilmmakingPage() {
             <CinematicCapabilityVault />
             <FilmmakingPortfolio />
             <FilmmakingTarget />
-            <SelectedEngagementsHorizontal />
+            <SelectedEngagementsHorizontal department="filmmaking" />
+            <DepartmentCrossLink to="automations" />
             <Footer />
         </div>
     );

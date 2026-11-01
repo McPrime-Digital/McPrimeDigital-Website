@@ -3,16 +3,16 @@ import AutomationsClient from "./AutomationsClient";
 
 export const metadata: Metadata = {
     title: "Enterprise AI Automation Systems",
-    description: "Agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
+    description: "The McPrime Digital Automations Department: agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
     alternates: { canonical: "/automations" },
     openGraph: {
         title: "Enterprise AI Automation Systems",
-        description: "Agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
+        description: "The McPrime Digital Automations Department: agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
         url: "/automations",
     },
     twitter: {
         title: "Enterprise AI Automation Systems",
-        description: "Agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
+        description: "The McPrime Digital Automations Department: agentic workflow automation, deep system integrations and governed execution with complete audit trails, engineered for mid-market and enterprise operations.",
     },
 };
 

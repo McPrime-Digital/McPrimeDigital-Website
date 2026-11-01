@@ -9,7 +9,7 @@ const features = [
     {
         id: "01",
         title: "Infrastructure, Not Temporary Campaigns",
-        content: "Every engagement is built on structured frameworks. Whether producing AI-native commercial films or implementing automation systems, we prioritize repeatable architecture over one-off output. This ensures consistency, scalability, and operational clarity.",
+        content: "Every engagement is built on structured frameworks. Our Filmmaking Department and our Automations Department each prioritize repeatable architecture over one-off output. This ensures consistency, scalability, and operational clarity.",
         icon: Database
     },
     {
@@ -33,7 +33,7 @@ const features = [
     {
         id: "05",
         title: "Focused Capability",
-        content: "We do not dilute our expertise across unnecessary service lines. Our specialization in AI commercial filmmaking and automation infrastructure allows us to operate with depth rather than breadth.",
+        content: "We do not dilute our expertise across unnecessary service lines. Two dedicated departments, one for AI-native and hybrid filmmaking and one for automation infrastructure, each operate with depth rather than breadth.",
         icon: Check
     }
 ];
@@ -63,7 +63,7 @@ export default function StorySection() {
                         <div className="w-12 h-1 bg-indigo-500/60 rounded-full" />
                         <p className="text-gray-300 text-lg leading-relaxed">
                             We started as a small team of filmmakers and developers who realized that the future of creativity wasn't just human—it was hybrid.
-                            By combining cinematic storytelling with algorithmic precision, we unlocked a new era of digital expression.
+                            By combining cinematic storytelling with algorithmic precision, we unlocked a new era of digital expression. Today that work runs as two dedicated departments: Filmmaking, and Automations.
                         </p>
                     </div>
 

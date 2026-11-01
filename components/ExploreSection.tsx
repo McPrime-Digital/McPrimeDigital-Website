@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Clapperboard, Cpu, Users, Megaphone, ArrowRight, Play, type LucideIcon } from 'lucide-react';
 import type { ReactNode } from 'react';
 import Button from './ui/Button';
+import { DEPARTMENTS, type Department } from '@/lib/departments';
 import AutomationFlow from './AutomationFlow';
 import FilmProductionMedia from './FilmProductionMedia';
 
@@ -39,12 +40,13 @@ export default function ExploreSection() {
                 </motion.h2>
             </div>
 
-            {/* 1. Innovative Solutions */}
+            {/* 1. The two departments */}
             <div className="mb-32">
-                <SectionHeader title="Our Innovative Solutions" subtitle="Core services engineered on enterprise-grade AI infrastructure." color="text-teal-400" />
+                <SectionHeader title="Two Departments" subtitle="Two separate practices, each with its own specialists, process and engagements." color="text-teal-400" />
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <SolutionCard
-                        title="AI Film Production"
+                        department="filmmaking"
+                        title="Filmmaking Department"
                         description="Broadcast-grade film, TV, and commercial content delivered through a hybrid production model — AI-native pipelines fused with traditional cinematographic standards for precision, speed, and repeatable output."
                         icon={Clapperboard}
                         color="teal"
@@ -52,7 +54,8 @@ export default function ExploreSection() {
                         href="/filmmaking"
                     />
                     <SolutionCard
-                        title="AI Automations"
+                        department="automations"
+                        title="Automations Department"
                         description="Mission-critical workflow orchestration for regulated operations — agentic pipelines, deep system integrations, and governed execution with complete audit trails. Engineered to remove manual load and reduce operational development spend."
                         icon={Cpu}
                         color="orange"
@@ -78,12 +81,12 @@ export default function ExploreSection() {
                 <div className="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-8 mb-12 items-start">
                     {/* Left: Header */}
                     <div>
-                        <p className="text-amber-500 font-mono tracking-[0.2em] mb-4 text-sm uppercase">Integrated Extensions</p>
+                        <p className="text-amber-500 font-mono tracking-[0.2em] mb-4 text-sm uppercase">Filmmaking Department · Extensions</p>
                         <h3 className="text-3xl md:text-4xl font-bold font-serif mb-4 bg-clip-text text-transparent bg-gradient-to-r from-amber-100 via-yellow-200 to-amber-500 leading-tight">
-                            Integrated Extensions for Active Partners
+                            Integrated Extensions for Film Partners
                         </h3>
                         <p className="text-amber-100/60 text-lg leading-relaxed font-light">
-                            Available exclusively to clients engaged in our AI Commercial Filmmaking or Automation programs, these add-ons extend your existing infrastructure without fragmentation or vendor complexity.
+                            Available exclusively to active clients of our Filmmaking Department, these add-ons extend your film program without fragmentation or vendor complexity.
                         </p>
                     </div>
 
@@ -94,7 +97,7 @@ export default function ExploreSection() {
                         </div>
                         <h4 className="text-xl font-bold text-amber-100 font-serif mb-2">Access & Alignment</h4>
                         <p className="text-amber-200/60 leading-relaxed text-sm">
-                            These services are not offered as standalone engagements. They are available only to active partners to preserve alignment, operational clarity, and structured execution across all initiatives.
+                            These services are not offered as standalone engagements. They are available only to active Filmmaking Department clients, to preserve alignment, operational clarity, and structured execution across all initiatives.
                         </p>
                     </div>
                 </div>
@@ -142,7 +145,7 @@ export default function ExploreSection() {
                                         <li>Continuous optimization</li>
                                     </ul>
                                     <p className="text-amber-400/90 font-medium italic">
-                                        Paid advertising, when integrated properly, becomes a performance extension of your creative and operational systems — not a disconnected channel.
+                                        Paid advertising, when integrated properly, becomes a performance extension of your films — not a disconnected channel.
                                     </p>
                                 </>
                             }
@@ -170,7 +173,8 @@ function SectionHeader({ title, subtitle, color = "text-white", align = "left" }
     );
 }
 
-function SolutionCard({ title, description, icon: Icon, color, media, href }: { title: string; description: string; icon: LucideIcon; color: string; media?: ReactNode; href: string }) {
+function SolutionCard({ department, title, description, icon: Icon, color, media, href }: { department: Department; title: string; description: string; icon: LucideIcon; color: string; media?: ReactNode; href: string }) {
+    const d = DEPARTMENTS[department];
     const colorClasses: { [key: string]: string } = {
         teal: "from-blue-600 via-cyan-500 to-emerald-400", // Cyber-Cinematic: Deep Blue -> Cyan -> Emerald
         orange: "from-purple-600 via-pink-500 to-orange-400" // High-Energy: Purple -> Pink -> Orange
@@ -204,6 +208,10 @@ function SolutionCard({ title, description, icon: Icon, color, media, href }: { 
                 )}
             </div>
             <div className="p-8 relative">
+                <p className="relative z-10 mb-4 flex items-center gap-3 font-mono text-[11px] tracking-[0.3em] uppercase" style={{ color: d.accent }}>
+                    <span className="h-px w-6" style={{ background: d.accent }} />
+                    Department {d.index}
+                </p>
                 <div className="flex items-center gap-4 mb-4 relative z-10">
                     <div className={`p-4 rounded-2xl bg-gradient-to-br ${colorClasses[color]} bg-opacity-20 group-hover:scale-110 transition-transform duration-300 shadow-lg`}>
                         <Icon className="w-7 h-7 text-white drop-shadow-md" />
@@ -214,7 +222,7 @@ function SolutionCard({ title, description, icon: Icon, color, media, href }: { 
                 {href ? (
                     <a href={href} className="inline-block relative z-10">
                         <Button variant="outline" className="border-white/10 pl-6 pr-6 py-3 hover:pl-8 transition-all bg-white/5 hover:bg-white/10 backdrop-blur-sm group-hover:border-white/20">
-                            LEARN MORE <ArrowRight className="w-4 h-4 ml-2" />
+                            EXPLORE {d.short.toUpperCase()} <ArrowRight className="w-4 h-4 ml-2" />
                         </Button>
                     </a>
                 ) : (
